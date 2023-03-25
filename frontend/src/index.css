@@ -55,7 +55,7 @@ a {
     width: 80px;
     text-align: center;
     font-size: 15px;
-    margin-right: 15px;
+    margin-right: 20px;
     padding: 4px 6px;
     border-radius: 4px;
 }
@@ -73,7 +73,7 @@ a {
 
 .logo {
     font-size: 26px;
-    margin-left: 15px;
+    margin-left: 20px;
     color: #05386B;
     font-weight: 700;
 }
@@ -260,10 +260,12 @@ a {
     width: 40px;
     height: 40px;
     border-radius: 40px;
-    background-color: #d8c5a1;
     border: 1.5px solid #2d806f;
     margin-top: 10px;
     cursor: pointer;
+    background-size: cover;
+    background-position: center center;
+    background-image: url('https://st3.depositphotos.com/6672868/13701/v/600/depositphotos_137014128-stock-illustration-user-profile-icon.jpg');
 }
 
 .stream-info-right {
@@ -291,26 +293,38 @@ a {
     flex-direction: row;
     flex-wrap: no-wrap;
     overflow-x: auto;
-    width: 100%;
-    margin-left: 20px;
+    max-width: 100%;
     gap: 10px;
     align-self: start;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .home-section-title {
     font-size: 30px;
     margin-left: 20px;
-    margin-top: 20px;
-    margin-bottom: 5px;
+    margin-top: 30px;
+    margin-bottom: 15px;
     color: #2d806f;
 }
 
+.streamers {
+    gap: 20px;
+}
+
+.streamer-item {
+    width: auto;
+    text-align: center;
+}
+
 .profile-picture {
-    width: 100%;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     background-size: cover;
     background-position: center center;
-    background-image: url('https://st3.depositphotos.com/6672868/13701/v/600/depositphotos_137014128-stock-illustration-user-profile-icon.jpg')
+    background-image: url('https://st3.depositphotos.com/6672868/13701/v/600/depositphotos_137014128-stock-illustration-user-profile-icon.jpg');
+    border-radius: 100%;
+    border: 1.5px solid #2d806f;
 }
 
 .register-form .info {

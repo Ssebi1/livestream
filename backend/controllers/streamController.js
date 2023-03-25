@@ -10,7 +10,25 @@ const User = require('../models/userModel')
 // @access Public
 const getStreams = asyncHandler(async (req, res) => {
     const streams = await Stream.find()
+    for (let i=0; i<streams.length; i++) {
+      const user = await User.findById(streams[i].user)
+      streams[i].user = user
+    }
     res.status(200).send(streams)
+})
+
+// @desc Get stream
+// @route GET /api/streams
+// @access Public
+const getStream = asyncHandler(async (req, res) => {
+  const stream = await Stream.findById(req.params.id)
+  if (!stream) {
+    res.status(400)
+    throw new Error('Stream not found')
+  }
+  const user = await User.findById(stream.user)
+  stream.user = user
+  res.status(200).send(stream)
 })
 
 // @desc Post stream
@@ -90,6 +108,7 @@ const deleteStream = asyncHandler(async (req, res) => {
 // export functions
 module.exports = {
     getStreams,
+    getStream,
     postStream,
     putStream,
     deleteStream

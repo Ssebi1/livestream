@@ -15,7 +15,6 @@ const getStreams = async () => {
     return response.data
 }
 
-
 const streamService = {
     createStream,
     getStreams
