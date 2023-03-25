@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
-import {useNavigate} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import {login, reset} from '../features/auth/authSlice'
 
 function Login() {
@@ -48,13 +48,22 @@ function Login() {
     return (
         <>
             <section className='form login-form'>
-                <div className='title'>Login</div>
+                <div className='title-box'>
+                    <div className="title-box-text">Login</div>
+                </div>
 
                 <form onSubmit={onSubmit}>
-                    <input type="email" className="form-input" id="email" name="email" value={email} placeholder="Enter your email" onChange={onChange} />
-                    <input type="password" className="form-input" id="password" name="password" value={password} placeholder="Enter your password" onChange={onChange} />
-                    <button type="submit" class="button-1">Submit</button>
+                    <div className='input-1'>
+                        <input type="text" className="input-1-field" id="email" name="email" value={email} onChange={onChange} required/>
+                        <label className="input-1-label">Email</label>
+                    </div>
+                    <div className='input-1'>
+                        <input type="password" className="input-1-field" id="password" name="password" value={password} onChange={onChange} required/>
+                        <label className="input-1-label">Password</label>
+                    </div>
+                    <button type="submit" className="login-submit-button">Submit</button>
                 </form>
+                <div className='info'>Not having an account yet? Create one <Link to="/register" className="link">here</Link></div>
             </section>
         </>
     )

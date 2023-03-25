@@ -16,13 +16,7 @@ function Topbar() {
 
     return (
         <div className='topbar'>
-            <Link to='/'>
-                <div className="logo">
-                    StreamIT
-                    <div className="red-dot"></div>
-                </div>
-            </Link>
-            <ul>
+            
             {user ? (
                 <>
                     <li>
@@ -34,11 +28,19 @@ function Topbar() {
                 </>
             ) : (
                 <>
-                    <Link to='/login'><li className="button-1 login-button">Login</li></Link>
-                    <Link to='/register'><li className="button-1 register-button">Register</li></Link>
+                <ul className='left'>
+                    <Link to='/'><li className="logo">LIVESTREAM</li></Link>
+                    <Link to='/'><li className="topbar-link">RECENT</li></Link>
+                    <Link to='/'><li className="topbar-link">POPULAR</li></Link>
+                    <Link to='/'><li className="topbar-link">PAST STREAMS</li></Link>
+                    <Link to='/'><li className="topbar-link">CATEGORIES</li></Link>
+                </ul>
+                <ul className='right'>
+                    <Link to='/login'><li className="login-button">Login</li></Link>
+                    <Link to='/register'><li className="register-button">Register</li></Link>
+                </ul>
                 </>
             )}
-            </ul>
         </div>
     )
 }

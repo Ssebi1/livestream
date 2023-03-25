@@ -4,12 +4,11 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Poppins', arial;
-    background-color: #fafafa;
+    background-color: #EDF5E1;
 }
 
 a {
     text-decoration: none;
-    color: black;
 }
 
 .button-1 {
@@ -21,65 +20,104 @@ a {
     border: none;
 }
 
-.logo {
-    background-color: #ededed;
-    padding: 10px;
-    margin-left: 10px;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: row;
-    justify-content:center;
-    align-items:center;
-    gap: 5px;
-}
-
-.logo .red-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 100%;
-    background-color: red;
-}
-
 .topbar {
     width: 100%;
+    position: relative;
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
+}
+
+.topbar ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
-    background-color: white;
-    border-bottom: 1px solid #ededed;
-    
+    padding-inline-start: 0;
+    position: relative;
+}
+
+.topbar ul .left{
+    justify-content: flex-start;
+}
+
+.topbar ul .right{
+    justify-content: flex-end;
 }
 
 .topbar ul li {
     list-style-type: none;
-    display: inline-block;
-    margin-right: 10px;
-    font-size: 13px;
 }
 
 .register-button {
-    background-color: #a562d9;
-    color: white;
+    background-color: #05386B;
+    color: #EDF5E1;
+    width: 80px;
+    text-align: center;
+    font-size: 15px;
+    margin-right: 15px;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.login-button {
+    background-color: #dae2cf;
+    color: #05386B;
+    width: 80px;
+    text-align: center;
+    font-size: 15px;
+    margin-right: 10px;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.logo {
+    font-size: 26px;
+    margin-left: 15px;
+    color: #05386B;
+    font-weight: 700;
+}
+
+.topbar-link {
+    margin-left: 25px;
+    font-size: 16px;
+    color: #05386B;
+    font-weight: 550;
 }
 
 /* Login */
-.title {
-    margin: 0 auto;
-    text-align: center;
+.title-box {
+    width: 100%;
+    height: 100px;
+    /* background-image: url("../public/login-box-background.jpg");
+    background-position: center center;
+    background-size: cover; */
+    background-color: #2d806f;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.title-box-text {
+    color: #EDF5E1;
+    font-size: 35px;
+    margin-left: 25px;
 }
 
 .form  {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    background-color: white;
-    border-radius: 4px;
-    padding: 30px;
-    margin-top: 50px;
+    background-color: #EDF5E1;
+    border-radius: 6px;
+    padding: 35px;
+    margin-top: 90px;
+    box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.12);
 }
 
 .form .title {
     font-size: 40px;
+    color: #949494;
 }
 
 .form form {
@@ -91,18 +129,77 @@ a {
     margin-top: 40px;
 }
 
-.form form input {
-    height: 40px;
-    border: none;
-    outline: none;
-    background-color: #fafafa;
+.input-1 {
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+    margin-top: 25px;
 }
 
-.form form button {
-    background-color: #a562d9;
-    color: white;
+.input-1-label {
+    color: #949494;
+    font-size: 18px;
+    position: absolute;
+    top: 6px;
+    left: 0;
+    transition: all 1.25 ease;
+}
+
+.input-1-field {
+    outline: none;
+    border: 0;
+    background-color: transparent;
+    border-bottom: 2px solid #949494;
+    padding: 10px;
+    font-size: 16px;
+    z-index: 1;
+}
+
+.input-1-field:focus {
+    border-bottom-color: #2d806f;
+}
+
+.input-1-field:valid {
+    border-bottom-color: #2d806f;
+}
+
+.input-1-field:focus + .input-1-label {
+    color: #2d806f;
+    transform: translateY(-30px);
+}
+
+.input-1-field:valid + .input-1-label {
+    color: #2d806f;
+    transform: translateY(-30px);
+}
+
+.login-form .info {
+    margin: 0 auto;
+    text-align: center;
+    font-size: 15px;
+    margin-top: 10px;
+    color: #949494;
+}
+
+.link-1 {
+    color: #2d806f;
+    text-decoration: none;
+}
+
+.login-submit-button {
+    background-color: #2d806f;
+    color: #EDF5E1;
     font-size: 22px;
     cursor: pointer;
+    border: none;
+    outline: none;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.login-submit-button:hover {
+    background-color: #359582;
 }
 
 .account-button {
@@ -124,7 +221,7 @@ a {
     width: auto;
     height: auto;
     background-color: #a562d9;
-    color: white;
+    color: #EDF5E1;
     padding: 10px;
     border-radius: 4px;
     width: 90px;
@@ -135,11 +232,11 @@ a {
     font-size: 14px;
 }
 
+/* Stream item */
+
 .stream-item {
-    width: 200px;
-    min-width: 200px;
+    width: 250px;
     height: auto;
-    background-color: #ededed;
 }
 
 .stream-item .thumbnail{
@@ -147,13 +244,46 @@ a {
     height: 150px;
     background-size: cover;
     background-position: center center;
-    background-image: url('https://q5n8c8q9.rocketcdn.me/wp-content/uploads/2019/09/YouTube-thumbnail-size-guide-best-practices-top-examples.png');
+    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_faiar-440x248.jpg');
+    cursor: pointer;
 }
 
-.stream-item .stream-title {
+.stream-info {
+    display: flex;
     width: 100%;
     height: auto;
-    padding: 10px;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.stream-author-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    background-color: #d8c5a1;
+    border: 1.5px solid #2d806f;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.stream-info-right {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.stream-title {
+    color: #05386B;
+    font-size: 18px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.stream-author, .stream-category {
+    font-size: 14px;
+    color: #05386bc7;
+    cursor: pointer;
 }
 
 .streams, .streamers {
@@ -168,10 +298,11 @@ a {
 }
 
 .home-section-title {
-    font-size: 25px;
+    font-size: 30px;
     margin-left: 20px;
     margin-top: 20px;
     margin-bottom: 5px;
+    color: #2d806f;
 }
 
 .profile-picture {
@@ -180,4 +311,12 @@ a {
     background-size: cover;
     background-position: center center;
     background-image: url('https://st3.depositphotos.com/6672868/13701/v/600/depositphotos_137014128-stock-illustration-user-profile-icon.jpg')
+}
+
+.register-form .info {
+    margin: 0 auto;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 15px;
+    color: gray;
 }

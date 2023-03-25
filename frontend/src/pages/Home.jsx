@@ -35,7 +35,14 @@ function Home() {
                 (<></>)
             }
 
-            <div className="home-section-title">Latest streams</div>
+            <div className="home-section-title">Recommended streams</div>
+            <section className="streams">
+                {streams.map((stream) => (
+                    <StreamItem key={stream._id} stream={stream}/>
+                ))}
+            </section>
+
+            <div className="home-section-title">Popular categories</div>
             <section className="streams">
                 {streams.map((stream) => (
                     <StreamItem key={stream._id} stream={stream}/>

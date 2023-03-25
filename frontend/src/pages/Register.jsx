@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
-import {useNavigate} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import {register, reset} from '../features/auth/authSlice'
 
 function Register() {
@@ -55,14 +55,30 @@ function Register() {
     return (
         <>
             <section className='form register-form'>
-                <div className='title'> Register</div>
+            <div className='title-box'>
+                    <div className="title-box-text">Register</div>
+                </div>
+
                 <form onSubmit={onSubmit}>
-                    <input type="text" className="form-input" id="name" name="name" value={name} placeholder="Enter your name" onChange={onChange} />
-                    <input type="email" className="form-input" id="email" name="email" value={email} placeholder="Enter your email" onChange={onChange} />
-                    <input type="password" className="form-input" id="password" name="password" value={password} placeholder="Enter your password" onChange={onChange} />
-                    <input type="password" className="form-input" id="passwordConfirm" name="passwordConfirm" value={passwordConfirm} placeholder="Confirm password" onChange={onChange} />
-                    <button type="submit" class="button-1">Submit</button>
+                    <div className='input-1'>
+                        <input type="text" className="input-1-field" id="name" name="name" value={name} onChange={onChange} required/>
+                        <label className="input-1-label">Username</label>
+                    </div>
+                    <div className='input-1'>
+                        <input type="text" className="input-1-field" id="email" name="email" value={email} onChange={onChange} required/>
+                        <label className="input-1-label">Email</label>
+                    </div>
+                    <div className='input-1'>
+                        <input type="password" className="input-1-field" id="password" name="password" value={password} onChange={onChange} required/>
+                        <label className="input-1-label">Password</label>
+                    </div>
+                    <div className='input-1'>
+                        <input type="password" className="input-1-field" id="passwordConfirm" name="passwordConfirm" value={passwordConfirm} onChange={onChange} required/>
+                        <label className="input-1-label">Confirm password</label>
+                    </div>
+                    <button type="submit" className="login-submit-button">Submit</button>
                 </form>
+                <div className='info'>Already having an account? Login <Link to="/login" className="link-1">here</Link></div>
             </section>
         </>
     )
