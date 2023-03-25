@@ -7,8 +7,14 @@ const getStreamers = async () => {
     return response.data
 }
 
+const getStreamer = async (id) => {
+    const response = await axios.get(API_URL + '/' + id)
+    return response.data
+}
+
 const streamerService = {
-    getStreamers
+    getStreamers,
+    getStreamer
 }
 
 export default streamerService

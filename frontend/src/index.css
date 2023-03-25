@@ -139,7 +139,7 @@ a {
     border-radius: 6px;
     padding: 35px;
     margin-top: 90px;
-    box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.054);
 }
 
 .form .title {
@@ -264,6 +264,7 @@ a {
 .stream-item {
     width: 250px;
     height: auto;
+    flex-shrink: 0;
 }
 
 .stream-item .thumbnail{
@@ -271,7 +272,7 @@ a {
     height: 150px;
     background-size: cover;
     background-position: center center;
-    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_zlavog-440x248.jpg');
+    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_topracingtv-440x248.jpg');
     cursor: pointer;
 }
 
@@ -363,37 +364,42 @@ a {
 }
 
 /* Stream page */
+
 .stream-container {
     max-width: 100%;
     padding: 20px;
-    height: 100px;
-}
-
-.stream-chat-container {
-    width: 100%;
     display: flex;
-    align-items: row;
+    flex-direction: row;
     gap: 20px;
     align-items: stretch;
 }
 
-.stream-player {
+.stream-player-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
     width: 100%;
-    max-width: 1200px;
+    flex: 1;
+    gap: 20px;
+}
+
+.stream-player {
+    max-width: 100%;
     aspect-ratio: 16/9;
     background-color: #cecfcd;
-    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_zlavog-440x248.jpg');
+    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_topracingtv-440x248.jpg');
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
 }
 
 .stream-chat {
-    flex: 1;
+    max-width: 650px;
     background-color: #DAE2CF;
     display: flex;
     flex-direction: column;
     border-radius: 6px;
+    flex: 1;
 }
 
 .stream-chat-title {
@@ -408,8 +414,19 @@ a {
 }
 
 .stream-chat-messages {
-    width: 100%;
-    flex: 1;
+    max-width: 100%;
+    height: 100%;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.stream-chat-message .username {
+    color: #2d806f;
+}
+
+.stream-chat-message {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .stream-chat-input {
@@ -445,5 +462,65 @@ a {
 }
 
 .stream-chat-input button:hover {
+    background-color: #359582;
+}
+
+.stream-container .stream-info {
+    width: 100%;
+    height: auto;
+    background-color: #DAE2CF;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.stream-container .stream-info-container-1 {
+    padding: 0 10px;
+}
+
+.stream-container .stream-author-profile-picture {
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
+    border: 1px solid #2d806f;
+    background-color: cyan;
+}
+
+.stream-container .stream-info-container-2 {
+    flex: 1;
+}
+
+.stream-container .stream-title {
+    font-size: 20px;
+    color: #2d806f;
+    margin-top: 0;
+}
+
+.stream-container .stream-author-username, .stream-container .stream-category {
+    font-size: 16px;
+    color: rgb(93, 93, 93);
+}
+
+.stream-container .stream-info-container-3 {
+    padding: 0 10px;
+}
+
+.stream-container .stream-author-follow {
+    font-size: 16px;
+    padding: 6px 10px;
+    background-color: #2d806f;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stream-container .stream-author-follow:hover {
     background-color: #359582;
 }

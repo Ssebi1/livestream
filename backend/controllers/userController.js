@@ -108,6 +108,15 @@ const getStreamers = asyncHandler(async (req, res) => {
     res.status(200).send(streamers)
 })
 
+// @desc Ennable streamer mode for user
+// @route GET /api/users/streamers
+// @access Public
+const getStreamer = asyncHandler(async (req, res) => {
+    const streamer = await User.find({"streamerMode": true, _id: req.params.id})
+    res.status(200).send(streamer)
+})
+
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -121,5 +130,6 @@ module.exports = {
     loginUser,
     getUserData,
     enableStreamerMode,
-    getStreamers
+    getStreamers,
+    getStreamer
 }

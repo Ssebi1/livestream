@@ -3,7 +3,11 @@ import streamService from './streamService'
 
 const initialState = {
     streams: [],
-    stream: {},
+    stream: {
+        user: {
+
+        }
+    },
     isErrorStreams: false,
     isSuccessStreams: false,
     isLoadingStreams: false,

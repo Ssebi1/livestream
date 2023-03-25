@@ -2,10 +2,9 @@ import {Link, useNavigate, useParams} from 'react-router-dom'
 import {useState, useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {getStream, reset} from '../features/streams/streamSlice'
-import StreamItem from '../components/StreamItem'
-import StreamerItem from '../components/StreamerItem'
 import Spinner from '../components/Spinner'
 import StreamChat from '../components/StreamChat'
+import {AiOutlineStar} from "react-icons/ai";
 
 
 function Stream() {
@@ -35,12 +34,23 @@ function Stream() {
     return (
         <>
             <div className="stream-container">
-                <div className="stream-chat-container">
-                    <div className="stream-player">
-
+                <div className="stream-player-container">
+                    <div className="stream-player"></div>
+                    <div className="stream-info">
+                        <div className="stream-info-container-1">
+                            <div className="stream-author-profile-picture"></div>
+                        </div>
+                        <div className="stream-info-container-2">
+                            <div className="stream-title">{stream.title}</div>
+                            <div className="stream-author-username">{stream.user.name}</div>
+                            <div className="stream-category">Category</div>
+                        </div>
+                        <div className="stream-info-container-3">
+                            <div className="stream-author-follow">FOLLOW <AiOutlineStar size={20}/></div>
+                        </div>
                     </div>
-                    <StreamChat />
                 </div>
+                <StreamChat />
             </div>
         </>
     )
