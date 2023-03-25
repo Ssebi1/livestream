@@ -11,6 +11,33 @@ a {
     text-decoration: none;
 }
 
+/* Spinner */
+.spinner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-image {
+    width: 100px;
+    height: 100px;
+    animation: rotation 1.5s infinite linear;
+}
+
+@keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+
 .button-1 {
     padding: 10px;
     border-radius: 4px;
@@ -244,7 +271,7 @@ a {
     height: 150px;
     background-size: cover;
     background-position: center center;
-    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_faiar-440x248.jpg');
+    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_zlavog-440x248.jpg');
     cursor: pointer;
 }
 
@@ -333,4 +360,90 @@ a {
     font-size: 14px;
     margin-top: 15px;
     color: gray;
+}
+
+/* Stream page */
+.stream-container {
+    max-width: 100%;
+    padding: 20px;
+    height: 100px;
+}
+
+.stream-chat-container {
+    width: 100%;
+    display: flex;
+    align-items: row;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.stream-player {
+    width: 100%;
+    max-width: 1200px;
+    aspect-ratio: 16/9;
+    background-color: #cecfcd;
+    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_zlavog-440x248.jpg');
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.stream-chat {
+    flex: 1;
+    background-color: #DAE2CF;
+    display: flex;
+    flex-direction: column;
+    border-radius: 6px;
+}
+
+.stream-chat-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 60px;
+    color: #2d806f;
+    font-size: 18px;
+    border-bottom: 1px solid #2d806f;
+}
+
+.stream-chat-messages {
+    width: 100%;
+    flex: 1;
+}
+
+.stream-chat-input {
+    height: 50px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    padding: 10px;
+    gap: 10px;
+}
+
+.stream-chat-input input {
+    flex: 1;
+    border-radius: 6px;
+    outline: none;
+    border: none;
+    padding: 5px 10px;;
+    font-size: 16px;
+}
+
+.stream-chat-input button {
+    width: 50px;
+    border-radius: 6px;
+    outline: none;
+    border: none;
+    background-color: #2d806f;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.stream-chat-input button:hover {
+    background-color: #359582;
 }

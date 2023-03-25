@@ -5,17 +5,23 @@ import {getStreams, reset} from '../features/streams/streamSlice'
 import {getStreamers, reset as resetStreamers} from '../features/streamers/streamerSlice'
 import StreamItem from '../components/StreamItem'
 import StreamerItem from '../components/StreamerItem'
+import Spinner from '../components/Spinner'
 
 function Home() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector((state) => state.auth)
-    const {streams, isError, message} = useSelector((state) => state.streams)
-    const {streamers} = useSelector((state) => state.streamers)
+    const {streams, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams} = useSelector((state) => state.streams)
+    const {streamers, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers} = useSelector((state) => state.streamers)
 
     useEffect(() => {
-        if(isError) {
-            console.log(message)
+        if(isErrorStreams) {
+            console.log(messageStreams)
+            navigate('/')
+        }
+
+        if(isErrorStreamers) {
+            console.log(messageStreamers)
             navigate('/')
         }
 
@@ -26,7 +32,11 @@ function Home() {
             dispatch(reset())
             dispatch(resetStreamers())
         }
-    }, [user, navigate, isError, message, dispatch])
+    }, [user, navigate, isErrorStreams, messageStreams, isErrorStreamers, messageStreamers, dispatch])
+
+    if (isLoadingStreams || isLoadingStreamers) {
+        return <Spinner />
+    }
 
     return (
         <>

@@ -3,10 +3,10 @@ import streamerService from './streamerService'
 
 const initialState = {
     streamers: [],
-    isError: false,
-    isSuccess: false,
-    isLoading: false,
-    message: ''
+    isErrorStreamers: false,
+    isSuccessStreamers: false,
+    isLoadingStreamers: false,
+    messageStreamers: ''
 }
 
 export const getStreamers = createAsyncThunk('streamers/getAll', async (thunkAPI) => {
@@ -30,17 +30,17 @@ export const streamerSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getStreamers.pending, (state) => {
-                state.isLoading = true
+                state.isLoadingStreamers = true
             })
             .addCase(getStreamers.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
+                state.isLoadingStreamers = false
+                state.isSuccessStreamers = true
                 state.streamers = action.payload
             })
             .addCase(getStreamers.rejected, (state, action) => {
-                state.isLoading = false
-                state.isError = true
-                state.message = action.payload
+                state.isLoadingStreamers = false
+                state.isErrorStreamers = true
+                state.messageStreamers = action.payload
             })
     }
 })
