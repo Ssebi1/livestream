@@ -1,21 +1,23 @@
-import {Link, useNavigate, useParams} from 'react-router-dom'
-import {useState, useEffect} from 'react'
-import {useSelector, useDispatch} from 'react-redux'
-import {getStream, reset} from '../features/streams/streamSlice'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { getStream, reset } from '../features/streams/streamSlice'
 import Spinner from '../components/Spinner'
 import StreamChat from '../components/StreamChat'
-import {AiOutlineStar} from "react-icons/ai";
+import { AiOutlineStar } from "react-icons/ai";
+import io from 'socket.io-client';
 
+const socket = io.connect('http://localhost:4000');
 
 function Stream() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { id } = useParams()
-    const {user} = useSelector((state) => state.auth)
-    const {stream, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams} = useSelector((state) => state.streams)
+    const { user } = useSelector((state) => state.auth)
+    const { stream, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
 
     useEffect(() => {
-        if(isErrorStreams) {
+        if (isErrorStreams) {
             console.log(messageStreams)
             navigate('/')
         }
@@ -31,6 +33,19 @@ function Stream() {
         return <Spinner />
     }
 
+    if (isSuccessStreams) {
+        // join chat room
+        const room = stream._id
+        if (room !== "") {
+            let username
+            if (user)
+                username = user.name
+            else
+                username = 'guest-user'
+            socket.emit('join_room', { username, room })
+        }
+    }
+
     return (
         <>
             <div className="stream-container">
@@ -38,7 +53,7 @@ function Stream() {
                     <div className="stream-player"></div>
                     <div className="stream-info">
                         <div className="stream-info-container-1">
-                            <div className="stream-author-profile-picture" style={{backgroundImage: `url('/profile-pictures/${stream.user._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}></div>
+                            <div className="stream-author-profile-picture" style={{ backgroundImage: `url('/profile-pictures/${stream.user._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}></div>
                         </div>
                         <div className="stream-info-container-2">
                             <div className="stream-title">{stream.title}</div>
@@ -46,11 +61,11 @@ function Stream() {
                             <div className="stream-category">Category</div>
                         </div>
                         <div className="stream-info-container-3">
-                            <div className="stream-author-follow">FOLLOW <AiOutlineStar size={20}/></div>
+                            <div className="stream-author-follow">FOLLOW <AiOutlineStar size={20} /></div>
                         </div>
                     </div>
                 </div>
-                <StreamChat />
+                <StreamChat socket={socket} stream={stream}/>
             </div>
         </>
     )

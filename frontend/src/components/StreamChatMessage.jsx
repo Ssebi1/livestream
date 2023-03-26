@@ -1,12 +1,12 @@
 import {useSelector, useDispatch} from 'react-redux'
 
-function StreamChatMessage() {
+function StreamChatMessage(props) {
     const { user } = useSelector((state) => state.auth)
 
     return (
         <div className="stream-chat-message">
-            <span className="username">User123</span>:&nbsp;
-            <span className="message">Hello there! This is my first time here</span>
+            <span className="username">{props.username}</span>:&nbsp;
+            <span className="message">{props.message}</span>
         </div>
     )
 }
