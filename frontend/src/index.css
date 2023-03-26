@@ -7,10 +7,6 @@ body {
     background-color: #EDF5E1;
 }
 
-a {
-    text-decoration: none;
-}
-
 /* Spinner */
 .spinner {
     position: absolute;
@@ -76,6 +72,10 @@ a {
     list-style-type: none;
 }
 
+.topbar ul a {
+    text-decoration: none;
+}
+
 .register-button {
     background-color: #05386B;
     color: #EDF5E1;
@@ -110,6 +110,41 @@ a {
     font-size: 16px;
     color: #05386B;
     font-weight: 550;
+    text-decoration: none;
+}
+
+.topbar .account {
+    color: #05386B;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: 5px 10px;
+    gap: 4px;
+    font-size: 18px;
+    border-radius: 6px;
+    background-color: #dae2cf;
+}
+
+.topbar .account:hover {
+    background-color: #dae2cfb0;
+}
+
+.topbar .logout-button {
+    background-color: #05386B;
+    color: #dae2cf;
+    cursor: pointer;
+    margin-right: 20px;
+    margin-left: 10px;
+    padding: 9px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.topbar .logout-button:hover {
+    background-color: rgba(5, 56, 107, 0.837)
 }
 
 /* Login */
@@ -227,15 +262,6 @@ a {
 
 .login-submit-button:hover {
     background-color: #359582;
-}
-
-.account-button {
-    cursor: pointer;
-}
-
-.logout-button {
-    cursor: pointer;
-    color: #a562d9;
 }
 
 .subtitle {

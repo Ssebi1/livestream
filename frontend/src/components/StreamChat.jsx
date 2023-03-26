@@ -22,7 +22,11 @@ function StreamChat() {
 
             </div>
             <div className="stream-chat-input">
-                <input type="text" name="stream-message" id="stream-message" placeholder="Send a message"/>
+                {user ? (
+                    <input type="text" name="stream-message" id="stream-message" placeholder="Send a message"/>
+                ) : (
+                    <input type="text" name="stream-message" id="stream-message" placeholder="Log in to send messages" disabled/>
+                )}
                 <button><AiOutlineSend size={25}/></button>
             </div>
         </div>

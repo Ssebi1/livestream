@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {Link, useNavigate} from 'react-router-dom'
 import {register, reset} from '../features/auth/authSlice'
+import { toast } from 'react-toastify';
 
 function Register() {
     const [formData, setFormData] = useState({
@@ -20,11 +21,20 @@ function Register() {
 
     useEffect(() => {
         if(isError) {
-            console.error(message)
+            toast.error(message, {
+                position: "top-right",
+                autoClose: 3000,
+                closeOnClick: true
+            })
         }
 
         if(isSuccess || user) {
             navigate('/')
+            toast.success("Registered succesfully", {
+                position: "top-right",
+                autoClose: 3000,
+                closeOnClick: true
+            })
         }
 
         dispatch(reset())
@@ -40,7 +50,11 @@ function Register() {
     const onSubmit = (e) => {
         e.preventDefault()
         if(password !== passwordConfirm) {
-            console.error('Passwords do not match')
+            toast.error('Passwords do not match', {
+                position: "top-right",
+                autoClose: 3000,
+                closeOnClick: true
+            })
         } else {
             const userData = {
                 name,

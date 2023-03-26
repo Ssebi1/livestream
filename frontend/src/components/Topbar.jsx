@@ -16,25 +16,27 @@ function Topbar() {
 
     return (
         <div className='topbar'>
-            
+            <ul className='left'>
+                <Link to='/'><li className="logo">LIVESTREAM</li></Link>
+                <Link to='/'><li className="topbar-link">RECENT</li></Link>
+                <Link to='/'><li className="topbar-link">POPULAR</li></Link>
+                <Link to='/'><li className="topbar-link">PAST STREAMS</li></Link>
+                <Link to='/'><li className="topbar-link">CATEGORIES</li></Link>
+            </ul>
             {user ? (
                 <>
-                    <li>
-                        <Link to='/account'><li classname="acount-button"><FaUser size={20} /></li></Link>
-                    </li>
-                    <li>
-                        <div onClick={onLogout} className="logout-button"><FaSignOutAlt size={20} /></div>
-                    </li>
+                    <ul className='right'>
+                        <Link to='/account'>
+                            <li className="account">
+                                <div className="username">{user.name}</div>
+                                <div className="icon"><FaUser size={16}/></div>
+                            </li>
+                        </Link>
+                        <li onClick={onLogout} className="logout-button"><FaSignOutAlt size={16} /></li>
+                    </ul>
                 </>
             ) : (
                 <>
-                <ul className='left'>
-                    <Link to='/'><li className="logo">LIVESTREAM</li></Link>
-                    <Link to='/'><li className="topbar-link">RECENT</li></Link>
-                    <Link to='/'><li className="topbar-link">POPULAR</li></Link>
-                    <Link to='/'><li className="topbar-link">PAST STREAMS</li></Link>
-                    <Link to='/'><li className="topbar-link">CATEGORIES</li></Link>
-                </ul>
                 <ul className='right'>
                     <Link to='/login'><li className="login-button">Login</li></Link>
                     <Link to='/register'><li className="register-button">Register</li></Link>

@@ -6,6 +6,8 @@ import Register from './pages/Register.jsx'
 import Account from './pages/Account.jsx'
 import CreateStream from './pages/CreateStream.jsx'
 import Stream from './pages/Stream.jsx'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      <ToastContainer />
     </>
   )
 }

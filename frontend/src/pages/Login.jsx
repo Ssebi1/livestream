@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {Link, useNavigate} from 'react-router-dom'
 import {login, reset} from '../features/auth/authSlice'
+import { toast } from 'react-toastify';
 
 function Login() {
     const navigate = useNavigate()
@@ -24,10 +25,19 @@ function Login() {
 
     useEffect(() => {
         if(isError) {
-            console.error(message)
+            toast.error(message, {
+                position: "top-right",
+                autoClose: 3000,
+                closeOnClick: true
+            })
         }
 
         if(isSuccess || user) {
+            toast.success("Logged in succesfully", {
+                position: "top-right",
+                autoClose: 3000,
+                closeOnClick: true
+            })
             navigate('/')
         }
 
