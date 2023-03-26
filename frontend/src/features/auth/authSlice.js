@@ -61,6 +61,20 @@ export const enableStreamerMode = createAsyncThunk('auth/streamerMode', async (u
   }
 })
 
+// Upload profile picture
+export const uploadProfilePicture = createAsyncThunk('auth/uploadProfilePicture', async (data, thunkAPI) => {
+  try {
+    return await authService.uploadProfilePicture(data)
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -114,6 +128,18 @@ export const authSlice = createSlice({
         state.user = action.payload
       })
       .addCase(enableStreamerMode.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(uploadProfilePicture.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(uploadProfilePicture.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+      })
+      .addCase(uploadProfilePicture.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

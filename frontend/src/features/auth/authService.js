@@ -16,6 +16,7 @@ const register = async (userData) => {
 // Login user
 const login = async (userData) => {
   const response = await axios.post(API_URL + 'login', userData)
+  console.log(response)
 
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data))
@@ -40,11 +41,17 @@ const logout = () => {
   localStorage.removeItem('user')
 }
 
+const uploadProfilePicture  = async (data) => {
+  const response = await axios.post(API_URL + 'upload/profile-picture', data, { headers: {'Content-Type': 'multipart/form-data'}})
+  return response.data
+}
+
 const authService = {
   register,
   logout,
   login,
-  enableStreamerMode
+  enableStreamerMode,
+  uploadProfilePicture
 }
 
 export default authService

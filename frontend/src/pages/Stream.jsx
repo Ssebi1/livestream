@@ -38,7 +38,7 @@ function Stream() {
                     <div className="stream-player"></div>
                     <div className="stream-info">
                         <div className="stream-info-container-1">
-                            <div className="stream-author-profile-picture"></div>
+                            <div className="stream-author-profile-picture" style={{backgroundImage: `url('/profile-pictures/${stream.user._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}></div>
                         </div>
                         <div className="stream-info-container-2">
                             <div className="stream-title">{stream.title}</div>
