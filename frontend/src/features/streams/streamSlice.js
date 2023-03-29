@@ -5,7 +5,8 @@ const initialState = {
     streams: [],
     stream: {
         user: {
-
+        },
+        category: {
         }
     },
     isErrorStreams: false,

@@ -11,7 +11,7 @@ function StreamItem({stream}) {
                 <div className="stream-info-right">
                     <div className="stream-title">{stream.title}</div>
                     <div className="stream-author">{stream.user.name}</div>
-                    <div className="stream-category">Minecraft</div>
+                    <div className="stream-category">{stream.category.name}</div>
                 </div>
             </div>
         </div>

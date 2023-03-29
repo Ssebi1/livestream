@@ -383,13 +383,14 @@ body {
 }
 
 .streamer-item {
-    width: auto;
+    width: 100%;
+    max-width: 130px;
     text-align: center;
 }
 
 .profile-picture {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    aspect-ratio: 1/1;
     background-size: cover;
     background-position: center center;
     border-radius: 100%;
@@ -425,6 +426,7 @@ body {
     display: flex;
     align-items: flex-end;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .category-item .thumbnail {
@@ -434,7 +436,7 @@ body {
     background-size: cover;
     position: absolute;
     z-index: -1;
-    filter: grayscale(40%);
+    filter: grayscale(20%);
 }
 
 .category-item .bottom-grayscale-effect {

@@ -58,7 +58,7 @@ function Stream() {
                         <div className="stream-info-container-2">
                             <div className="stream-title">{stream.title}</div>
                             <div className="stream-author-username">{stream.user.name}</div>
-                            <div className="stream-category">Category</div>
+                            <div className="stream-category">{stream.category.name}</div>
                         </div>
                         <div className="stream-info-container-3">
                             <div className="stream-author-follow">FOLLOW <AiOutlineStar size={20} /></div>

@@ -75,6 +75,14 @@ function Home() {
                     <StreamerItem key={streamer._id} streamer={streamer} />
                 ))}
             </section>
+
+            <div className="home-section-title">Past streams</div>
+            <section className="streams">
+                {streams.map((stream) => (
+                    <StreamItem key={stream._id} stream={stream} />
+                ))}
+            </section>
+
         </>
     )
 }

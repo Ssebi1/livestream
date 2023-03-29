@@ -34,7 +34,7 @@ const postCategory = asyncHandler(async (req, res) => {
   }
 
   const category = await Category.create({
-    name: req.body.name,
+    name: req.body.name.toUpperCase(),
     image_path: req.body.image_path
   })
   res.status(200).json(category)

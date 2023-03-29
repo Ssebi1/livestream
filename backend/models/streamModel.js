@@ -9,6 +9,11 @@ const streamSchema = mongoose.Schema({
     title: {
         type: String,
         required: ['true', 'Please add a title']
+    },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Category',
     }
 }, {
     timestamps: true
