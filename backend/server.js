@@ -24,8 +24,11 @@ app.use(express.urlencoded({ extended: false }))
 // user routes
 app.use('/api/users', require('./routes/userRoutes'))
 
-// stream routs
+// stream routes
 app.use('/api/streams', require('./routes/streamRoutes'))
+
+// category routes
+app.use('/api/categories', require('./routes/categoryRoutes'))
 
 // error handler
 app.use(errorHandler)
