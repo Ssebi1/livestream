@@ -14,6 +14,7 @@ function App() {
     <>
       <Router>
         <div className='.root-container'>
+          <ToastContainer />
           <Topbar />
           <Routes>
             <Route path='/' element={<Home/>} />
@@ -25,7 +26,6 @@ function App() {
           </Routes>
         </div>
       </Router>
-      <ToastContainer />
     </>
   )
 }

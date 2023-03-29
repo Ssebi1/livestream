@@ -28,15 +28,20 @@ function Login() {
             toast.error(message, {
                 position: "top-right",
                 autoClose: 3000,
-                closeOnClick: true
+                closeOnClick: true,
+                toastId: 'loginSuccess',
+                hideProgressBar: true
             })
         }
 
         if(isSuccess || user) {
             toast.success("Logged in succesfully", {
+                toastId: 'loginSuccess',
                 position: "top-right",
                 autoClose: 3000,
-                closeOnClick: true
+                closeOnClick: true,
+                toastId: 'loginError',
+                hideProgressBar: true
             })
             navigate('/')
         }

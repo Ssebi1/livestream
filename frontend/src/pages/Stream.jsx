@@ -61,7 +61,16 @@ function Stream() {
                             <div className="stream-category">{stream.category.name}</div>
                         </div>
                         <div className="stream-info-container-3">
-                            <div className="stream-author-follow">FOLLOW <AiOutlineStar size={20} /></div>
+                            {(() => {
+                                if(stream.user._id !== user._id) {
+                                        return (
+                                            <div className="stream-author-follow">FOLLOW <AiOutlineStar size={20} /></div>
+                                        )
+                                    } else {
+                                        return (<></>)
+                                    }
+                            })()}
+                            
                         </div>
                     </div>
                 </div>

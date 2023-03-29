@@ -68,6 +68,7 @@ export const streamSlice = createSlice({
                 state.isLoadingStreams = false
                 state.isSuccessStreams = true
                 state.streams.push(action.payload)
+                state.stream = action.payload
             })
             .addCase(createStream.rejected, (state, action) => {
                 state.isLoadingStreams = false

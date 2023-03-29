@@ -33,7 +33,10 @@ function Register() {
             toast.success("Registered succesfully", {
                 position: "top-right",
                 autoClose: 3000,
-                closeOnClick: true
+                closeOnClick: true,
+                toastId: 'loginSuccess',
+                hideProgressBar: true,
+                toastId: 'registerSuccess'
             })
         }
 
@@ -53,7 +56,10 @@ function Register() {
             toast.error('Passwords do not match', {
                 position: "top-right",
                 autoClose: 3000,
-                closeOnClick: true
+                closeOnClick: true,
+                toastId: 'loginSuccess',
+                hideProgressBar: true,
+                toastId: 'registerError'
             })
         } else {
             const userData = {
