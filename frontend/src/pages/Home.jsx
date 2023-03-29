@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getStreams, reset } from '../features/streams/streamSlice'
 import { getStreamers, reset as resetStreamers } from '../features/streamers/streamerSlice'
+import { getCategories, reset as resetCategories } from '../features/categories/categorySlice'
 import StreamItem from '../components/StreamItem'
 import StreamerItem from '../components/StreamerItem'
+import CategoryItem from '../components/CategoryItem'
 import Spinner from '../components/Spinner'
 
 function Home() {
@@ -13,6 +15,7 @@ function Home() {
     const { user } = useSelector((state) => state.auth)
     const { streams, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
     const { streamers, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers } = useSelector((state) => state.streamers)
+    const { categories, isErrorCategories, isSuccessCategories, isLoadingCategories, messageCategories } = useSelector((state) => state.categories)
 
     useEffect(() => {
         if (isErrorStreams) {
@@ -25,16 +28,23 @@ function Home() {
             navigate('/')
         }
 
+        if (isErrorCategories) {
+            console.log(messageCategories)
+            navigate('/')
+        }
+
         dispatch(getStreams())
         dispatch(getStreamers())
+        dispatch(getCategories())
 
         return () => {
             dispatch(reset())
             dispatch(resetStreamers())
+            dispatch(resetCategories())
         }
-    }, [user, navigate, isErrorStreams, messageStreams, isErrorStreamers, messageStreamers, dispatch])
+    }, [user, navigate, isErrorStreams, messageStreams, isErrorStreamers, messageStreamers, dispatch, isErrorCategories, messageCategories])
 
-    if (isLoadingStreams || isLoadingStreamers) {
+    if (isLoadingStreams || isLoadingStreamers || isLoadingCategories) {
         return <Spinner />
     }
 
@@ -53,9 +63,9 @@ function Home() {
             </section>
 
             <div className="home-section-title">Popular categories</div>
-            <section className="streams">
-                {streams.map((stream) => (
-                    <StreamItem key={stream._id} stream={stream} />
+            <section className="categories">
+                {categories.map((category) => (
+                    <CategoryItem category={category} />
                 ))}
             </section>
 

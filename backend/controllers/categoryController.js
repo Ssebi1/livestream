@@ -8,7 +8,6 @@ const Category = require('../models/categoryModel')
 // @route GET /api/categories
 // @access Public
 const getCategories = asyncHandler(async (req, res) => {
-  console.log('test')
   const categories = await Category.find()
   res.status(200).send(categories)
 })
@@ -30,7 +29,6 @@ const getCategory = asyncHandler(async (req, res) => {
 // @access Public
 const postCategory = asyncHandler(async (req, res) => {
   if (!req.body.name || !req.body.image_path) {
-    console.log(req.body)
     res.status(400)
     throw new Error('Missing fields')
   }
