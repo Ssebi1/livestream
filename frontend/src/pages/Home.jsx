@@ -16,8 +16,16 @@ function Home() {
     const { streams, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
     const { streamers, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers } = useSelector((state) => state.streamers)
     const { categories, isErrorCategories, isSuccessCategories, isLoadingCategories, messageCategories } = useSelector((state) => state.categories)
+    const [streamsNumber, setStreamsNumber] = useState(8)
+    const [categoriesNumber, setCategoriesNumber] = useState(8)
 
     useEffect(() => {
+        const handleResize = () => {
+            setStreamsNumber(window.innerWidth/240)
+            setCategoriesNumber(window.innerWidth/240)
+        }
+        window.addEventListener('resize', handleResize)
+
         if (isErrorStreams) {
             console.log(messageStreams)
             navigate('/')
@@ -57,14 +65,14 @@ function Home() {
 
             <div className="home-section-title">Recommended streams</div>
             <section className="streams">
-                {streams.map((stream) => (
+                {streams.slice(0, (streamsNumber)).map((stream) => (
                     <StreamItem key={stream._id} stream={stream} />
                 ))}
             </section>
 
             <div className="home-section-title">Popular categories</div>
             <section className="categories">
-                {categories.map((category) => (
+                {categories.slice(0, (categoriesNumber)).map((category) => (
                     <CategoryItem category={category} />
                 ))}
             </section>
@@ -78,7 +86,7 @@ function Home() {
 
             <div className="home-section-title">Past streams</div>
             <section className="streams">
-                {streams.map((stream) => (
+                {streams.slice(0, (categoriesNumber)).map((stream) => (
                     <StreamItem key={stream._id} stream={stream} />
                 ))}
             </section>
