@@ -8,6 +8,8 @@ import StreamItem from '../components/StreamItem'
 import StreamerItem from '../components/StreamerItem'
 import CategoryItem from '../components/CategoryItem'
 import Spinner from '../components/Spinner'
+import {FaChevronRight} from 'react-icons/fa'
+import '../home-streamers.css'
 
 function Home() {
     const navigate = useNavigate()
@@ -18,11 +20,13 @@ function Home() {
     const { categories, isErrorCategories, isSuccessCategories, isLoadingCategories, messageCategories } = useSelector((state) => state.categories)
     const [streamsNumber, setStreamsNumber] = useState(8)
     const [categoriesNumber, setCategoriesNumber] = useState(8)
+    const [streamersNumber, setStreamersNumber] = useState(8)
 
     useEffect(() => {
         const handleResize = () => {
             setStreamsNumber(window.innerWidth/240)
             setCategoriesNumber(window.innerWidth/240)
+            setStreamersNumber(window.innerWidth/240)
         }
         window.addEventListener('resize', handleResize)
 
@@ -63,28 +67,40 @@ function Home() {
                 (<></>)
             }
 
-            <div className="home-section-title">Recommended streams</div>
+            <div className="home-section-title-container">
+                <div className="home-section-title">Recommended streams</div>
+                <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
+            </div>
             <section className="streams">
                 {streams.slice(0, (streamsNumber)).map((stream) => (
                     <StreamItem key={stream._id} stream={stream} />
                 ))}
             </section>
 
-            <div className="home-section-title">Popular categories</div>
+            <div className="home-section-title-container">
+                <div className="home-section-title">Popular categories</div>
+                <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
+            </div>
             <section className="categories">
                 {categories.slice(0, (categoriesNumber)).map((category) => (
                     <CategoryItem category={category} />
                 ))}
             </section>
 
-            <div className="home-section-title">Popular streamers</div>
+            <div className="home-section-title-container">
+                <div className="home-section-title">Popular streamers</div>
+                <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
+            </div>
             <section className="streamers">
-                {streamers.map((streamer) => (
+                {streamers.slice(0, (streamersNumber)).map((streamer) => (
                     <StreamerItem key={streamer._id} streamer={streamer} />
                 ))}
             </section>
 
-            <div className="home-section-title">Past streams</div>
+            <div className="home-section-title-container">
+                <div className="home-section-title">Past streams</div>
+                <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
+            </div>
             <section className="streams">
                 {streams.slice(0, (categoriesNumber)).map((stream) => (
                     <StreamItem key={stream._id} stream={stream} />

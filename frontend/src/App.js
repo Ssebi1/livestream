@@ -8,6 +8,7 @@ import CreateStream from './pages/CreateStream.jsx'
 import Stream from './pages/Stream.jsx'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './topbar.css'
 
 function App() {
   return (

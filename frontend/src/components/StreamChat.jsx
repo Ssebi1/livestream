@@ -44,7 +44,7 @@ function StreamChat(props) {
                 {user ? (
                     <input type="text" name="stream-message" id="stream-message" placeholder="Send a message" onChange={(e) => setMessage(e.target.value)} value={message} />
                 ) : (
-                    <input type="text" name="stream-message" id="stream-message" placeholder="Log in to send messages" disabled />
+                    <input type="text" name="stream-message" id="stream-message" placeholder="Login to send messages" disabled />
                 )}
                 <button onClick={sendMessage}><AiOutlineSend size={25} /></button>
             </div>

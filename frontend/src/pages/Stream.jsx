@@ -6,6 +6,7 @@ import Spinner from '../components/Spinner'
 import StreamChat from '../components/StreamChat'
 import { AiOutlineStar } from "react-icons/ai";
 import io from 'socket.io-client';
+import '../stream-page.css'
 
 const socket = io.connect('http://localhost:4000');
 
@@ -62,7 +63,7 @@ function Stream() {
                         </div>
                         <div className="stream-info-container-3">
                             {(() => {
-                                if(stream.user._id !== user._id) {
+                                if(!user || stream.user._id !== user._id) {
                                         return (
                                             <div className="stream-author-follow">FOLLOW <AiOutlineStar size={20} /></div>
                                         )

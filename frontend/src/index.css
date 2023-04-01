@@ -4,7 +4,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Poppins', arial;
-    background-color: #EDF5E1;
+    background-color: rgb(242, 242, 242);
 }
 
 #root {
@@ -51,110 +51,6 @@ body {
     border: none;
 }
 
-.topbar {
-    width: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.topbar ul {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    padding-inline-start: 0;
-    position: relative;
-}
-
-.topbar ul .left{
-    justify-content: flex-start;
-}
-
-.topbar ul .right{
-    justify-content: flex-end;
-}
-
-.topbar ul li {
-    list-style-type: none;
-}
-
-.topbar ul a {
-    text-decoration: none;
-}
-
-.register-button {
-    background-color: #05386B;
-    color: #EDF5E1;
-    width: 80px;
-    text-align: center;
-    font-size: 15px;
-    margin-right: 20px;
-    padding: 4px 6px;
-    border-radius: 4px;
-}
-
-.login-button {
-    background-color: #dae2cf;
-    color: #05386B;
-    width: 80px;
-    text-align: center;
-    font-size: 15px;
-    margin-right: 10px;
-    padding: 4px 6px;
-    border-radius: 4px;
-}
-
-.logo {
-    font-size: 26px;
-    margin-left: 20px;
-    color: #05386B;
-    font-weight: 700;
-}
-
-.topbar-link {
-    margin-left: 25px;
-    font-size: 16px;
-    color: #05386B;
-    font-weight: 550;
-    text-decoration: none;
-}
-
-.topbar .account {
-    color: #05386B;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    padding: 5px 10px;
-    gap: 4px;
-    font-size: 18px;
-    border-radius: 6px;
-    background-color: #dae2cf;
-}
-
-.topbar .account:hover {
-    background-color: #dae2cfb0;
-}
-
-.topbar .logout-button {
-    background-color: #05386B;
-    color: #dae2cf;
-    cursor: pointer;
-    margin-right: 20px;
-    margin-left: 10px;
-    padding: 9px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.topbar .logout-button:hover {
-    background-color: rgba(5, 56, 107, 0.837)
-}
-
 /* Login */
 .title-box {
     width: 100%;
@@ -178,7 +74,7 @@ body {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    background-color: #EDF5E1;
+    background-color: white;
     border-radius: 6px;
     padding: 35px;
     margin-top: 90px;
@@ -302,6 +198,14 @@ body {
     font-size: 14px;
 }
 
+.register-form .info {
+    margin: 0 auto;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 15px;
+    color: gray;
+}
+
 /* Stream item */
 
 .stream-item {
@@ -348,7 +252,7 @@ body {
 }
 
 .stream-title {
-    color: #05386B;
+    color: black;
     font-size: 18px;
     margin-top: 10px;
     cursor: pointer;
@@ -356,11 +260,11 @@ body {
 
 .stream-author, .stream-category {
     font-size: 14px;
-    color: #05386bc7;
+    color: rgba(0, 0, 0, 0.623);
     cursor: pointer;
 }
 
-.streams, .streamers {
+.streams {
     display: flex;
     flex-direction: row;
     flex-wrap: no-wrap;
@@ -371,40 +275,33 @@ body {
     position: relative;
 }
 
-.home-section-title {
-    font-size: 30px;
-    margin-left: 20px;
+.home-section-title-container {
+    max-width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
     margin-top: 30px;
     margin-bottom: 15px;
+    margin-left: 20px;
+}
+
+.home-section-title {
+    font-size: 22px;
     color: #2d806f;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.streamers {
-    gap: 20px;
-}
-
-.streamer-item {
-    width: 100%;
-    max-width: 130px;
-    height: auto;
-    text-align: center;
-}
-
-.profile-picture {
-    width: 100%;
-    aspect-ratio: 1/1;
-    background-size: cover;
-    background-position: center center;
-    border-radius: 100%;
-    border: 1.5px solid #2d806f;
-}
-
-.register-form .info {
-    margin: 0 auto;
-    text-align: center;
-    font-size: 14px;
-    margin-top: 15px;
-    color: gray;
+.home-section-subtitle {
+    font-size: 15px;
+    color: black;
+    margin-top: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 /* Categories home page */
@@ -466,173 +363,6 @@ body {
 
 .category-item:hover .category-name {
     margin-bottom: 20%;
-}
-
-/* Stream page */
-
-.stream-container {
-    max-width: 100%;
-    padding: 20px;
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    align-items: stretch;
-}
-
-.stream-player-container {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    width: 100%;
-    flex: 1;
-    gap: 20px;
-}
-
-.stream-player {
-    max-width: 100%;
-    aspect-ratio: 16/9;
-    background-color: #cecfcd;
-    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_topracingtv-440x248.jpg');
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-
-.stream-author-profile-picture {
-    background-position: center center;
-    background-size: cover;
-}
-
-.stream-chat {
-    max-width: 650px;
-    background-color: #DAE2CF;
-    display: flex;
-    flex-direction: column;
-    border-radius: 6px;
-    flex: 1;
-}
-
-.stream-chat-title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 60px;
-    color: #2d806f;
-    font-size: 18px;
-    border-bottom: 1px solid #2d806f;
-}
-
-.stream-chat-messages {
-    max-width: 100%;
-    height: 100%;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.stream-chat-message .username {
-    color: #2d806f;
-}
-
-.stream-chat-message {
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-.stream-chat-input {
-    height: 50px;
-    max-width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    padding: 10px;
-    gap: 10px;
-}
-
-.stream-chat-input input {
-    flex: 1;
-    border-radius: 6px;
-    outline: none;
-    border: none;
-    padding: 5px 10px;;
-    font-size: 16px;
-}
-
-.stream-chat-input button {
-    width: 50px;
-    border-radius: 6px;
-    outline: none;
-    border: none;
-    background-color: #2d806f;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.stream-chat-input button:hover {
-    background-color: #359582;
-}
-
-.stream-container .stream-info {
-    width: 100%;
-    height: auto;
-    background-color: #DAE2CF;
-    border-radius: 6px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    padding-top: 15px;
-    padding-bottom: 15px;
-}
-
-.stream-container .stream-info-container-1 {
-    padding: 0 10px;
-}
-
-.stream-container .stream-author-profile-picture {
-    width: 70px;
-    height: 70px;
-    border-radius: 100%;
-    border: 1px solid #2d806f;
-    background-color: cyan;
-}
-
-.stream-container .stream-info-container-2 {
-    flex: 1;
-}
-
-.stream-container .stream-title {
-    font-size: 20px;
-    color: #2d806f;
-    margin-top: 0;
-}
-
-.stream-container .stream-author-username, .stream-container .stream-category {
-    font-size: 16px;
-    color: rgb(93, 93, 93);
-}
-
-.stream-container .stream-info-container-3 {
-    padding: 0 10px;
-}
-
-.stream-container .stream-author-follow {
-    font-size: 16px;
-    padding: 6px 10px;
-    background-color: #2d806f;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.stream-container .stream-author-follow:hover {
-    background-color: #359582;
 }
 
 /* Account page */
