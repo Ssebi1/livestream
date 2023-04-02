@@ -24,11 +24,19 @@ function Home() {
 
     useEffect(() => {
         const handleResize = () => {
-            setStreamsNumber(window.innerWidth/240)
-            setCategoriesNumber(window.innerWidth/240)
-            setStreamersNumber(window.innerWidth/240)
+            if (window.innerWidth > 600) {
+                setStreamsNumber(window.innerWidth/240)
+                setCategoriesNumber(window.innerWidth/240)
+                setStreamersNumber(window.innerWidth/240)
+            } else {
+                setStreamsNumber(10)
+                setCategoriesNumber(10)
+                setStreamersNumber(10)
+            }
+            
         }
         window.addEventListener('resize', handleResize)
+        window.addEventListener('load', handleResize)
 
         if (isErrorStreams) {
             console.log(messageStreams)
@@ -102,7 +110,7 @@ function Home() {
                 <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
             </div>
             <section className="streams">
-                {streams.slice(0, (categoriesNumber)).map((stream) => (
+                {streams.slice(0, (streamsNumber)).map((stream) => (
                     <StreamItem key={stream._id} stream={stream} />
                 ))}
             </section>

@@ -401,3 +401,20 @@ body {
     position: absolute;
     z-index: -1;
 }
+
+@media only screen and (max-width: 600px) {
+
+    .streams, .categories, .streamers {
+        overflow-x: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .streams::-webkit-scrollbar, .categories::-webkit-scrollbar, .streamers::-webkit-scrollbar {
+        display: none;
+    }
+
+    .stream-item, .category-item, .streamer-item {
+        min-width: 200px;
+    }
+}
