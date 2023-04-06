@@ -55,9 +55,9 @@
 
 .stream-chat-messages {
     max-width: 100%;
-    max-height: 100%;
-    flex: 1;
+    height: 100%;
     padding: 20px;
+    flex-grow: 0;
     overflow-y: auto;
     overflow-wrap: break-word;
 }
@@ -166,4 +166,51 @@
 
 .stream-container .stream-author-follow:hover {
     background-color: #266c5e;
+}
+
+@media only screen and (min-width: 1601px) {
+
+    .stream-chat {
+        max-height: 850px;
+    }
+}
+
+@media only screen and (max-width: 1600px) {
+
+    .stream-chat {
+        max-width: 450px;
+        max-height: 670px;
+    }
+}
+
+@media only screen and (max-width: 1400px) {
+
+    .stream-chat {
+        max-width: 350px;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+
+    .stream-chat {
+        max-width: 300px;
+        max-height: 600px;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+
+    .stream-container {
+        flex-direction: column;
+    }
+
+    .stream-chat {
+        max-width: 100%;
+        max-height: 600px;
+    }
+
+    .stream-chat-messages {
+        height: 400px;
+        flex: none;
+    }
 }

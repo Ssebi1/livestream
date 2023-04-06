@@ -71,7 +71,7 @@ body {
 }
 
 .form  {
-    width: 100%;
+    width: 90%;
     max-width: 500px;
     margin: 0 auto;
     background-color: white;
@@ -79,6 +79,7 @@ body {
     padding: 35px;
     margin-top: 90px;
     box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.054);
+    margin-bottom: 40px;
 }
 
 .form .title {
@@ -416,5 +417,11 @@ body {
 
     .stream-item, .category-item, .streamer-item {
         min-width: 200px;
+    }
+
+    .form {
+       max-width: 90%;
+       box-sizing: border-box;
+       padding: 20px;
     }
 }

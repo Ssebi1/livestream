@@ -89,7 +89,7 @@
     left: 0; 
 }
 
-.topbar .account {
+.topbar .account, .down-items .account {
     color: black;
     display: flex;
     flex-direction: row;
@@ -106,7 +106,7 @@
     background-color: rgb(226, 226, 226);
 }
 
-.topbar .logout-button {
+.topbar .logout-button, .down-items .logout-button {
     background-color: #2d806f;
     color: white;
     cursor: pointer;
@@ -145,10 +145,12 @@
     padding-left: 30px;
     padding-top: 20px;
     padding-bottom: 30px;
+    padding-right: 30px;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
     gap: 10px;
+    align-items: flex-start;
 }
 
 .down-items .topbar-link {
@@ -165,24 +167,33 @@
     left: 0; 
 }
 
+.down-items .logout-button {
+    display: none;
+    margin: 0;
+}
+
 @media only screen and (min-width: 901px) {
 
     .topbar-down {
-        display: none;
+        display: none !important; 
     }
 }
 
 @media only screen and (max-width: 900px) {
 
     .hamburger-menu {
-        display: flex;
+        display: flex !important;
     }
 
-    .login-button, .register-button, .account, .logout-button, .topbar-link {
-        display: none;
+    .login-button, .register-button, .account, .logout-button, .topbar-link, .account-link, .logout-button{
+        display: none !important;
     }
 
-    .down-items .login-button, .down-items .register-button, .down-items .account, .down-items .logout-button, .down-items .topbar-link {
-        display: block;
+    .down-items .login-button, .down-items .register-button, .down-items .logout-button, .down-items .topbar-link {
+        display: block !important;
+    }
+
+    .down-items .account {
+        display: flex !important;
     }
 }
