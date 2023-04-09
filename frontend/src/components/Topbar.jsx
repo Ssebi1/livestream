@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '../features/auth/authSlice'
 import { FaUser, FaSignOutAlt } from 'react-icons/fa'
 import { GiHamburgerMenu } from 'react-icons/gi'
+import {AiFillVideoCamera} from 'react-icons/ai'
 import { useRef } from 'react'
 
 function Topbar() {
@@ -10,6 +11,7 @@ function Topbar() {
     const dispatch = useDispatch()
     const { user } = useSelector((state) => state.auth)
     const downbarRef = useRef(null)
+    const accountDropdownRef = useRef(null)
 
     const onLogout = () => {
         dispatch(logout())
@@ -26,9 +28,23 @@ function Topbar() {
         }
     }
 
+    const toggleAccountDropdown = () => {
+        let accountDropdown = accountDropdownRef.current
+        if (accountDropdown.clientHeight < 0.1) {
+            accountDropdown.style.height = 'auto'
+        } else {
+            accountDropdown.style.height = '0px'
+        } 
+    }
+
     const closeTopbar = () => {
         let downbar = downbarRef.current
         downbar.style.height = '0px'
+    }
+
+    const closeAccount = () => {
+        let accountDropdown = accountDropdownRef.current
+        accountDropdown.style.height = '0px'
     }
 
     return (
@@ -44,13 +60,18 @@ function Topbar() {
                 {user ? (
                     <>
                         <ul className='right'>
-                            <Link to='/account' className='account-link' onClick={closeTopbar}>
+                            <div className='account-link' onClick={() => {closeTopbar(); toggleAccountDropdown()}}>
                                 <li className="account">
                                     <div className="username">{user.name}</div>
                                     <div className="icon"><FaUser size={16} /></div>
                                 </li>
-                            </Link>
-                            <li className="logout-button" onClick={() => { closeTopbar(); onLogout() }}><FaSignOutAlt size={16} /></li>
+                                <ul className="account-dropdown" ref={accountDropdownRef}>
+                                    <a href="/account">Account</a>
+                                    <li>Profile</li>
+                                    <li onClick={() => { closeTopbar(); onLogout() }}>Logout</li>
+                                </ul>
+                            </div>
+                            <Link to="/create-stream" className="button-start-stream"><AiFillVideoCamera size={16} /></Link>
                             <li className='hamburger-menu' onClick={toggleTopbar}><GiHamburgerMenu size={25} /></li>
                         </ul>
                     </>

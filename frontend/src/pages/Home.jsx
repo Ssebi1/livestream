@@ -70,11 +70,6 @@ function Home() {
 
     return (
         <>
-            {user && user.streamerMode ?
-                (<Link to="/create-stream"><div class="button-start-stream">Start stream</div></Link>) :
-                (<></>)
-            }
-
             <div className="home-section-title-container">
                 <div className="home-section-title">Recommended streams</div>
                 <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
