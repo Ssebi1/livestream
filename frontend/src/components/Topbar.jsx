@@ -51,11 +51,11 @@ function Topbar() {
         <>
             <div className='topbar'>
                 <ul className='left'>
-                    <Link to='/'><li className="logo">LIVESTREAM</li></Link>
-                    <Link to='/'><li className="topbar-link">RECENT</li></Link>
-                    <Link to='/'><li className="topbar-link">POPULAR</li></Link>
-                    <Link to='/'><li className="topbar-link">PAST STREAMS</li></Link>
-                    <Link to='/'><li className="topbar-link">CATEGORIES</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="logo">LIVESTREAM</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">RECENT</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">POPULAR</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">PAST STREAMS</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">CATEGORIES</li></Link>
                 </ul>
                 {user ? (
                     <>
@@ -66,45 +66,43 @@ function Topbar() {
                                     <div className="icon"><FaUser size={16} /></div>
                                 </li>
                                 <ul className="account-dropdown" ref={accountDropdownRef}>
-                                    <a href="/account">Account</a>
-                                    <li>Profile</li>
-                                    <li onClick={() => { closeTopbar(); onLogout() }}>Logout</li>
+                                    <a href="/account" onClick={() => { closeTopbar(); closeAccount() }}>Account</a>
+                                    <Link to={{pathname: `/profile/${user._id}`}} onClick={() => { closeTopbar(); closeAccount() }}>Profile</Link>
+                                    <li onClick={() => { closeTopbar(); closeAccount(); onLogout() }}>Logout</li>
                                 </ul>
                             </div>
-                            <Link to="/create-stream" className="button-start-stream"><AiFillVideoCamera size={16} /></Link>
-                            <li className='hamburger-menu' onClick={toggleTopbar}><GiHamburgerMenu size={25} /></li>
+                            <Link to="/create-stream" className="button-start-stream" onClick={() => { closeTopbar(); closeAccount() }}><AiFillVideoCamera size={16} /></Link>
+                            <li className='hamburger-menu' onClick={() => { toggleTopbar(); closeAccount() }}><GiHamburgerMenu size={25} /></li>
                         </ul>
                     </>
                 ) : (
                     <>
                         <ul className='right'>
-                            <Link to='/login' onClick={closeTopbar}><li className="login-button">Login</li></Link>
-                            <Link to='/register' onClick={closeTopbar}><li className="register-button">Register</li></Link>
-                            <li className='hamburger-menu' onClick={toggleTopbar}><GiHamburgerMenu size={25} /></li>
+                            <Link to='/login' onClick={() => { closeTopbar(); closeAccount() }}><li className="login-button">Login</li></Link>
+                            <Link to='/register' onClick={() => { closeTopbar(); closeAccount() }}><li className="register-button">Register</li></Link>
+                            <li className='hamburger-menu' onClick={() => { toggleTopbar(); closeAccount() }}><GiHamburgerMenu size={25} /></li>
                         </ul>
                     </>
                 )}
             </div>
             <div className="topbar-down" ref={downbarRef}>
                 <ul className="down-items">
-                    <Link to='/' onClick={closeTopbar}><li className="topbar-link">RECENT</li></Link>
-                    <Link to='/' onClick={closeTopbar}><li className="topbar-link">POPULAR</li></Link>
-                    <Link to='/' onClick={closeTopbar}><li className="topbar-link">PAST STREAMS</li></Link>
-                    <Link to='/' onClick={closeTopbar}><li className="topbar-link">CATEGORIES</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">RECENT</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">POPULAR</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">PAST STREAMS</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">CATEGORIES</li></Link>
+                    <div className="horizontal-line"></div>
                     {user ? (
                         <>
-                            <Link to='/account' onClick={closeTopbar}>
-                                <li className="account">
-                                    <div className="icon"><FaUser size={16} /></div>
-                                    <div className="username">{user.name}</div>
-                                </li>
-                            </Link>
-                            <li onClick={() => { closeTopbar(); onLogout() }} className="logout-button">Logout</li>
+                            <Link to='/account' onClick={() => { closeTopbar(); closeAccount() }} className="topbar-link">Account</Link>
+                            <Link to={{pathname: `/profile/${user._id}`}} user={user} onClick={() => { closeTopbar(); closeAccount() }} className="topbar-link">Profile</Link>
+                            <div onClick={() => { closeTopbar(); closeAccount(); onLogout() }} className="topbar-link">Logout</div>
+                            <Link to="/create-stream" className='start-stream-link topbar-link' onClick={() => { closeTopbar(); closeAccount() }}>Start stream</Link>
                         </>
                     ) : (
                         <>
-                            <Link to='/login' onClick={closeTopbar}><li className="login-button">Login</li></Link>
-                            <Link to='/register' onClick={closeTopbar}><li className="register-button">Register</li></Link>
+                            <Link to='/login' onClick={() => { closeTopbar(); closeAccount() }}><li className="login-button">Login</li></Link>
+                            <Link to='/register' onClick={() => { closeTopbar(); closeAccount() }}><li className="register-button">Register</li></Link>
                         </>
                     )}
                 </ul>

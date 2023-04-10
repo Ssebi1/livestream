@@ -6,6 +6,7 @@ import Register from './pages/Register.jsx'
 import Account from './pages/Account.jsx'
 import CreateStream from './pages/CreateStream.jsx'
 import Stream from './pages/Stream.jsx'
+import Profile from './pages/Profile.jsx'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './topbar.css'
@@ -24,6 +25,7 @@ function App() {
             <Route path='/account' element={<Account/>} />
             <Route path='/create-stream' element={<CreateStream/>} />
             <Route path='/streams/:id' element={<Stream/>} />
+            <Route path='/profile/:id' element={<Profile/>} />
           </Routes>
         </div>
       </Router>

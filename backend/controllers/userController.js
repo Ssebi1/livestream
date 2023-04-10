@@ -73,19 +73,7 @@ const loginUser = asyncHandler(async (req, res) => {
     })
 })
 
-// @desc Get user data
-// @route GET /api/users/data
-// @access Private
-const getUserData = asyncHandler(async (req, res) => {
-    if(!req.user) {
-        res.status(400)
-        throw new Error('Cannot get user data')
-    }
-
-    res.status(200).json(req.user)
-})
-
-// @desc Ennable streamer mode for user
+// @desc Enable streamer mode for user
 // @route Put /api/users/enableStreamer
 // @access Private
 const enableStreamerMode = asyncHandler(async (req, res) => {
@@ -108,14 +96,25 @@ const getStreamers = asyncHandler(async (req, res) => {
     res.status(200).send(streamers)
 })
 
-// @desc Ennable streamer mode for user
+// @desc Get streamer
 // @route GET /api/users/streamers
 // @access Public
 const getStreamer = asyncHandler(async (req, res) => {
     const streamer = await User.find({"streamerMode": true, _id: req.params.id})
     res.status(200).send(streamer)
 })
-
+// @desc Get user data
+// @route GET /api/users/data/:id
+// @access Public
+const getUserData = asyncHandler(async (req, res) => {
+    let user = await User.findOne({_id: req.params.id})
+    if(user) {
+        res.status(200).json({
+            _id: user.id,
+            name: user.name
+        })
+    }
+})
 
 // Generate JWT
 const generateToken = (id) => {

@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema({
     streamerMode: {
         type: Boolean,
         required: false,
-        deafult: false
+        default: false
     }
 }, {
     timestamps: true

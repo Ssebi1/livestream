@@ -35,7 +35,7 @@
 
 .register-button {
     background-color: #2d806f;
-    color: #EDF5E1;
+    color: white;
     width: 80px;
     text-align: center;
     font-size: 15px;
@@ -69,6 +69,7 @@
     font-weight: 550;
     text-decoration: none;
     position: relative;
+    cursor: pointer;
 }
 
 .topbar-link:after {    
@@ -233,6 +234,16 @@
     background-color: #266c5e;
 }
 
+.horizontal-line {
+    width: 100%;
+    height: 2px;
+    background-color: rgba(179, 179, 179, 0.32);
+}
+
+.start-stream-link{
+    color: #2d806f;
+}
+
 @media only screen and (min-width: 901px) {
 
     .topbar-down {
@@ -246,7 +257,7 @@
         display: flex !important;
     }
 
-    .login-button, .register-button, .account, .logout-button, .topbar-link, .account-link, .logout-button{
+    .login-button, .register-button, .account, .logout-button, .topbar-link, .account-link, .logout-button, .button-start-stream{
         display: none !important;
     }
 

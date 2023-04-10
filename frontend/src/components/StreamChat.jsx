@@ -23,6 +23,12 @@ function StreamChat(props) {
         return () => props.socket.off('receive_message');
     }, [props.socket]);
 
+    const handleKeyDown = (event) => {
+        if (event.keyCode == 13) {
+            sendMessage()
+        }
+    }
+
     const sendMessage = () => {
         if (message !== '') {
             let username = user.name
@@ -42,7 +48,7 @@ function StreamChat(props) {
             </div>
             <div className="stream-chat-input">
                 {user ? (
-                    <input type="text" name="stream-message" id="stream-message" placeholder="Send a message" onChange={(e) => setMessage(e.target.value)} value={message} />
+                    <input type="text" name="stream-message" id="stream-message" placeholder="Send a message" onKeyDown={handleKeyDown} onChange={(e) => setMessage(e.target.value)} value={message} />
                 ) : (
                     <input type="text" name="stream-message" id="stream-message" placeholder="Login to send messages" disabled />
                 )}
