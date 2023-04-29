@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom"
 
-function StreamItem({stream}) {
+function StreamItemMinimal({stream}) {
     return (
         <div className="stream-item">
             <Link to={{pathname: `/streams/${stream._id}`}}><div className="thumbnail" background-image="url('https://q5n8c8q9.rocketcdn.me/wp-content/uploads/2019/09/YouTube-thumbnail-size-guide-best-practices-top-examples.png')"></div></Link>
             <div className="stream-info">
-                <div className="stream-info-left">
-                    <Link to={{pathname: `/profile/${stream.user._id}`}}><div className="stream-author-image" style={{backgroundImage: `url('/profile-pictures/${stream.user._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}></div></Link>
-                </div>
                 <div className="stream-info-right">
                     <div className="stream-title">{stream.title}</div>
                     <Link to={{pathname: `/profile/${stream.user._id}`}} className="stream-author">{stream.user.name}</Link>
@@ -18,4 +15,4 @@ function StreamItem({stream}) {
     )
 }
 
-export default StreamItem
+export default StreamItemMinimal

@@ -2,7 +2,7 @@
 const express = require('express')
 const router = express.Router()
 // controllers
-const { getStreams, postStream, putStream, deleteStream, getStream } = require('../controllers/streamController')
+const { getStreams, postStream, putStream, deleteStream, getStream, getUserStreams } = require('../controllers/streamController')
 const {protect} = require('../middleware/authMiddleware')
 // export router
 module.exports = router
@@ -10,6 +10,7 @@ module.exports = router
 // GET
 router.get('/', getStreams)
 router.get('/:id', getStream)
+router.get('/user/:id', getUserStreams)
 
 // POST
 router.post('/', protect, postStream)

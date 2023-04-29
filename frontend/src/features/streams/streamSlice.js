@@ -52,6 +52,18 @@ export const getStream = createAsyncThunk('streams/get', async (id, thunkAPI) =>
     }
 })
 
+export const getUserStreams = createAsyncThunk('streams/getUserStreams', async (id, thunkAPI) => {
+    try {
+        return await streamService.getUserStreams(id)
+    } catch (error) {
+        const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 
 export const streamSlice = createSlice({
     name: 'stream',
@@ -97,6 +109,19 @@ export const streamSlice = createSlice({
                 state.stream = action.payload
             })
             .addCase(getStream.rejected, (state, action) => {
+                state.isLoadingStreams = false
+                state.isErrorStreams = true
+                state.messageStreams = action.payload
+            })
+            .addCase(getUserStreams.pending, (state) => {
+                state.isLoadingStreams = true
+            })
+            .addCase(getUserStreams.fulfilled, (state, action) => {
+                state.isLoadingStreams = false
+                state.isSuccessStreams = true
+                state.streams = action.payload
+            })
+            .addCase(getUserStreams.rejected, (state, action) => {
                 state.isLoadingStreams = false
                 state.isErrorStreams = true
                 state.messageStreams = action.payload

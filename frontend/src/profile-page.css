@@ -1,0 +1,151 @@
+.banner {
+    width: 100%;
+    aspect-ratio: 7/1;
+    background-image: url("../public/banner-pictures/banner-image.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+.profile-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    max-width: 100%;
+    padding: 20px;
+    gap: 20px;
+}
+
+.profile-user-picture {
+    width: 100px;
+    aspect-ratio: 1/1;
+    border-radius: 100%;
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border: 1px solid #2d806f;
+}
+
+.profile-box-2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.profile-box-2 .name {
+    font-size: 25px;
+}
+
+.profile-box-2 .followers {
+    color: rgba(0, 0, 0, 0.623);
+}
+
+.follow-button {
+    height: auto;
+    font-size: 16px;
+    padding: 6px 10px;
+    background-color: #2d806f;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.follow-button:hover {
+    background-color: #266c5e;
+}
+
+.profile-pages {
+    max-width: 100%;
+    padding: 10px 20px 20px 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.profile-pages div {
+    font-size: 20px;
+    border-bottom: 3px solid;
+    cursor: pointer;
+}
+
+.home-profile-page {
+    color: #2d806f;
+    border-color: #2d806f;
+}
+
+.profile-content {
+    max-width: 100%;
+    padding: 20px;
+}
+
+.profile-streams, .profile-categories {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: no-wrap;
+    max-width: 100%;
+    gap: 10px;
+    position: relative;
+}
+
+.profile-title-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-view-more {
+    font-size: 14px;
+    color: #2d806f;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-top: 3px;
+}
+
+.profile-title {
+    font-size: 22px;
+}
+
+.profile-title-container {
+    padding-bottom: 10px;
+}
+
+.stream-info {
+    padding-left: 10px;
+}
+
+.stream-item .stream-title {
+    font-size: 18px;
+}
+
+.stream-item .stream-category {
+    font-size: 14px;
+}
+
+.profile-categories-container {
+    margin-top: 30px;
+}
+
+@media only screen and (max-width: 600px) {
+
+    .profile-streams, .profile-categories{
+        overflow-x: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .profile-streams::-webkit-scrollbar, .profile-categories::-webkit-scrollbar {
+        display: none;
+    }
+
+    .stream-item, .category-item, .streamer-item {
+        min-width: 200px;
+    }
+}

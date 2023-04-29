@@ -100,7 +100,7 @@ const getStreamers = asyncHandler(async (req, res) => {
 // @route GET /api/users/streamers
 // @access Public
 const getStreamer = asyncHandler(async (req, res) => {
-    const streamer = await User.find({"streamerMode": true, _id: req.params.id})
+    const streamer = await User.findOne({"streamerMode": true, _id: req.params.id})
     res.status(200).send(streamer)
 })
 // @desc Get user data

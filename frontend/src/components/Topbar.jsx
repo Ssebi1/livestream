@@ -95,7 +95,7 @@ function Topbar() {
                     {user ? (
                         <>
                             <Link to='/account' onClick={() => { closeTopbar(); closeAccount() }} className="topbar-link">Account</Link>
-                            <Link to={{pathname: `/profile/${user._id}`}} user={user} onClick={() => { closeTopbar(); closeAccount() }} className="topbar-link">Profile</Link>
+                            <Link to={{pathname: `/profile/${user._id}`}} onClick={() => { closeTopbar(); closeAccount() }} className="topbar-link">Profile</Link>
                             <div onClick={() => { closeTopbar(); closeAccount(); onLogout() }} className="topbar-link">Logout</div>
                             <Link to="/create-stream" className='start-stream-link topbar-link' onClick={() => { closeTopbar(); closeAccount() }}>Start stream</Link>
                         </>

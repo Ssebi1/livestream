@@ -19,10 +19,16 @@ const getStream = async (id) => {
     return response.data
 }
 
+const getUserStreams = async (id) => {
+    let response = await axios.get(API_URL + '/user/' + id)
+    return response.data
+}
+
 const streamService = {
     createStream,
     getStreams,
-    getStream
+    getStream,
+    getUserStreams
 }
 
 export default streamService

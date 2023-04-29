@@ -15,6 +15,10 @@ body {
     min-height: 100vh;
 }
 
+a {
+    text-decoration: none;
+}
+
 /* Spinner */
 .spinner {
     position: absolute;
@@ -200,6 +204,7 @@ body {
     flex: 1;
     min-width: 0;
     overflow: hidden;
+    max-width: 300px;
 }
 
 .stream-item .thumbnail{
@@ -213,7 +218,7 @@ body {
 
 .stream-info {
     display: flex;
-    width: 100%;
+    max-width: 100%;
     height: auto;
     flex-direction: row;
     gap: 10px;
@@ -311,6 +316,7 @@ body {
     cursor: pointer;
     flex-shrink: 1;
     flex-grow: 1;
+    max-width: 300px;
 }
 
 .category-item .thumbnail {

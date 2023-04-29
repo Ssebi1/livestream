@@ -24,7 +24,7 @@ const getStreams = asyncHandler(async (req, res) => {
 })
 
 // @desc Get stream
-// @route GET /api/streams
+// @route GET /api/stream/<id>
 // @access Public
 const getStream = asyncHandler(async (req, res) => {
   const stream = await Stream.findById(req.params.id)
@@ -40,6 +40,21 @@ const getStream = asyncHandler(async (req, res) => {
   }
   stream.category = category
   res.status(200).send(stream)
+})
+
+// @desc Get user streams
+// @route GET /api/streams/user/<id>
+// @access Public
+const getUserStreams = asyncHandler(async (req, res) => {
+  const streams = await Stream.find({user: {_id: req.params.id}})
+  for (let i = 0; i < streams.length; i++) {
+    let category = await Category.findById(streams[i].category)
+    if (!category) {
+      category = await Category.findOne({ name: 'GENERAL' })
+    }
+    streams[i].category = category
+  }
+  res.status(200).send(streams)
 })
 
 // @desc Post stream
@@ -129,5 +144,6 @@ module.exports = {
   getStream,
   postStream,
   putStream,
-  deleteStream
+  deleteStream,
+  getUserStreams
 }
