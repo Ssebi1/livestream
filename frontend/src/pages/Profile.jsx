@@ -9,23 +9,29 @@ import { getStreamer } from '../features/streamers/streamerSlice'
 import StreamItemMinimal from '../components/StreamItemMinimal'
 import {FaChevronRight} from 'react-icons/fa'
 import CategoryItem from '../components/CategoryItem'
+import {BsFillTrashFill} from 'react-icons/bs'
+import {AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
 
 function Profile() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { id } = useParams()
+    const { user } = useSelector((state) => state.auth)
     const { streamer, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers } = useSelector((state) => state.streamers)
     const { streams, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
 
     const homePageRef = useRef(null)
     const aboutPageRef = useRef(null)
     const streamsPageRef = useRef(null)
+    const linkModalRef = useRef(null)
 
     const [page, setPage] = useState('home')
     const [streamsNumber, setStreamsNumber] = useState(8)
     const [categoriesNumber, setCategoriesNumber] = useState(8)
     const [userCategories, setUserCategories] = useState([])
     const [userCategoriesCalculated, setUserCategoriesCalculated] = useState(false)
+    const [userLoaded, setUserLoaded] = useState(false)
+    const [isOwnProfile, setIsOwnProfile] = useState(false)
 
     useEffect(() => {
         const handleResize = () => {
@@ -63,9 +69,15 @@ function Profile() {
             userCategories.push(stream.category)
         }
         let userCategoriesUnique = [...new Map(userCategories.map(item => [item['_id'], item])).values()];
-        console.log(userCategoriesUnique)
         setUserCategories(userCategoriesUnique)
         setUserCategoriesCalculated(true)
+    }
+
+    if (isSuccessStreamers && !userLoaded) {
+        if (user && id == user._id) {
+            setIsOwnProfile(true)
+        }
+        setUserLoaded(true)
     }
 
     const selectPage = (option) => {
@@ -93,8 +105,42 @@ function Profile() {
         }
     }
 
+    const toggleLinksModal = () => {
+        console.log(linkModalRef.current.clientHeight)
+        if (linkModalRef.current.clientHeight == 0) {
+            linkModalRef.current.style.display = 'block'
+        } else {
+            linkModalRef.current.style.display = 'none'
+        }
+    }
+
     return (
         <>
+        <div ref={linkModalRef} className="modal-wrapper">
+            <div className="edit-links-modal">
+                <div className="edit-links-header">
+                    <div className="edit-links-title">Edit links</div>
+                    <div className="close-button" onClick={toggleLinksModal}><AiOutlineClose size={22}/></div>
+                </div>
+                <div className="edit-links">
+                    <div className="edit-link">
+                        <select name="link-type" className="link-type">
+                            <option value="instagram" selected>Instagram</option>
+                            <option value="instagram">Facebook</option>
+                            <option value="instagram">Youtube</option>
+                            <option value="instagram">Discord</option>
+                        </select>
+                        <input type="text" className="link-url" />
+                        <div className="link-delete-button"><BsFillTrashFill size={16}/></div>
+                    </div>
+                </div>
+                <div className="edit-links-footer">
+                    <div className="add-link-button"><AiOutlinePlus/> Link</div>
+                    <div className="update-button">Save</div>
+                </div>
+            </div>
+        </div>
+
         <div className="banner"></div>
         <div className="profile-box">
             <div className="profile-user-picture"  style={{backgroundImage: `url('/profile-pictures/${streamer._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}></div>
@@ -102,9 +148,13 @@ function Profile() {
                 <div className="name">{streamer.name}</div>
                 <div className="followers">1332 followers</div>
             </div>
-            <div className="follow-button-wrapper">
-                <div className="follow-button">FOLLOW <AiOutlineStar size={20} /></div>
-            </div>
+            { isOwnProfile === false ? (
+                    <div className="follow-button-wrapper">
+                        <div className="follow-button">FOLLOW <AiOutlineStar size={20} /></div>
+                    </div>
+                ) : (<></>)
+            }
+            
         </div>
         <div className="profile-pages">
             <div className='home-profile-page' ref={homePageRef} onClick={() => {setPage('home'); selectPage('home')}}>Home</div>
@@ -142,8 +192,34 @@ function Profile() {
                     
                 ) : ( page === "about"
                     ? (
-                        <div className="about-container">About</div>
-                        
+                        <div className="about-container">
+                            { isOwnProfile ? (
+                                    <div className="edit-button-container"><div className="edit-button" onClick={toggleLinksModal}>edit</div></div>
+                                ) : (<></>)
+                            }
+                            
+                            <div className="stats">
+                                <div className="column-1">
+                                    <div className="latest-stream">Latest stream: <span className='stats-subtitle'>13 Januray 2023</span></div>
+                                    <div className="first-stream">Frist stream: <span className='stats-subtitle'>1 Januray 2023</span></div>
+                                    <div className="account-created">Account created: <span className='stats-subtitle'>1 Januray 2022</span></div>
+                                </div>
+                                <div className="columne-2">
+                                    <div className="instagram">Instagram</div>
+                                    <div className="facebook">Facebook</div>
+                                    <div className="youtube">Youtube</div>
+                                </div>
+                            </div>
+
+                            { isOwnProfile ? (
+                                    <div className="edit-button-container"><div className="edit-button">edit</div></div>
+                                ) : (<></>)
+                            }
+                            <div className="description">
+                                <div className="description-title">Description</div>
+                                <div className="description-content"></div>
+                            </div>
+                            </div>                        
                     ) : (
                         <div className="streams-container">Streams</div>
                     )
