@@ -9,8 +9,11 @@ import { getStreamer } from '../features/streamers/streamerSlice'
 import StreamItemMinimal from '../components/StreamItemMinimal'
 import {FaChevronRight} from 'react-icons/fa'
 import CategoryItem from '../components/CategoryItem'
-import {BsFillTrashFill} from 'react-icons/bs'
+import {BsFillTrashFill, BsInstagram, BsDiscord} from 'react-icons/bs'
 import {AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
+import {AiOutlineCloudUpload} from 'react-icons/ai'
+import {uploadProfilePicture, uploadBannerPicture} from '../features/auth/authSlice'
+import {FaFacebook, FaYoutube} from 'react-icons/fa'
 
 function Profile() {
     const navigate = useNavigate()
@@ -24,6 +27,7 @@ function Profile() {
     const aboutPageRef = useRef(null)
     const streamsPageRef = useRef(null)
     const linkModalRef = useRef(null)
+    const descriptionModalWrapper = useRef(null)
 
     const [page, setPage] = useState('home')
     const [streamsNumber, setStreamsNumber] = useState(8)
@@ -32,6 +36,7 @@ function Profile() {
     const [userCategoriesCalculated, setUserCategoriesCalculated] = useState(false)
     const [userLoaded, setUserLoaded] = useState(false)
     const [isOwnProfile, setIsOwnProfile] = useState(false)
+    const [file, setFile] = useState()
 
     useEffect(() => {
         const handleResize = () => {
@@ -114,6 +119,30 @@ function Profile() {
         }
     }
 
+    const toggleDescriptionModal = () => {
+        if (descriptionModalWrapper.current.clientHeight == 0) {
+            descriptionModalWrapper.current.style.display = 'block'
+        } else {
+            descriptionModalWrapper.current.style.display = 'none'
+        }
+    }
+
+    const submitProfilePicture = async e => {
+        let uploadFile = e.target.files[0]
+        let newFile = new File([uploadFile], user._id + '.png')
+        let formData = new FormData();
+        formData.append('image', newFile)
+        dispatch(uploadProfilePicture(formData))
+    }    
+
+    const submitProfileBanner  = async e => {
+        let uploadFile = e.target.files[0]
+        let newFile = new File([uploadFile], user._id + '.png')
+        let formData = new FormData();
+        formData.append('image', newFile)
+        dispatch(uploadBannerPicture(formData))
+    }   
+
     return (
         <>
         <div ref={linkModalRef} className="modal-wrapper">
@@ -130,7 +159,7 @@ function Profile() {
                             <option value="instagram">Youtube</option>
                             <option value="instagram">Discord</option>
                         </select>
-                        <input type="text" className="link-url" />
+                        <input type="text" className="link-url" placeholder='url'/>
                         <div className="link-delete-button"><BsFillTrashFill size={16}/></div>
                     </div>
                 </div>
@@ -141,9 +170,39 @@ function Profile() {
             </div>
         </div>
 
-        <div className="banner"></div>
+        <div ref={descriptionModalWrapper} className="modal-wrapper">
+            <div className="description-modal">
+                <div className="description-header">
+                    <div className="description-title">Edit description</div>
+                    <div className="close-button" onClick={toggleDescriptionModal}><AiOutlineClose size={22}/></div>
+                </div>
+                <textarea name="profile-description" id="profile-description" cols="40" rows="10"></textarea>
+                <div className="description-footer">
+                    <div className="clear-button">Clear</div>
+                    <div className="update-button">Save</div>
+                </div>
+            </div>
+        </div>
+
+        <div className="banner" style={{backgroundImage: `url('/banner-pictures/${streamer._id}.png'), url('/banner-pictures/banner-image.png')`}}>
+            { isOwnProfile ? (
+                    <div className="upload">
+                        <input className="upload-input" name="profileFile" id="profileFile" filename={file} onChange={(e) => {submitProfileBanner(e)}} type="file" accept="image/*"></input>
+                        <label className='upload-icon' htmlFor="profileFile"><AiOutlineCloudUpload size={40}/></label>
+                    </div>
+                ) : (<></>)
+            }
+        </div>
         <div className="profile-box">
-            <div className="profile-user-picture"  style={{backgroundImage: `url('/profile-pictures/${streamer._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}></div>
+            <div className="profile-user-picture"  style={{backgroundImage: `url('/profile-pictures/${streamer._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}>
+                { isOwnProfile ? (
+                        <div className="upload">
+                            <input className="upload-input" name="bannerFile" id="bannerFile" filename={file} onChange={(e) => {submitProfilePicture(e)}} type="file" accept="image/*"></input>
+                            <label className='upload-icon' htmlFor="bannerFile"><AiOutlineCloudUpload size={40}/></label>
+                        </div>
+                    ) : (<></>)
+                }
+            </div>
             <div className="profile-box-2">
                 <div className="name">{streamer.name}</div>
                 <div className="followers">1332 followers</div>
@@ -205,14 +264,14 @@ function Profile() {
                                     <div className="account-created">Account created: <span className='stats-subtitle'>1 Januray 2022</span></div>
                                 </div>
                                 <div className="columne-2">
-                                    <div className="instagram">Instagram</div>
-                                    <div className="facebook">Facebook</div>
-                                    <div className="youtube">Youtube</div>
+                                    <div className="instagram"><BsInstagram/> Instagram</div>
+                                    <div className="facebook"><FaFacebook/> Facebook</div>
+                                    <div className="youtube"><FaYoutube/> Youtube</div>
                                 </div>
                             </div>
 
                             { isOwnProfile ? (
-                                    <div className="edit-button-container"><div className="edit-button">edit</div></div>
+                                    <div className="edit-button-container"><div className="edit-button" onClick={toggleDescriptionModal}>edit</div></div>
                                 ) : (<></>)
                             }
                             <div className="description">
@@ -221,7 +280,11 @@ function Profile() {
                             </div>
                             </div>                        
                     ) : (
-                        <div className="streams-container">Streams</div>
+                        <section className="profile-streams-2">
+                            {streams.map((stream) => (
+                                <StreamItemMinimal key={stream._id} stream={stream} />
+                            ))}
+                        </section>
                     )
                 )
             }

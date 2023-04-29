@@ -74,6 +74,18 @@ export const uploadProfilePicture = createAsyncThunk('auth/uploadProfilePicture'
   }
 })
 
+// Upload banner picture
+export const uploadBannerPicture = createAsyncThunk('auth/uploadBannerPicture', async (data, thunkAPI) => {
+  try {
+    return await authService.uploadBannerPicture(data)
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -140,6 +152,18 @@ export const authSlice = createSlice({
         state.isSuccess = true
       })
       .addCase(uploadProfilePicture.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(uploadBannerPicture.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(uploadBannerPicture.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+      })
+      .addCase(uploadBannerPicture.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

@@ -46,12 +46,18 @@ const uploadProfilePicture  = async (data) => {
   return response.data
 }
 
+const uploadBannerPicture  = async (data) => {
+  const response = await axios.post(API_URL + 'upload/banner-picture', data, { headers: {'Content-Type': 'multipart/form-data'}})
+  return response.data
+}
+
 const authService = {
   register,
   logout,
   login,
   enableStreamerMode,
-  uploadProfilePicture
+  uploadProfilePicture,
+  uploadBannerPicture
 }
 
 export default authService

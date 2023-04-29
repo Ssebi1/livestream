@@ -186,7 +186,7 @@
     display: none;
 }
 
-.edit-links-modal {
+.edit-links-modal, .description-modal {
     z-index: 100;
     background-color: red;
     position: absolute;
@@ -198,7 +198,7 @@
     border-radius: 6px;
 }
 
-.edit-links-header {
+.edit-links-header, .description-header {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -207,7 +207,7 @@
     margin-bottom: 30px;
 }
 
-.edit-links-title {
+.edit-links-title, .description-title {
     font-size: 22px;
 }
 
@@ -254,11 +254,11 @@
     cursor: pointer;
 }
 
-.edit-link .link-delete-button:hover, .add-link-button:hover {
+.edit-link .link-delete-button:hover, .add-link-button:hover, .clear-button:hover {
     background-color: #dcdcdc;
 }
 
-.edit-links-footer {
+.edit-links-footer, .description-footer {
     display: flex;
     width: 100%;
     flex-direction: row;
@@ -267,7 +267,7 @@
     margin-top: 20px;
 }
 
-.add-link-button {
+.add-link-button, .clear-button {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -290,6 +290,30 @@
 
 .update-button:hover {
     background-color: #266c5e;
+}
+
+.description-modal textarea {
+    resize: none;
+    overflow: auto;
+    outline: none;
+    border: none;
+    border: 2px solid #ebeaea;
+    margin-top: -10px;
+    border-radius: 6px;
+}
+
+.profile-streams-2 {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.profile-streams-2 .stream-item {
+    min-width: 250px;
+    flex-shrink: 0;
+    flex-grow: 0;
 }
 
 @media only screen and (max-width: 600px) {
