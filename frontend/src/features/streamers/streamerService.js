@@ -12,9 +12,20 @@ const getStreamer = async (id) => {
     return response.data
 }
 
+// Patch user
+const updateUser = async (user_id, streamer_id, data) => {
+    if (user_id != streamer_id) {
+      return {}
+    }
+    const response = await axios.patch('/api/users/' + user_id, data)
+    return response.data
+  }
+  
+
 const streamerService = {
     getStreamers,
-    getStreamer
+    getStreamer,
+    updateUser
 }
 
 export default streamerService

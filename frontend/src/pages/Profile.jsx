@@ -5,15 +5,16 @@ import {  getUserStreams, reset } from '../features/streams/streamSlice'
 import Spinner from '../components/Spinner'
 import { AiOutlineStar } from "react-icons/ai";
 import '../profile-page.css'
-import { getStreamer } from '../features/streamers/streamerSlice'
+import { getStreamer, updateUser } from '../features/streamers/streamerSlice'
 import StreamItemMinimal from '../components/StreamItemMinimal'
 import {FaChevronRight} from 'react-icons/fa'
 import CategoryItem from '../components/CategoryItem'
 import {BsFillTrashFill, BsInstagram, BsDiscord} from 'react-icons/bs'
 import {AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
 import {AiOutlineCloudUpload} from 'react-icons/ai'
-import {uploadProfilePicture, uploadBannerPicture, updateUser} from '../features/auth/authSlice'
+import {uploadProfilePicture, uploadBannerPicture} from '../features/auth/authSlice'
 import {FaFacebook, FaYoutube} from 'react-icons/fa'
+import { Markup } from 'interweave';
 
 function Profile() {
     const navigate = useNavigate()
@@ -155,7 +156,6 @@ function Profile() {
             "updateMap": updateMap
         }))
         toggleDescriptionModal()
-        window.location.reload(true)
     }
 
     return (
@@ -291,7 +291,7 @@ function Profile() {
                             }
                             <div className="description">
                                 <div className="description-title">Description</div>
-                                <div className="description-content">{streamer.description}</div>
+                                <Markup className="description-content" content={streamer.description}/>
                             </div>
                             </div>                        
                     ) : (

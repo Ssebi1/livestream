@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import streamerService from './streamerService'
 
 const initialState = {
@@ -15,9 +15,9 @@ export const getStreamers = createAsyncThunk('streamers/getAll', async (thunkAPI
         return await streamerService.getStreamers()
     } catch (error) {
         const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString()
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
         return thunkAPI.rejectWithValue(message)
     }
 })
@@ -27,9 +27,22 @@ export const getStreamer = createAsyncThunk('streamers/get', async (id, thunkAPI
         return await streamerService.getStreamer(id)
     } catch (error) {
         const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString()
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Patch updates user
+export const updateUser = createAsyncThunk('streamers/updateUser', async (data, thunkAPI) => {
+    try {
+        return await streamerService.updateUser(data.user_id, data.streamer_id, data.updateMap)
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
         return thunkAPI.rejectWithValue(message)
     }
 })
@@ -68,8 +81,21 @@ export const streamerSlice = createSlice({
                 state.isErrorStreamers = true
                 state.messageStreamers = action.payload
             })
+            .addCase(updateUser.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.streamer = action.payload
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
     }
 })
 
-export const {reset} = streamerSlice.actions
+export const { reset } = streamerSlice.actions
 export default streamerSlice.reducer
