@@ -1,19 +1,19 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import {useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import {  getUserStreams, reset } from '../features/streams/streamSlice'
+import { getUserStreams, reset } from '../features/streams/streamSlice'
 import Spinner from '../components/Spinner'
 import { AiOutlineStar } from "react-icons/ai";
 import '../profile-page.css'
 import { getStreamer, updateUser } from '../features/streamers/streamerSlice'
 import StreamItemMinimal from '../components/StreamItemMinimal'
-import {FaChevronRight} from 'react-icons/fa'
+import { FaChevronRight } from 'react-icons/fa'
 import CategoryItem from '../components/CategoryItem'
-import {BsFillTrashFill, BsInstagram, BsDiscord} from 'react-icons/bs'
-import {AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
-import {AiOutlineCloudUpload} from 'react-icons/ai'
-import {uploadProfilePicture, uploadBannerPicture} from '../features/auth/authSlice'
-import {FaFacebook, FaYoutube} from 'react-icons/fa'
+import { BsFillTrashFill, BsInstagram, BsDiscord } from 'react-icons/bs'
+import { AiOutlineClose, AiOutlinePlus } from 'react-icons/ai'
+import { AiOutlineCloudUpload } from 'react-icons/ai'
+import { uploadProfilePicture, uploadBannerPicture } from '../features/auth/authSlice'
+import { FaFacebook, FaYoutube } from 'react-icons/fa'
 import { Markup } from 'interweave';
 
 function Profile() {
@@ -38,18 +38,21 @@ function Profile() {
     const [userLoaded, setUserLoaded] = useState(false)
     const [isOwnProfile, setIsOwnProfile] = useState(false)
     const [file, setFile] = useState()
-    const [editDescription, setEditDescription] = useState()
+    const [editDescription, setEditDescription] = useState("")
+    const [links, setLinks] = useState([])
+
+    const linkTypes = ['Instagram', 'Facebook', 'Youtube', 'Discord']
 
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth > 600) {
-                setStreamsNumber(window.innerWidth/240)
-                setCategoriesNumber(window.innerWidth/240)
+                setStreamsNumber(window.innerWidth / 240)
+                setCategoriesNumber(window.innerWidth / 240)
             } else {
                 setStreamsNumber(10)
                 setCategoriesNumber(10)
             }
-            
+
         }
         window.addEventListener('resize', handleResize)
         window.addEventListener('load', handleResize)
@@ -82,6 +85,7 @@ function Profile() {
 
     if (isSuccessStreamers && !userLoaded) {
         setEditDescription(streamer.description)
+        setLinks(streamer.links)
         if (user && id == user._id) {
             setIsOwnProfile(true)
         }
@@ -114,7 +118,7 @@ function Profile() {
     }
 
     const toggleLinksModal = () => {
-        console.log(linkModalRef.current.clientHeight)
+        setLinks(streamer.links)
         if (linkModalRef.current.clientHeight == 0) {
             linkModalRef.current.style.display = 'block'
         } else {
@@ -136,15 +140,15 @@ function Profile() {
         let formData = new FormData();
         formData.append('image', newFile)
         dispatch(uploadProfilePicture(formData))
-    }    
+    }
 
-    const submitProfileBanner  = async e => {
+    const submitProfileBanner = async e => {
         let uploadFile = e.target.files[0]
         let newFile = new File([uploadFile], user._id + '.png')
         let formData = new FormData();
         formData.append('image', newFile)
         dispatch(uploadBannerPicture(formData))
-    }   
+    }
 
     const saveDescription = async () => {
         let updateMap = {
@@ -158,152 +162,200 @@ function Profile() {
         toggleDescriptionModal()
     }
 
+    const saveLinks = async () => {
+        let updateMap = {
+            "links": links
+        }
+        dispatch(updateUser({
+            "user_id": user._id,
+            "streamer_id": streamer._id,
+            "updateMap": updateMap
+        }))
+        toggleLinksModal()
+    }
+
+    const addLink = () => {
+        if (links.length >= linkTypes.length) {
+            return
+        }
+        let linksCopy = [...links]
+        linksCopy.push({
+            'type': 'Instagram',
+            'url': ''
+        })
+        setLinks(linksCopy)
+    }
+
+    const deleteLink = (index) => {
+        let linksCopy = structuredClone(links)
+        linksCopy.splice(index, 1)
+        setLinks(linksCopy)
+    }
+
+    const onChangeLinkUrl = (index, e) => {
+        let linksCopy = structuredClone(links)
+        console.log(linksCopy[index])
+        linksCopy[index].url = e.target.value
+        setLinks(linksCopy)
+    }
+
+    const onChangeLinkType = (index, e) => {
+        let linksCopy = structuredClone(links)
+        linksCopy[index].type = e.target.value
+        setLinks(linksCopy)
+    }
+
     return (
         <>
-        <div ref={linkModalRef} className="modal-wrapper">
-            <div className="edit-links-modal">
-                <div className="edit-links-header">
-                    <div className="edit-links-title">Edit links</div>
-                    <div className="close-button" onClick={toggleLinksModal}><AiOutlineClose size={22}/></div>
-                </div>
-                <div className="edit-links">
-                    <div className="edit-link">
-                        <select name="link-type" className="link-type">
-                            <option value="instagram" selected>Instagram</option>
-                            <option value="instagram">Facebook</option>
-                            <option value="instagram">Youtube</option>
-                            <option value="instagram">Discord</option>
-                        </select>
-                        <input type="text" className="link-url" placeholder='url'/>
-                        <div className="link-delete-button"><BsFillTrashFill size={16}/></div>
+            <div ref={linkModalRef} className="modal-wrapper">
+                <div className="edit-links-modal">
+                    <div className="edit-links-header">
+                        <div className="edit-links-title">Edit links</div>
+                        <div className="close-button" onClick={toggleLinksModal}><AiOutlineClose size={22} /></div>
+                    </div>
+                    <div className="edit-links">
+                        {links.map((link, index) => (
+                            <div className="edit-link">
+                                <select name="link-type" className="link-type" onChange={(e) => { onChangeLinkType(index, e) }}>
+                                    {linkTypes.map((linkType) => (
+                                        linkType === link.type ? (
+                                            <option value={linkType} selected>{linkType}</option>
+                                        ) : (
+                                            <option value={linkType}>{linkType}</option>
+                                        )
+                                    ))}
+                                </select>
+                                <input type="text" className="link-url" placeholder='url' value={link.url} onChange={(e) => { onChangeLinkUrl(index, e) }} />
+                                <div className="link-delete-button" onClick={() => { deleteLink(index) }}><BsFillTrashFill size={16} /></div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="edit-links-footer">
+                        <div className="add-link-button" onClick={addLink}><AiOutlinePlus /> Link</div>
+                        <div className="update-button" onClick={saveLinks}>Save</div>
                     </div>
                 </div>
-                <div className="edit-links-footer">
-                    <div className="add-link-button"><AiOutlinePlus/> Link</div>
-                    <div className="update-button">Save</div>
+            </div>
+
+            <div ref={descriptionModalWrapper} className="modal-wrapper">
+                <div className="description-modal">
+                    <div className="description-header">
+                        <div className="description-title">Edit description</div>
+                        <div className="close-button" onClick={toggleDescriptionModal}><AiOutlineClose size={22} /></div>
+                    </div>
+                    <textarea name="profile-description" id="profile-description" cols="40" rows="10" value={editDescription} onChange={(e) => setEditDescription(e.target.value)}></textarea>
+                    <div className="description-footer">
+                        <div className="clear-button" onClick={() => setEditDescription("")}>Clear</div>
+                        <div className="update-button" onClick={saveDescription}>Save</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div ref={descriptionModalWrapper} className="modal-wrapper">
-            <div className="description-modal">
-                <div className="description-header">
-                    <div className="description-title">Edit description</div>
-                    <div className="close-button" onClick={toggleDescriptionModal}><AiOutlineClose size={22}/></div>
-                </div>
-                <textarea name="profile-description" id="profile-description" cols="40" rows="10" value={editDescription} onChange={(e) => setEditDescription(e.target.value)}></textarea>
-                <div className="description-footer">
-                    <div className="clear-button" onClick={() => setEditDescription("")}>Clear</div>
-                    <div className="update-button" onClick={saveDescription}>Save</div>
-                </div>
-            </div>
-        </div>
-
-        <div className="banner" style={{backgroundImage: `url('/banner-pictures/${streamer._id}.png'), url('/banner-pictures/banner-image.png')`}}>
-            { isOwnProfile ? (
+            <div className="banner" style={{ backgroundImage: `url('/banner-pictures/${streamer._id}.png'), url('/banner-pictures/banner-image.png')` }}>
+                {isOwnProfile ? (
                     <div className="upload">
-                        <input className="upload-input" name="profileFile" id="profileFile" filename={file} onChange={(e) => {submitProfileBanner(e)}} type="file" accept="image/*"></input>
-                        <label className='upload-icon' htmlFor="profileFile"><AiOutlineCloudUpload size={40}/></label>
+                        <input className="upload-input" name="profileFile" id="profileFile" filename={file} onChange={(e) => { submitProfileBanner(e) }} type="file" accept="image/*"></input>
+                        <label className='upload-icon' htmlFor="profileFile"><AiOutlineCloudUpload size={40} /></label>
                     </div>
                 ) : (<></>)
-            }
-        </div>
-        <div className="profile-box">
-            <div className="profile-user-picture"  style={{backgroundImage: `url('/profile-pictures/${streamer._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}>
-                { isOwnProfile ? (
-                        <div className="upload">
-                            <input className="upload-input" name="bannerFile" id="bannerFile" filename={file} onChange={(e) => {submitProfilePicture(e)}} type="file" accept="image/*"></input>
-                            <label className='upload-icon' htmlFor="bannerFile"><AiOutlineCloudUpload size={40}/></label>
-                        </div>
-                    ) : (<></>)
                 }
             </div>
-            <div className="profile-box-2">
-                <div className="name">{streamer.name}</div>
-                <div className="followers">1332 followers</div>
-            </div>
-            { isOwnProfile === false ? (
+            <div className="profile-box">
+                <div className="profile-user-picture" style={{ backgroundImage: `url('/profile-pictures/${streamer._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}>
+                    {isOwnProfile ? (
+                        <div className="upload">
+                            <input className="upload-input" name="bannerFile" id="bannerFile" filename={file} onChange={(e) => { submitProfilePicture(e) }} type="file" accept="image/*"></input>
+                            <label className='upload-icon' htmlFor="bannerFile"><AiOutlineCloudUpload size={40} /></label>
+                        </div>
+                    ) : (<></>)
+                    }
+                </div>
+                <div className="profile-box-2">
+                    <div className="name">{streamer.name}</div>
+                    <div className="followers">1332 followers</div>
+                </div>
+                {isOwnProfile === false ? (
                     <div className="follow-button-wrapper">
                         <div className="follow-button">FOLLOW <AiOutlineStar size={20} /></div>
                     </div>
                 ) : (<></>)
-            }
-            
-        </div>
-        <div className="profile-pages">
-            <div className='home-profile-page' ref={homePageRef} onClick={() => {setPage('home'); selectPage('home')}}>Home</div>
-            <div className='about-profile-page' ref={aboutPageRef} onClick={() => {setPage('about'); selectPage('about')}}>About</div>
-            <div className='streams-profile-page' ref={streamsPageRef} onClick={() => {setPage('streams'); selectPage('streams')}}>Streams</div>
-        </div>
-        <div className="profile-content">
-            {page === "home"
-                ? (
-                    <>
-                    <div className="profile-streams-container">
-                        <div className="profile-title-container">
-                            <div className="profile-title">Streams</div>
-                            <div className="profile-view-more">View more <FaChevronRight size={14}/></div>
-                        </div>
-                        <section className="profile-streams">
-                            {streams.slice(0, (streamsNumber)).map((stream) => (
-                                <StreamItemMinimal key={stream._id} stream={stream} />
-                            ))}
-                        </section>
-                    </div>
+                }
 
-                    <div className="profile-categories-container">
-                        <div className="profile-title-container">
-                            <div className="profile-title">Categories</div>
-                            <div className="profile-view-more">View more <FaChevronRight size={14}/></div>
-                        </div>
-                        <section className="profile-categories">
-                            {userCategories.slice(0, (categoriesNumber)).map((category) => (
-                                <CategoryItem key={category._id} category={category} />
-                            ))}
-                        </section>
-                    </div>
-                    </>
-                    
-                ) : ( page === "about"
+            </div>
+            <div className="profile-pages">
+                <div className='home-profile-page' ref={homePageRef} onClick={() => { setPage('home'); selectPage('home') }}>Home</div>
+                <div className='about-profile-page' ref={aboutPageRef} onClick={() => { setPage('about'); selectPage('about') }}>About</div>
+                <div className='streams-profile-page' ref={streamsPageRef} onClick={() => { setPage('streams'); selectPage('streams') }}>Streams</div>
+            </div>
+            <div className="profile-content">
+                {page === "home"
                     ? (
-                        <div className="about-container">
-                            { isOwnProfile ? (
+                        <>
+                            <div className="profile-streams-container">
+                                <div className="profile-title-container">
+                                    <div className="profile-title">Streams</div>
+                                    <div className="profile-view-more">View more <FaChevronRight size={14} /></div>
+                                </div>
+                                <section className="profile-streams">
+                                    {streams.slice(0, (streamsNumber)).map((stream) => (
+                                        <StreamItemMinimal key={stream._id} stream={stream} />
+                                    ))}
+                                </section>
+                            </div>
+
+                            <div className="profile-categories-container">
+                                <div className="profile-title-container">
+                                    <div className="profile-title">Categories</div>
+                                    <div className="profile-view-more">View more <FaChevronRight size={14} /></div>
+                                </div>
+                                <section className="profile-categories">
+                                    {userCategories.slice(0, (categoriesNumber)).map((category) => (
+                                        <CategoryItem key={category._id} category={category} />
+                                    ))}
+                                </section>
+                            </div>
+                        </>
+
+                    ) : (page === "about"
+                        ? (
+                            <div className="about-container">
+                                {isOwnProfile ? (
                                     <div className="edit-button-container"><div className="edit-button" onClick={toggleLinksModal}>edit</div></div>
                                 ) : (<></>)
-                            }
-                            
-                            <div className="stats">
-                                <div className="column-1">
-                                    <div className="latest-stream">Latest stream: <span className='stats-subtitle'>13 Januray 2023</span></div>
-                                    <div className="first-stream">Frist stream: <span className='stats-subtitle'>1 Januray 2023</span></div>
-                                    <div className="account-created">Account created: <span className='stats-subtitle'>1 Januray 2022</span></div>
-                                </div>
-                                <div className="columne-2">
-                                    <div className="instagram"><BsInstagram/> Instagram</div>
-                                    <div className="facebook"><FaFacebook/> Facebook</div>
-                                    <div className="youtube"><FaYoutube/> Youtube</div>
-                                </div>
-                            </div>
+                                }
 
-                            { isOwnProfile ? (
+                                <div className="stats">
+                                    <div className="column-1">
+                                        <div className="latest-stream">Latest stream: <span className='stats-subtitle'>13 Januray 2023</span></div>
+                                        <div className="first-stream">Frist stream: <span className='stats-subtitle'>1 Januray 2023</span></div>
+                                        <div className="account-created">Account created: <span className='stats-subtitle'>1 Januray 2022</span></div>
+                                    </div>
+                                    <div className="columne-2">
+                                        {streamer.links.map((link) => (
+                                           <div>{link.type}</div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {isOwnProfile ? (
                                     <div className="edit-button-container"><div className="edit-button" onClick={toggleDescriptionModal}>edit</div></div>
                                 ) : (<></>)
-                            }
-                            <div className="description">
-                                <div className="description-title">Description</div>
-                                <Markup className="description-content" content={streamer.description}/>
+                                }
+                                <div className="description">
+                                    <div className="description-title">Description</div>
+                                    <Markup className="description-content" content={streamer.description} />
+                                </div>
                             </div>
-                            </div>                        
-                    ) : (
-                        <section className="profile-streams-2">
-                            {streams.map((stream) => (
-                                <StreamItemMinimal key={stream._id} stream={stream} />
-                            ))}
-                        </section>
+                        ) : (
+                            <section className="profile-streams-2">
+                                {streams.map((stream) => (
+                                    <StreamItemMinimal key={stream._id} stream={stream} />
+                                ))}
+                            </section>
+                        )
                     )
-                )
-            }
-        </div>
+                }
+            </div>
         </>
     )
 }

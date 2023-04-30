@@ -152,7 +152,6 @@
 
 .description {
     max-width: 100%;
-    height: 500px;
     border-radius: 6px;
     padding: 20px;
     background-color: #ebeaea;
@@ -196,6 +195,7 @@
     background-color: white;
     padding: 30px;
     border-radius: 6px;
+    min-width: 300px;
 }
 
 .edit-links-header, .description-header {
@@ -213,6 +213,12 @@
 
 .close-button {
     cursor: pointer;
+}
+
+.edit-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .edit-link {
