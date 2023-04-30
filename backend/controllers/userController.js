@@ -103,6 +103,27 @@ const getStreamer = asyncHandler(async (req, res) => {
     const streamer = await User.findOne({"streamerMode": true, _id: req.params.id})
     res.status(200).send(streamer)
 })
+
+// @desc Update user
+// @route PUT /api/users/<id>
+// @access Private
+const updateUser = asyncHandler(async (req, res) => {
+    const user = await User.findOne({_id: req.params.id})
+    console.log(user)
+
+    let query = {$set: {}}
+    for (let key in req.body) {
+        if (key in user)
+            query.$set[key] = req.body[key];
+    }
+        
+    
+    await User.findOneAndUpdate({_id: req.params.id}, query)
+    const updatedUser = await User.findOne({_id: req.params.id})
+    console.log(updatedUser)
+    res.status(200).send(updatedUser)
+})
+
 // @desc Get user data
 // @route GET /api/users/data/:id
 // @access Public
@@ -129,5 +150,6 @@ module.exports = {
     getUserData,
     enableStreamerMode,
     getStreamers,
-    getStreamer
+    getStreamer,
+    updateUser
 }

@@ -49,17 +49,17 @@ export const logout = createAsyncThunk('auth/logout', async () => {
 })
 
 // Enable streamer mode for user
-export const enableStreamerMode = createAsyncThunk('auth/streamerMode', async (user, thunkAPI) => {
-  try {
-    return await authService.enableStreamerMode(user)
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString()
-    return thunkAPI.rejectWithValue(message)
-  }
-})
+// export const enableStreamerMode = createAsyncThunk('auth/streamerMode', async (user, thunkAPI) => {
+//   try {
+//     return await authService.enableStreamerMode(user)
+//   } catch (error) {
+//     const message =
+//       (error.response && error.response.data && error.response.data.message) ||
+//       error.message ||
+//       error.toString()
+//     return thunkAPI.rejectWithValue(message)
+//   }
+// })
 
 // Upload profile picture
 export const uploadProfilePicture = createAsyncThunk('auth/uploadProfilePicture', async (data, thunkAPI) => {
@@ -78,6 +78,19 @@ export const uploadProfilePicture = createAsyncThunk('auth/uploadProfilePicture'
 export const uploadBannerPicture = createAsyncThunk('auth/uploadBannerPicture', async (data, thunkAPI) => {
   try {
     return await authService.uploadBannerPicture(data)
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
+// Patch updates user
+export const updateUser = createAsyncThunk('auth/updateUser', async (data, thunkAPI) => {
+  try {
+    return await authService.updateUser(data.user_id, data.streamer_id, data.updateMap)
   } catch (error) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
@@ -131,19 +144,6 @@ export const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.user = null
       })
-      .addCase(enableStreamerMode.pending, (state) => {
-        state.isLoading = true
-      })
-      .addCase(enableStreamerMode.fulfilled, (state, action) => {
-        state.isLoading = false
-        state.isSuccess = true
-        state.user = action.payload
-      })
-      .addCase(enableStreamerMode.rejected, (state, action) => {
-        state.isLoading = false
-        state.isError = true
-        state.message = action.payload
-      })
       .addCase(uploadProfilePicture.pending, (state) => {
         state.isLoading = true
       })
@@ -164,6 +164,19 @@ export const authSlice = createSlice({
         state.isSuccess = true
       })
       .addCase(uploadBannerPicture.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.user = action.payload
+      })
+      .addCase(updateUser.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

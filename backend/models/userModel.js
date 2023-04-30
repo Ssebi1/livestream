@@ -1,9 +1,15 @@
 const mongoose = require('mongoose')
 
+const linkSchema = mongoose.mongoose.Schema({
+    type: String,
+    url: String
+})
+
 const userSchema = mongoose.Schema({
     name: {
         type: String,
-        required: ['true', 'Please add a name']
+        required: ['true', 'Please add a name'],
+        unique: true
     },
     email: {
         type: String,
@@ -18,6 +24,14 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         required: false,
         default: false
+    },
+    description: {
+        type: String,
+        default: ''
+    },
+    links: {
+        type: [linkSchema],
+        default: []
     }
 }, {
     timestamps: true

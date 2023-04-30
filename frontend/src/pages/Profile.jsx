@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {useState, useEffect, useRef} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { getStream, getUserStreams, reset } from '../features/streams/streamSlice'
+import {  getUserStreams, reset } from '../features/streams/streamSlice'
 import Spinner from '../components/Spinner'
 import { AiOutlineStar } from "react-icons/ai";
 import '../profile-page.css'
@@ -12,7 +12,7 @@ import CategoryItem from '../components/CategoryItem'
 import {BsFillTrashFill, BsInstagram, BsDiscord} from 'react-icons/bs'
 import {AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
 import {AiOutlineCloudUpload} from 'react-icons/ai'
-import {uploadProfilePicture, uploadBannerPicture} from '../features/auth/authSlice'
+import {uploadProfilePicture, uploadBannerPicture, updateUser} from '../features/auth/authSlice'
 import {FaFacebook, FaYoutube} from 'react-icons/fa'
 
 function Profile() {
@@ -37,6 +37,7 @@ function Profile() {
     const [userLoaded, setUserLoaded] = useState(false)
     const [isOwnProfile, setIsOwnProfile] = useState(false)
     const [file, setFile] = useState()
+    const [editDescription, setEditDescription] = useState()
 
     useEffect(() => {
         const handleResize = () => {
@@ -79,6 +80,7 @@ function Profile() {
     }
 
     if (isSuccessStreamers && !userLoaded) {
+        setEditDescription(streamer.description)
         if (user && id == user._id) {
             setIsOwnProfile(true)
         }
@@ -143,6 +145,19 @@ function Profile() {
         dispatch(uploadBannerPicture(formData))
     }   
 
+    const saveDescription = async () => {
+        let updateMap = {
+            "description": editDescription
+        }
+        dispatch(updateUser({
+            "user_id": user._id,
+            "streamer_id": streamer._id,
+            "updateMap": updateMap
+        }))
+        toggleDescriptionModal()
+        window.location.reload(true)
+    }
+
     return (
         <>
         <div ref={linkModalRef} className="modal-wrapper">
@@ -176,10 +191,10 @@ function Profile() {
                     <div className="description-title">Edit description</div>
                     <div className="close-button" onClick={toggleDescriptionModal}><AiOutlineClose size={22}/></div>
                 </div>
-                <textarea name="profile-description" id="profile-description" cols="40" rows="10"></textarea>
+                <textarea name="profile-description" id="profile-description" cols="40" rows="10" value={editDescription} onChange={(e) => setEditDescription(e.target.value)}></textarea>
                 <div className="description-footer">
-                    <div className="clear-button">Clear</div>
-                    <div className="update-button">Save</div>
+                    <div className="clear-button" onClick={() => setEditDescription("")}>Clear</div>
+                    <div className="update-button" onClick={saveDescription}>Save</div>
                 </div>
             </div>
         </div>
@@ -276,7 +291,7 @@ function Profile() {
                             }
                             <div className="description">
                                 <div className="description-title">Description</div>
-                                <div className="description-content"></div>
+                                <div className="description-content">{streamer.description}</div>
                             </div>
                             </div>                        
                     ) : (

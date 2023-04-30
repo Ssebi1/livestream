@@ -3,7 +3,7 @@ const express = require('express')
 const multer = require('multer')
 const router = express.Router()
 // controllers
-const { registerUser, loginUser, getUserData, enableStreamerMode, getStreamers, getStreamer, uploadProfilePicture, getUser } = require('../controllers/userController')
+const { registerUser, loginUser, getUserData, enableStreamerMode, getStreamers, getStreamer, uploadProfilePicture, getUser, updateUser } = require('../controllers/userController')
 const { protect } = require('../middleware/authMiddleware')
 // export router
 module.exports = router
@@ -16,6 +16,7 @@ router.get('/data/:id', getUserData)
 router.put('/streamerMode', protect, enableStreamerMode)
 router.get('/streamers', getStreamers)
 router.get('/streamers/:id', getStreamer)
+router.patch('/:id', updateUser)
 
 var profileStorage = multer.diskStorage({
   destination: function (req, file, cb) {

@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import {useNavigate} from 'react-router-dom'
-import {enableStreamerMode, uploadProfilePicture} from '../features/auth/authSlice'
+import {uploadProfilePicture} from '../features/auth/authSlice'
 import {AiOutlineCloudUpload} from 'react-icons/ai'
 import Spinner from '../components/Spinner'
 
@@ -43,7 +43,7 @@ function Account() {
 
     const onSubmit = (e) => {
         e.preventDefault()
-        dispatch(enableStreamerMode(user))
+        // dispatch(enableStreamerMode(user))
     }
 
     const submitProfilePicture = async e => {

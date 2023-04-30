@@ -16,7 +16,6 @@ const register = async (userData) => {
 // Login user
 const login = async (userData) => {
   const response = await axios.post(API_URL + 'login', userData)
-  console.log(response)
 
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data))
@@ -51,13 +50,22 @@ const uploadBannerPicture  = async (data) => {
   return response.data
 }
 
+// Patch user
+const updateUser = async (user_id, streamer_id, data) => {
+  if (user_id != streamer_id) {
+    return {}
+  }
+  const response = await axios.patch(API_URL + user_id, data)
+  return response.data
+}
+
 const authService = {
   register,
   logout,
   login,
-  enableStreamerMode,
   uploadProfilePicture,
-  uploadBannerPicture
+  uploadBannerPicture,
+  updateUser
 }
 
 export default authService
