@@ -3,12 +3,29 @@ const asyncHandler = require('express-async-handler')
 
 // stream model
 const Category = require('../models/categoryModel')
+const Stream = require('../models/streamModel')
 
 // @desc Get categories
 // @route GET /api/categories
 // @access Public
 const getCategories = asyncHandler(async (req, res) => {
   const categories = await Category.find()
+  res.status(200).send(categories)
+})
+
+const getUserCategories = asyncHandler(async (req, res) => {
+  const streams = await Stream.find({user: {_id: req.params.id}})
+  let categoriesIds = []
+  for (let stream of streams) {
+    if (stream.category == undefined) {
+      categoriesIds.push('64248b6be2e2118622ea2984')
+    } else {
+      categoriesIds.push(stream.category)
+    }
+  }
+  const categories = await Category.find({
+    '_id': { $in: categoriesIds}
+  })
   res.status(200).send(categories)
 })
 
@@ -79,5 +96,6 @@ module.exports = {
   getCategory,
   postCategory,
   putCategory,
-  deleteCategory
+  deleteCategory,
+  getUserCategories
 }

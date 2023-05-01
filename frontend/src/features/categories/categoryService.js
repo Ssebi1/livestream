@@ -12,9 +12,15 @@ const getCategory = async (id) => {
     return response.data
 }
 
+const getUserCategories = async (id) => {
+    let response = await axios.get(API_URL + '/user/' + id)
+    return response.data
+}
+
 const categoryService = {
     getCategories,
-    getCategory
+    getCategory,
+    getUserCategories
 }
 
 export default categoryService

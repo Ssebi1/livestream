@@ -15,6 +15,7 @@ import { AiOutlineCloudUpload } from 'react-icons/ai'
 import { uploadProfilePicture, uploadBannerPicture } from '../features/auth/authSlice'
 import { FaFacebook, FaYoutube } from 'react-icons/fa'
 import { Markup } from 'interweave';
+import { getUserCategories } from '../features/categories/categorySlice'
 
 function Profile() {
     const navigate = useNavigate()
@@ -23,6 +24,7 @@ function Profile() {
     const { user } = useSelector((state) => state.auth)
     const { streamer, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers } = useSelector((state) => state.streamers)
     const { streams, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
+    const { categories, isErrorCategories, isSuccessCategories, isLoadingCategories, messageCategories } = useSelector((state) => state.categories)
 
     const homePageRef = useRef(null)
     const aboutPageRef = useRef(null)
@@ -33,8 +35,6 @@ function Profile() {
     const [page, setPage] = useState('home')
     const [streamsNumber, setStreamsNumber] = useState(8)
     const [categoriesNumber, setCategoriesNumber] = useState(8)
-    const [userCategories, setUserCategories] = useState([])
-    const [userCategoriesCalculated, setUserCategoriesCalculated] = useState(false)
     const [userLoaded, setUserLoaded] = useState(false)
     const [isOwnProfile, setIsOwnProfile] = useState(false)
     const [file, setFile] = useState()
@@ -58,32 +58,22 @@ function Profile() {
         window.addEventListener('resize', handleResize)
         window.addEventListener('load', handleResize)
 
-        if (isErrorStreamers || isErrorStreams) {
+        if (isErrorStreamers || isErrorStreams || isErrorCategories) {
             console.log(messageStreamers)
         }
 
         dispatch(getStreamer(id))
         dispatch(getUserStreams(id))
+        dispatch(getUserCategories(id))
 
         return () => {
             dispatch(reset())
             setCategoryFilter('all')
-            setUserCategories([])
         }
     }, [])
 
-    if (isLoadingStreamers || isLoadingStreams) {
+    if (isLoadingStreamers || isLoadingStreams || isLoadingCategories) {
         return <Spinner />
-    }
-
-    if (isSuccessStreams && !userCategoriesCalculated) {
-        let userCategories = []
-        for (let stream of streams) {
-            userCategories.push(stream.category)
-        }
-        let userCategoriesUnique = [...new Map(userCategories.map(item => [item['_id'], item])).values()];
-        setUserCategories(userCategoriesUnique)
-        setUserCategoriesCalculated(true)
     }
 
     if (isSuccessStreamers && !userLoaded) {
@@ -323,7 +313,7 @@ function Profile() {
                                     <div className="profile-title">Categories</div>
                                 </div>
                                 <section className="profile-categories">
-                                    {userCategories.slice(0, (categoriesNumber)).map((category) => (
+                                    {categories.slice(0, (categoriesNumber)).map((category) => (
                                             <CategoryItem key={category._id} category={category} onPress={() => {viewCategoryStreams(category.name)}}/>
                                     ))}
                                 </section>
@@ -364,7 +354,7 @@ function Profile() {
                             <>
                                 <select className="stream-category-filter"  onChange={(e) => { setCategoryFilter(e.target.value) }}>
                                     <option value="all">All categories</option>
-                                    {userCategories.map((category) => (
+                                    {categories.map((category) => (
                                         categoryFilter === category.name ? (
                                             <option value={category.name} selected>{category.name}</option>
                                         ) : (

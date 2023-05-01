@@ -8,7 +8,6 @@ const User = require('../models/userModel')
 // @access Public
 const registerUser = asyncHandler(async  (req, res) => {
     const { name, email, password } = req.body
-    console.log(name, email, password)
 
     if(!name || !email || !password) {
         res.status(400)
@@ -109,7 +108,6 @@ const getStreamer = asyncHandler(async (req, res) => {
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({_id: req.params.id})
-    console.log(user)
 
     let query = {$set: {}}
     for (let key in req.body) {
@@ -120,7 +118,6 @@ const updateUser = asyncHandler(async (req, res) => {
     
     await User.findOneAndUpdate({_id: req.params.id}, query)
     const updatedUser = await User.findOne({_id: req.params.id})
-    console.log(updatedUser)
     res.status(200).send(updatedUser)
 })
 

@@ -21,6 +21,18 @@ export const getCategories = createAsyncThunk('categories/getAll', async (thunkA
     }
 })
 
+export const getUserCategories = createAsyncThunk('categories/getUserCategories', async (id, thunkAPI) => {
+    try {
+        return await categoryService.getUserCategories(id)
+    } catch (error) {
+        const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const getCategory = createAsyncThunk('categories/get', async (id, thunkAPI) => {
     try {
         return await categoryService.getCategory(id)
@@ -64,6 +76,19 @@ export const categorySlice = createSlice({
                 state.stream = action.payload
             })
             .addCase(getCategory.rejected, (state, action) => {
+                state.isLoadingCategories = false
+                state.isErrorCategories = true
+                state.messageCategories = action.payload
+            })
+            .addCase(getUserCategories.pending, (state) => {
+                state.isLoadingCategories = true
+            })
+            .addCase(getUserCategories.fulfilled, (state, action) => {
+                state.isLoadingCategories = false
+                state.isSuccessCategories = true
+                state.categories = action.payload
+            })
+            .addCase(getUserCategories.rejected, (state, action) => {
                 state.isLoadingCategories = false
                 state.isErrorCategories = true
                 state.messageCategories = action.payload
