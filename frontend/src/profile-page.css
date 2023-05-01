@@ -59,6 +59,15 @@
     background-color: #266c5e;
 }
 
+.unfollow-button {
+    background-color: #ebeaea;
+    color: black;
+}
+
+.unfollow-button:hover {
+    background-color: #dedede;
+}
+
 .profile-pages {
     max-width: 100%;
     padding: 10px 20px 20px 20px;

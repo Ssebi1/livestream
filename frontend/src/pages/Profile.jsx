@@ -296,7 +296,7 @@ function Profile() {
                 ) : (<>
                     {user.following.includes(streamer._id) ? (
                         <div className="follow-button-wrapper">
-                            <div className="follow-button" onClick={unfollow}>UNFOLLOW <AiOutlineStar size={20} /></div>
+                            <div className="follow-button unfollow-button" onClick={unfollow}>UNFOLLOW <AiOutlineStar size={20} /></div>
                         </div>
                     ) : (
                         <div className="follow-button-wrapper">
