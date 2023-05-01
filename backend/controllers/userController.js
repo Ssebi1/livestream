@@ -68,6 +68,7 @@ const loginUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         streamerMode: user.streamerMode,
+        following: user.following,
         token: generateToken(user._id)
     })
 })
@@ -141,6 +142,35 @@ const generateToken = (id) => {
     })
 }
 
+// @desc Follow user
+// @route Post /api/users/follow
+// @access Private
+const followUser = asyncHandler(async (req, res) => {
+    let sourceUser = await User.findOne({_id: req.body.source})
+    let following = [... sourceUser.following]
+    if (!following.includes(req.body.destination))
+        following.push(req.body.destination)
+
+    await User.findOneAndUpdate({_id: req.body.source}, {following: following})
+    const updatedUser = await User.findOne({_id: req.body.source})
+    res.status(200).send(updatedUser)
+})
+
+// @desc Unfollow user
+// @route Post /api/users/unfollow
+// @access Private
+const unfollowUser = asyncHandler(async (req, res) => {
+    
+    let sourceUser = await User.findOne({_id: req.body.source})
+    let following = [... sourceUser.following]
+    if (following.includes(req.body.destination))
+        following.splice(following.indexOf(req.body.destination), 1)
+
+    await User.findOneAndUpdate({_id: req.body.source}, {following: following})
+    const updatedUser = await User.findOne({_id: req.body.source})
+    res.status(200).send(updatedUser)
+})
+
 module.exports = {
     registerUser,
     loginUser,
@@ -148,5 +178,7 @@ module.exports = {
     enableStreamerMode,
     getStreamers,
     getStreamer,
-    updateUser
+    updateUser,
+    followUser,
+    unfollowUser
 }

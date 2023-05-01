@@ -32,6 +32,10 @@ const userSchema = mongoose.Schema({
     links: {
         type: [linkSchema],
         default: []
+    },
+    following: {
+        type: [String],
+        default: []
     }
 }, {
     timestamps: true

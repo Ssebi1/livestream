@@ -56,6 +56,33 @@ const updateUser = async (user_id, streamer_id, data) => {
     return {}
   }
   const response = await axios.patch(API_URL + user_id, data)
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data))
+  }
+  return response.data
+}
+
+// Follow user
+const followUser = async (source, destination) => {
+  const response = await axios.post(API_URL + 'follow', {
+    'source': source,
+    'destination': destination
+  })
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data))
+  }
+  return response.data
+}
+
+// Unfollow user
+const unfollowUser = async (source, destination) => {
+  const response = await axios.post(API_URL + 'unfollow', {
+    'source': source,
+    'destination': destination
+  })
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data))
+  }
   return response.data
 }
 
@@ -65,7 +92,9 @@ const authService = {
   login,
   uploadProfilePicture,
   uploadBannerPicture,
-  updateUser
+  updateUser,
+  followUser,
+  unfollowUser
 }
 
 export default authService

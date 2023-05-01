@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getUserStreams, reset } from '../features/streams/streamSlice'
@@ -12,16 +12,14 @@ import CategoryItem from '../components/CategoryItem'
 import { BsFillTrashFill, BsInstagram, BsDiscord } from 'react-icons/bs'
 import { AiOutlineClose, AiOutlinePlus } from 'react-icons/ai'
 import { AiOutlineCloudUpload } from 'react-icons/ai'
-import { uploadProfilePicture, uploadBannerPicture } from '../features/auth/authSlice'
-import { FaFacebook, FaYoutube } from 'react-icons/fa'
+import { uploadProfilePicture, uploadBannerPicture, followUser, unfollowUser } from '../features/auth/authSlice'
 import { Markup } from 'interweave';
 import { getUserCategories } from '../features/categories/categorySlice'
 
 function Profile() {
-    const navigate = useNavigate()
     const dispatch = useDispatch()
     const { id } = useParams()
-    const { user } = useSelector((state) => state.auth)
+    const { user, isError, isSuccess, isLoading } = useSelector((state) => state.auth)
     const { streamer, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers } = useSelector((state) => state.streamers)
     const { streams, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
     const { categories, isErrorCategories, isSuccessCategories, isLoadingCategories, messageCategories } = useSelector((state) => state.categories)
@@ -58,7 +56,7 @@ function Profile() {
         window.addEventListener('resize', handleResize)
         window.addEventListener('load', handleResize)
 
-        if (isErrorStreamers || isErrorStreams || isErrorCategories) {
+        if (isErrorStreamers || isErrorStreams || isErrorCategories || isError) {
             console.log(messageStreamers)
         }
 
@@ -72,7 +70,7 @@ function Profile() {
         }
     }, [])
 
-    if (isLoadingStreamers || isLoadingStreams || isLoadingCategories) {
+    if (isLoadingStreamers || isLoadingStreams || isLoadingCategories || isLoading) {
         return <Spinner />
     }
 
@@ -210,6 +208,20 @@ function Profile() {
         setCategoryFilter(category_name)
     }
 
+    const follow = () => {
+        dispatch(followUser({
+            'source': user._id,
+            'destination': streamer._id
+        }))
+    }
+
+    const unfollow = () => {
+        dispatch(unfollowUser({
+            'source': user._id,
+            'destination': streamer._id
+        }))
+    }
+
     return (
         <>
             <div ref={linkModalRef} className="modal-wrapper">
@@ -279,11 +291,20 @@ function Profile() {
                     <div className="name">{streamer.name}</div>
                     <div className="followers">1332 followers</div>
                 </div>
-                {isOwnProfile === false ? (
-                    <div className="follow-button-wrapper">
-                        <div className="follow-button">FOLLOW <AiOutlineStar size={20} /></div>
-                    </div>
-                ) : (<></>)
+                {isOwnProfile === true ? (
+                    <></>
+                ) : (<>
+                    {user.following.includes(streamer._id) ? (
+                        <div className="follow-button-wrapper">
+                            <div className="follow-button" onClick={unfollow}>UNFOLLOW <AiOutlineStar size={20} /></div>
+                        </div>
+                    ) : (
+                        <div className="follow-button-wrapper">
+                            <div className="follow-button" onClick={follow}>FOLLOW <AiOutlineStar size={20} /></div>
+                        </div>
+                    )
+                    }
+                </>)
                 }
 
             </div>
