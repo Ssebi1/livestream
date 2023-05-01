@@ -322,6 +322,16 @@
     flex-grow: 0;
 }
 
+.stream-category-filter {
+    border: none;
+    outline: none;
+    background-color: #e4e2e2;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
 @media only screen and (max-width: 600px) {
 
     .profile-streams, .profile-categories{

@@ -40,6 +40,7 @@ function Profile() {
     const [file, setFile] = useState()
     const [editDescription, setEditDescription] = useState("")
     const [links, setLinks] = useState([])
+    const [categoryFilter, setCategoryFilter] = useState('all')
 
     const linkTypes = ['Instagram', 'Facebook', 'Youtube', 'Discord']
 
@@ -66,6 +67,8 @@ function Profile() {
 
         return () => {
             dispatch(reset())
+            setCategoryFilter('all')
+            setUserCategories([])
         }
     }, [])
 
@@ -205,6 +208,18 @@ function Profile() {
         setLinks(linksCopy)
     }
 
+    const viewAllStreams = () => {
+        setPage('streams')
+        selectPage('streams')
+        setCategoryFilter('all')
+    }
+
+    const viewCategoryStreams = (category_name) => {
+        setPage('streams')
+        selectPage('streams')
+        setCategoryFilter(category_name)
+    }
+
     return (
         <>
             <div ref={linkModalRef} className="modal-wrapper">
@@ -294,7 +309,7 @@ function Profile() {
                             <div className="profile-streams-container">
                                 <div className="profile-title-container">
                                     <div className="profile-title">Streams</div>
-                                    <div className="profile-view-more">View more <FaChevronRight size={14} /></div>
+                                    <div className="profile-view-more" onClick={viewAllStreams}>View more <FaChevronRight size={14} /></div>
                                 </div>
                                 <section className="profile-streams">
                                     {streams.slice(0, (streamsNumber)).map((stream) => (
@@ -306,11 +321,10 @@ function Profile() {
                             <div className="profile-categories-container">
                                 <div className="profile-title-container">
                                     <div className="profile-title">Categories</div>
-                                    <div className="profile-view-more">View more <FaChevronRight size={14} /></div>
                                 </div>
                                 <section className="profile-categories">
                                     {userCategories.slice(0, (categoriesNumber)).map((category) => (
-                                        <CategoryItem key={category._id} category={category} />
+                                            <CategoryItem key={category._id} category={category} onPress={() => {viewCategoryStreams(category.name)}}/>
                                     ))}
                                 </section>
                             </div>
@@ -347,11 +361,23 @@ function Profile() {
                                 </div>
                             </div>
                         ) : (
-                            <section className="profile-streams-2">
-                                {streams.map((stream) => (
-                                    <StreamItemMinimal key={stream._id} stream={stream} />
-                                ))}
-                            </section>
+                            <>
+                                <select className="stream-category-filter"  onChange={(e) => { setCategoryFilter(e.target.value) }}>
+                                    <option value="all">All categories</option>
+                                    {userCategories.map((category) => (
+                                        categoryFilter === category.name ? (
+                                            <option value={category.name} selected>{category.name}</option>
+                                        ) : (
+                                            <option value={category.name}>{category.name}</option>
+                                        )
+                                    ))}
+                                </select>
+                                <section className="profile-streams-2">
+                                    {streams.filter(stream => stream.category.name === categoryFilter || categoryFilter === "all").map((stream) => (
+                                        <StreamItemMinimal key={stream._id} stream={stream} />
+                                    ))}
+                                </section>
+                            </>
                         )
                     )
                 }
