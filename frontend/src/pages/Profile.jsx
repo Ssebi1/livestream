@@ -289,7 +289,7 @@ function Profile() {
                 </div>
                 <div className="profile-box-2">
                     <div className="name">{streamer.name}</div>
-                    <div className="followers">1332 followers</div>
+                    <div className="followers">{streamer.followersNr} followers</div>
                 </div>
                 {isOwnProfile === true ? (
                     <></>

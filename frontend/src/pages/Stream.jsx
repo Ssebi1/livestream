@@ -7,6 +7,7 @@ import StreamChat from '../components/StreamChat'
 import { AiOutlineStar } from "react-icons/ai";
 import io from 'socket.io-client';
 import '../stream-page.css'
+import { followUser, unfollowUser } from '../features/auth/authSlice'
 
 const socket = io.connect('http://localhost:4000');
 
@@ -47,6 +48,20 @@ function Stream() {
         }
     }
 
+    const follow = () => {
+        dispatch(followUser({
+            'source': user._id,
+            'destination': stream.user._id
+        }))
+    }
+
+    const unfollow = () => {
+        dispatch(unfollowUser({
+            'source': user._id,
+            'destination': stream.user._id
+        }))
+    }
+
     return (
         <>
             <div className="stream-container">
@@ -63,19 +78,30 @@ function Stream() {
                         </div>
                         <div className="stream-info-container-3">
                             {(() => {
-                                if(!user || stream.user._id !== user._id) {
-                                        return (
-                                            <div className="stream-author-follow">FOLLOW <AiOutlineStar size={20} /></div>
-                                        )
-                                    } else {
-                                        return (<></>)
-                                    }
+                                if (!user || stream.user._id !== user._id) {
+                                    return (
+                                        <>
+                                            {user.following.includes(stream.user._id) ? (
+                                                <div className="follow-button-wrapper">
+                                                    <div className="follow-button" onClick={unfollow}>UNFOLLOW <AiOutlineStar size={20} /></div>
+                                                </div>
+                                            ) : (
+                                                <div className="follow-button-wrapper">
+                                                    <div className="follow-button" onClick={follow}>FOLLOW <AiOutlineStar size={20} /></div>
+                                                </div>
+                                            )
+                                            }
+                                        </>
+                                    )
+                                } else {
+                                    return (<></>)
+                                }
                             })()}
-                            
+
                         </div>
                     </div>
                 </div>
-                <StreamChat socket={socket} stream={stream}/>
+                <StreamChat socket={socket} stream={stream} />
             </div>
         </>
     )

@@ -93,6 +93,11 @@ const enableStreamerMode = asyncHandler(async (req, res) => {
 // @access Public
 const getStreamers = asyncHandler(async (req, res) => {
     const streamers = await User.find({"streamerMode": true})
+    const users = (await User.find())
+    for (let i = 0; i < streamers.length; i++) {
+        let users_following = users.filter(user => user.following.includes(streamers[i]._id))
+        streamers[i].followersNr = users_following.length
+    }
     res.status(200).send(streamers)
 })
 
@@ -101,6 +106,9 @@ const getStreamers = asyncHandler(async (req, res) => {
 // @access Public
 const getStreamer = asyncHandler(async (req, res) => {
     const streamer = await User.findOne({"streamerMode": true, _id: req.params.id})
+    
+    const users = (await User.find()).filter(user => user.following.includes(streamer._id))
+    streamer.followersNr = users.length
     res.status(200).send(streamer)
 })
 
