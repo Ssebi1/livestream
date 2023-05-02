@@ -39,7 +39,7 @@ function Categories() {
         <>
             <section className="categories" style={{flexWrap: "wrap", marginTop: 30}}>
                 {categories.map((category) => (
-                    <CategoryItem category={category} />
+                    <CategoryItem category={category} onPress={() => {navigate("/streams/" + category._id)}}/>
                 ))}
             </section>
         </>

@@ -86,7 +86,7 @@ function Home() {
             </div>
             <section className="categories">
                 {categories.slice(0, (categoriesNumber)).map((category) => (
-                    <CategoryItem category={category} />
+                    <CategoryItem category={category} onPress={() => {navigate("/streams/" + category._id)}}/>
                 ))}
             </section>
 

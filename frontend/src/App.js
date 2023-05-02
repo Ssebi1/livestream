@@ -13,6 +13,7 @@ import './topbar.css'
 import Following from './pages/Following'
 import Streamers from './pages/Streamers'
 import Categories from './pages/Categories'
+import Streams from './pages/Streams'
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
           <Topbar />
           <Routes>
             <Route path='/' element={<Home/>} />
+            <Route path='/streams/:category' element={<Streams/>} />
+            <Route path='/streams' element={<Streams/>} />
             <Route path='/following' element={<Following/>} />
             <Route path='/streamers' element={<Streamers/>} />
             <Route path='/categories' element={<Categories/>} />
@@ -30,7 +33,7 @@ function App() {
             <Route path='/register' element={<Register/>} />
             <Route path='/account' element={<Account/>} />
             <Route path='/create-stream' element={<CreateStream/>} />
-            <Route path='/streams/:id' element={<Stream/>} />
+            <Route path='/stream/:id' element={<Stream/>} />
             <Route path='/profile/:id' element={<Profile/>} />
           </Routes>
         </div>

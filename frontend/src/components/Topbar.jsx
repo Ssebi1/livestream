@@ -59,7 +59,7 @@ function Topbar() {
             <div className='topbar'>
                 <ul className='left'>
                     <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="logo">LIVESTREAM</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streams')}>STREAMS</li></Link>
+                    <Link to='/streams' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streams')}>STREAMS</li></Link>
                     <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>FOLLOWING</li></Link>
                     <Link to='/streamers' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streamers')}>STREAMERS</li></Link>
                     <Link to='/categories' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('categories')}>CATEGORIES</li></Link>
@@ -73,7 +73,7 @@ function Topbar() {
                                     <div className="icon"><FaUser size={16} /></div>
                                 </li>
                                 <ul className="account-dropdown" ref={accountDropdownRef}>
-                                    <a href="/account" onClick={() => { closeTopbar(); closeAccount() }}>Account</a>
+                                    <Link to="/account" onClick={() => { closeTopbar(); closeAccount() }}>Account</Link>
                                     <Link to={{pathname: `/profile/${user._id}`}} onClick={() => { closeTopbar(); closeAccount() }}>Profile</Link>
                                     <li onClick={() => { closeTopbar(); closeAccount(); onLogout() }}>Logout</li>
                                 </ul>
@@ -94,7 +94,7 @@ function Topbar() {
             </div>
             <div className="topbar-down" ref={downbarRef}>
                 <ul className="down-items">
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>STREAMS</li></Link>
+                    <Link to='/streams' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>STREAMS</li></Link>
                     <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>FOLLOWING</li></Link>
                     <Link to='/streamers' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>STREAMERS</li></Link>
                     <Link to='/categories' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>CATEGORIES</li></Link>
@@ -102,7 +102,7 @@ function Topbar() {
                     {user ? (
                         <>
                             <Link to='/account' onClick={() => { closeTopbar(); closeAccount() }} className="topbar-link">Account</Link>
-                            <Link to={{pathname: `/profile/${user._id}`}} onClick={() => { closeTopbar(); closeAccount() }} className="topbar-link">Profile</Link>
+                            <div onClick={() => {closeTopbar(); closeAccount(); navigate("/profile/" + user._id)} } className="topbar-link">Profile</div>
                             <div onClick={() => { closeTopbar(); closeAccount(); onLogout() }} className="topbar-link">Logout</div>
                             <Link to="/create-stream" className='start-stream-link topbar-link' onClick={() => { closeTopbar(); closeAccount() }}>Start stream</Link>
                         </>
