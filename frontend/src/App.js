@@ -10,6 +10,7 @@ import Profile from './pages/Profile.jsx'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './topbar.css'
+import Following from './pages/Following'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Topbar />
           <Routes>
             <Route path='/' element={<Home/>} />
+            <Route path='/following' element={<Following/>} />
             <Route path='/login' element={<Login/>} />
             <Route path='/register' element={<Register/>} />
             <Route path='/account' element={<Account/>} />

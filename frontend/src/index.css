@@ -205,11 +205,11 @@ a {
 
 .stream-item {
     width: 100%;
+    max-width: 350px;
     flex-shrink: 1;
     flex: 1;
     min-width: 0;
     overflow: hidden;
-    max-width: 300px;
 }
 
 .stream-item .thumbnail{

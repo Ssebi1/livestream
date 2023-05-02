@@ -4,7 +4,7 @@ import { logout, reset } from '../features/auth/authSlice'
 import { FaUser, FaSignOutAlt } from 'react-icons/fa'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import {AiFillVideoCamera} from 'react-icons/ai'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 function Topbar() {
     const navigate = useNavigate()
@@ -47,15 +47,24 @@ function Topbar() {
         accountDropdown.style.height = '0px'
     }
 
+    const getActivePage = (page) => {
+        const pathname = window.location.pathname
+        console.log(pathname)
+        if (pathname.includes(page)) {
+            return 'topbar-link topbar-link-active'
+        }
+        return 'topbar-link'
+    }
+
     return (
         <>
             <div className='topbar'>
                 <ul className='left'>
                     <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="logo">LIVESTREAM</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">RECENT</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">POPULAR</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">PAST STREAMS</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">CATEGORIES</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('popular')}>POPULAR</li></Link>
+                    <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>FOLLOWING</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streameres')}>STREAMERS</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('categories')}>CATEGORIES</li></Link>
                 </ul>
                 {user ? (
                     <>
@@ -87,9 +96,9 @@ function Topbar() {
             </div>
             <div className="topbar-down" ref={downbarRef}>
                 <ul className="down-items">
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">RECENT</li></Link>
                     <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">POPULAR</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">PAST STREAMS</li></Link>
+                    <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">FOLLOWING</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">STREAMERS</li></Link>
                     <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">CATEGORIES</li></Link>
                     <div className="horizontal-line"></div>
                     {user ? (

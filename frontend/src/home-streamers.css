@@ -7,10 +7,12 @@
     padding-left: 20px;
     padding-right: 20px;
     position: relative;
+    overflow-x: auto;
 }
 
 .streamer-item {
     max-width: 100%;
+    max-width: 350px;
     height: auto;
     text-align: center;
     background-color: white;
@@ -23,6 +25,7 @@
     margin-top: 50px;
     padding-bottom: 30px;
     cursor: pointer;
+    min-width: 150px;
 }
 
 .profile-picture {

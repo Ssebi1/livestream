@@ -91,6 +91,11 @@
     left: 0; 
 }
 
+.topbar-link-active::after {
+    width: 100%; 
+    left: 0; 
+}
+
 .topbar .account, .down-items .account {
     color: black;
     display: flex;
