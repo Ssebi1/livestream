@@ -48,9 +48,7 @@ function Topbar() {
     }
 
     const getActivePage = (page) => {
-        const pathname = window.location.pathname
-        console.log(pathname)
-        if (pathname.includes(page)) {
+        if (window.location.pathname.includes(page)) {
             return 'topbar-link topbar-link-active'
         }
         return 'topbar-link'

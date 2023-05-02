@@ -8,7 +8,12 @@ function StreamItemMinimal({stream}) {
                 <div className="stream-info-right">
                     <div className="stream-title">{stream.title}</div>
                     <Link to={{pathname: `/profile/${stream.user._id}`}} className="stream-author">{stream.user.name}</Link>
-                    <div className="stream-category">{stream.category.name}</div>
+                    {  stream.hasOwnProperty("category") && stream.category !== null ? (
+                            <div className="stream-category">{stream.category.name}</div>
+                        ) : (
+                            <div className="stream-category">GENERAL</div>
+                        )
+                    }
                 </div>
             </div>
         </div>

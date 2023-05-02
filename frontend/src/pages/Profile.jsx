@@ -38,9 +38,9 @@ function Profile() {
     const [file, setFile] = useState()
     const [editDescription, setEditDescription] = useState("")
     const [links, setLinks] = useState([])
+    const [linkTypes, setLinkTypes] = useState([])
     const [categoryFilter, setCategoryFilter] = useState('all')
 
-    const linkTypes = ['Instagram', 'Facebook', 'Youtube', 'Discord']
 
     useEffect(() => {
         const handleResize = () => {
@@ -63,6 +63,7 @@ function Profile() {
         dispatch(getStreamer(id))
         dispatch(getUserStreams(id))
         dispatch(getUserCategories(id))
+        setLinkTypes(['Instagram', 'Facebook', 'Youtube', 'Discord'])
 
         return () => {
             dispatch(reset())
@@ -231,7 +232,7 @@ function Profile() {
                         <div className="close-button" onClick={toggleLinksModal}><AiOutlineClose size={22} /></div>
                     </div>
                     <div className="edit-links">
-                        {links.map((link, index) => (
+                        {links !== undefined && links.map((link, index) => (
                             <div className="edit-link">
                                 <select name="link-type" className="link-type" onChange={(e) => { onChangeLinkType(index, e) }}>
                                     {linkTypes.map((linkType) => (

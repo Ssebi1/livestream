@@ -10,16 +10,7 @@ const Category = require('../models/categoryModel')
 // @route GET /api/streams
 // @access Public
 const getStreams = asyncHandler(async (req, res) => {
-  const streams = await Stream.find()
-  for (let i = 0; i < streams.length; i++) {
-    const user = await User.findById(streams[i].user)
-    streams[i].user = user
-    let category = await Category.findById(streams[i].category)
-    if (!category) {
-      category = await Category.findOne({ name: 'GENERAL' })
-    }
-    streams[i].category = category
-  }
+  const streams = await Stream.find().populate("user").populate("category")
   res.status(200).send(streams)
 })
 

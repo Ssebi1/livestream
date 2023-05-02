@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const categorySchema = mongoose.Schema({
     name: {
         type: String,
-        required: ['true', 'Please add a name']
+        required: ['true', 'Please add a name'],
+        default: 'GENERAL'
     },
     image_path: {
         type: String,
