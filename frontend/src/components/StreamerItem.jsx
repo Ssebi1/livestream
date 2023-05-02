@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom"
 
-function StreamerItem({streamer}) {
+function StreamerItem({streamer, style}) {
     return (
-        <Link to={{pathname: `/profile/${streamer._id}`}} className="streamer-item">
+        <Link to={{pathname: `/profile/${streamer._id}`}} className="streamer-item" style={style}>
             <div className="profile-picture"  style={{backgroundImage: `url('/profile-pictures/${streamer._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}></div>
             <div className="streamer-title">{streamer.name}</div>
             <div className="streamer-followers">{streamer.followersNr} followers</div>

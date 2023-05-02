@@ -3,44 +3,47 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getStreams, reset } from '../features/streams/streamSlice'
 import { getStreamers, reset as resetStreamers } from '../features/streamers/streamerSlice'
+import { getCategories, reset as resetCategories } from '../features/categories/categorySlice'
 import StreamItem from '../components/StreamItem'
 import StreamerItem from '../components/StreamerItem'
+import CategoryItem from '../components/CategoryItem'
 import Spinner from '../components/Spinner'
+import {FaChevronRight} from 'react-icons/fa'
 import '../home-streamers.css'
 
-function Streamers() {
+function Categories() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { user } = useSelector((state) => state.auth)
-    const { streamers, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers } = useSelector((state) => state.streamers)
+    const { categories, isErrorCategories, isSuccessCategories, isLoadingCategories, messageCategories } = useSelector((state) => state.categories)
 
     useEffect(() => {
-        if (isErrorStreamers) {
-            console.log(messageStreamers)
+        if (isErrorCategories) {
+            console.log(messageCategories)
             navigate('/')
         }
 
-        dispatch(getStreamers())
+        dispatch(getCategories())
 
         return () => {
             dispatch(reset())
-            dispatch(resetStreamers())
+            dispatch(resetCategories())
         }
-    }, [user, navigate, isErrorStreamers, messageStreamers, dispatch])
+    }, [user, navigate, dispatch, isErrorCategories, messageCategories])
 
-    if (isLoadingStreamers) {
+    if (isLoadingCategories) {
         return <Spinner />
     }
 
     return (
         <>
-            <section className="streamers" style={{ flexWrap: 'wrap', marginTop: 30 }}>
-                {streamers.map((streamer) => (
-                    <StreamerItem key={streamer._id} streamer={streamer} style={{ flexGrow: 1, flexShrink: 1, flexBasis: "50%" }}/>
+            <section className="categories" style={{flexWrap: "wrap", marginTop: 30}}>
+                {categories.map((category) => (
+                    <CategoryItem category={category} />
                 ))}
             </section>
         </>
     )
 }
 
-export default Streamers
+export default Categories

@@ -11,6 +11,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './topbar.css'
 import Following from './pages/Following'
+import Streamers from './pages/Streamers'
+import Categories from './pages/Categories'
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Routes>
             <Route path='/' element={<Home/>} />
             <Route path='/following' element={<Following/>} />
+            <Route path='/streamers' element={<Streamers/>} />
+            <Route path='/categories' element={<Categories/>} />
             <Route path='/login' element={<Login/>} />
             <Route path='/register' element={<Register/>} />
             <Route path='/account' element={<Account/>} />

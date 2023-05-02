@@ -72,7 +72,7 @@ function Home() {
         <>
             <div className="home-section-title-container">
                 <div className="home-section-title">Recommended streams</div>
-                <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
+                <Link to="/" className="home-section-subtitle">View more <FaChevronRight size={14}/></Link>
             </div>
             <section className="streams">
                 {streams.slice(0, (streamsNumber)).map((stream) => (
@@ -82,7 +82,7 @@ function Home() {
 
             <div className="home-section-title-container">
                 <div className="home-section-title">Popular categories</div>
-                <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
+                <Link to="/categories" className="home-section-subtitle">View more <FaChevronRight size={14}/></Link>
             </div>
             <section className="categories">
                 {categories.slice(0, (categoriesNumber)).map((category) => (
@@ -92,7 +92,7 @@ function Home() {
 
             <div className="home-section-title-container">
                 <div className="home-section-title">Popular streamers</div>
-                <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
+                <Link to="/streamers" className="home-section-subtitle">View more <FaChevronRight size={14}/></Link>
             </div>
             <section className="streamers">
                 {streamers.slice(0, (streamersNumber)).map((streamer) => (

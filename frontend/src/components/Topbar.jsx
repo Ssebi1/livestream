@@ -59,10 +59,10 @@ function Topbar() {
             <div className='topbar'>
                 <ul className='left'>
                     <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="logo">LIVESTREAM</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('popular')}>POPULAR</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streams')}>STREAMS</li></Link>
                     <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>FOLLOWING</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streameres')}>STREAMERS</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('categories')}>CATEGORIES</li></Link>
+                    <Link to='/streamers' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streamers')}>STREAMERS</li></Link>
+                    <Link to='/categories' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('categories')}>CATEGORIES</li></Link>
                 </ul>
                 {user ? (
                     <>
@@ -94,10 +94,10 @@ function Topbar() {
             </div>
             <div className="topbar-down" ref={downbarRef}>
                 <ul className="down-items">
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">POPULAR</li></Link>
-                    <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">FOLLOWING</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">STREAMERS</li></Link>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="topbar-link">CATEGORIES</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>STREAMS</li></Link>
+                    <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>FOLLOWING</li></Link>
+                    <Link to='/streamers' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>STREAMERS</li></Link>
+                    <Link to='/categories' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>CATEGORIES</li></Link>
                     <div className="horizontal-line"></div>
                     {user ? (
                         <>
