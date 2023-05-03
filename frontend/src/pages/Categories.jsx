@@ -37,7 +37,7 @@ function Categories() {
 
     return (
         <>
-            <section className="categories" style={{flexWrap: "wrap", marginTop: 30}}>
+            <section className="categories" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', marginTop: 30 }}>
                 {categories.map((category) => (
                     <CategoryItem category={category} onPress={() => {navigate("/streams/" + category._id)}}/>
                 ))}

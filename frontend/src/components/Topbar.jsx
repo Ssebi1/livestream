@@ -13,6 +13,12 @@ function Topbar() {
     const downbarRef = useRef(null)
     const accountDropdownRef = useRef(null)
 
+    window.addEventListener('click', (e) => {
+        if (e.target.className !== 'account-link' && e.target.parentNode.className !== 'account-link' && e.target.parentNode.className !== 'account') {
+            accountDropdownRef.current.style.height = '0px'
+        }
+    })
+
     const onLogout = () => {
         dispatch(logout())
         dispatch(reset())

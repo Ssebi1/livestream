@@ -58,9 +58,9 @@ function Streams() {
                 ))}
             </select>
 
-            <section className="streams" style={{ flexWrap: 'wrap', marginTop: 10 }}>
+            <section className="streams" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', marginTop: 10 }}>
                 {streams.filter(stream => stream.category._id === categoryFilter || categoryFilter === "all").map((stream) => (
-                    <StreamItem key={stream._id} stream={stream} style={{ flexGrow: 1, flexShrink: 1, flexBasis: "50%" }}/>
+                    <StreamItem key={stream._id} stream={stream}/>
                 ))}
             </section>
         </>

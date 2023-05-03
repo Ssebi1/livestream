@@ -34,9 +34,9 @@ function Streamers() {
 
     return (
         <>
-            <section className="streamers" style={{ flexWrap: 'wrap', marginTop: 30 }}>
+            <section className="streamers" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', marginTop: 30 }}>
                 {streamers.map((streamer) => (
-                    <StreamerItem key={streamer._id} streamer={streamer} style={{ flexGrow: 1, flexShrink: 1, flexBasis: "50%" }}/>
+                    <StreamerItem key={streamer._id} streamer={streamer}/>
                 ))}
             </section>
         </>

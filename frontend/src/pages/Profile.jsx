@@ -55,6 +55,7 @@ function Profile() {
         }
         window.addEventListener('resize', handleResize)
         window.addEventListener('load', handleResize)
+        window.addEventListener('click', onClickOutside)
 
         if (isErrorStreamers || isErrorStreams || isErrorCategories || isError) {
             console.log(messageStreamers)
@@ -68,6 +69,7 @@ function Profile() {
         return () => {
             dispatch(reset())
             setCategoryFilter('all')
+            window.removeEventListener("click", onClickOutside);
         }
     }, [id])
 
@@ -222,6 +224,22 @@ function Profile() {
             'destination': streamer._id
         }))
     }
+
+    const onClickOutside = (e) => {
+        let parentModal = document.querySelector('.edit-links-modal')
+        console.log(e.target)
+        console.log(parentModal.contains(e.target))
+        if (!e.target.className.includes('link-delete-button') && !parentModal.contains(e.target) && !e.target.className.includes('edit-button')) {
+            setLinks(streamer.links)
+            linkModalRef.current.style.display = 'none'
+        }
+
+        parentModal = document.querySelector('.description-modal')
+        if (!parentModal.contains(e.target) && !e.target.className.includes('edit-button')) {
+            setEditDescription(streamer.description)
+            descriptionModalWrapper.current.style.display = 'none'
+        }
+    };
 
     return (
         <>
@@ -385,7 +403,7 @@ function Profile() {
                                             )
                                         ))}
                                     </select>
-                                    <section className="profile-streams-2">
+                                    <section className="profile-streams-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', marginTop: 10 }}>
                                         {streams.filter(stream => stream.category.name === categoryFilter || categoryFilter === "all").map((stream) => (
                                             <StreamItemMinimal key={stream._id} stream={stream} />
                                         ))}

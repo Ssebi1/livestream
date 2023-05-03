@@ -417,6 +417,7 @@ a {
 
     .stream-item, .category-item, .streamer-item {
         min-width: 200px;
+        max-width: 100%;
     }
 
     .form {
