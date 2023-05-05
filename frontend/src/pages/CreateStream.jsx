@@ -44,9 +44,9 @@ function CreateStream() {
             dispatch(resetCategories())
             dispatch(resetStreams())
         }
-    }, [user, isErrorCategories, messageCategories])
+    }, [user, isErrorCategories, messageCategories, stream])
 
-    if (isLoadingCategories) {
+    if (isLoadingCategories || isLoadingStreams) {
         return <Spinner />
     }
 
@@ -61,7 +61,7 @@ function CreateStream() {
     }
 
     if (isSuccessStreams && stream._id) {
-        navigate('/streams/' + stream._id)
+        navigate('/stream/' + stream._id)
         toast.success('Stream created succesfully', {
             position: "top-right",
             autoClose: 3000,
@@ -88,9 +88,7 @@ function CreateStream() {
     const onSubmit = async (e) => {
         e.preventDefault()
         if (!isLoadingStreams) {
-            await dispatch(createStream({title, category}))
-            dispatch(resetStreams())
-            setTitle('')
+            dispatch(createStream({title, category, engine}))
         }
     }
 
@@ -142,7 +140,7 @@ function CreateStream() {
                         <input type="text" name="stream-key" id="stream-key" className="input-1-field input-field-disabled" value={"63e9005e910af79245cbd188"} disabled/>
                         <label htmlFor="stream-key" className="input-1-label input-label-disabled">Stream key</label>
                     </div>
-                    <button type="submit" class="button-1 create-stream-submit-button">Start</button>
+                    <button type="submit" class="button-1 create-stream-submit-button">Create</button>
                 </form>
             </section>
         </>

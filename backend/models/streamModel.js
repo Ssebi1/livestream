@@ -14,6 +14,27 @@ const streamSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Category',
+    },
+    id: {
+        type: String
+    },
+    status: {
+        type: String
+    },
+    primary_server: {
+        type: String
+    },
+    host_port: {
+        type: Number
+    },
+    webrtc_url: {
+        type: String
+    },
+    hls_url: {
+        type: String
+    },
+    thumbnail_url: {
+        type: String
     }
 }, {
     timestamps: true

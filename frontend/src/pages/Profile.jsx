@@ -227,8 +227,6 @@ function Profile() {
 
     const onClickOutside = (e) => {
         let parentModal = document.querySelector('.edit-links-modal')
-        console.log(e.target)
-        console.log(parentModal.contains(e.target))
         if (!e.target.className.includes('link-delete-button') && !parentModal.contains(e.target) && !e.target.className.includes('edit-button')) {
             setLinks(streamer.links)
             linkModalRef.current.style.display = 'none'

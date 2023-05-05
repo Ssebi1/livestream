@@ -1,10 +1,14 @@
 // async handler
 const asyncHandler = require('express-async-handler')
 
+const token = process.env.WOWZA_TOKEN;
+
 // stream model
 const Stream = require('../models/streamModel')
 const User = require('../models/userModel')
 const Category = require('../models/categoryModel')
+const { default: axios } = require('axios')
+const { response } = require('express')
 
 // @desc Get stream
 // @route GET /api/streams
@@ -63,10 +67,63 @@ const postStream = asyncHandler(async (req, res) => {
     throw new Error('Category not found')
   }
 
+  let stream_id = -1
+  let primary_server = ""
+  let host_port = 10000
+  let webrtc_url = ""
+  let hls_url = ""
+  let thumbnail_url = ""
+  if (req.body.engine == 'personal') {
+    requestResponse = await axios.post('https://api.video.wowza.com/api/v1.10/live_streams', {
+      "live_stream": {
+        "aspect_ratio_height": 1920,
+        "aspect_ratio_width": 1080,
+        "broadcast_location": "eu_germany",
+        "delivery_method": "push",
+        "encoder": "other_srt",
+        "name": req.body.title,
+        "transcoder_type": "transcoded",
+        "recording": true,
+        "low_latency": true
+     }
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (requestResponse) {
+      stream_id = requestResponse.data.live_stream.id
+      primary_server = requestResponse.data.live_stream.source_connection_information.primary_server
+      host_port = requestResponse.data.live_stream.source_connection_information.host_port
+      hls_url = requestResponse.data.live_stream.direct_playback_urls.hls[0].url
+      webrtc_url = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].url
+    }
+
+    requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/live_streams/' + stream_id + '/thumbnail_url', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (requestResponse) {
+      thumbnail_url = requestResponse.data.live_stream.thumbnail_url
+    }
+  }
+
   const stream = await Stream.create({
     title: req.body.title,
     category: req.body.category,
-    user: req.user.id
+    user: req.user.id,
+    id: stream_id,
+    status: 'created',
+    primary_server: primary_server,
+    host_port: host_port,
+    hls_url: hls_url,
+    webrtc_url: webrtc_url,
+    thumbnail_url: thumbnail_url 
   })
   res.status(200).json(stream)
 })
