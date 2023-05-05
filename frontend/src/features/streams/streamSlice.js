@@ -74,7 +74,7 @@ export const streamSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(createStream.pending, (state) => {
-                state.isLoading = true
+                state.isLoadingStreams = true
             })
             .addCase(createStream.fulfilled, (state, action) => {
                 state.isLoadingStreams = false

@@ -121,7 +121,6 @@
 .stream-tabs {
     display: flex;
     flex-direction: row;
-    margin-bottom: 15px;
     width: 100%;
     background-color: #E2E2E2;
 }
@@ -146,6 +145,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
+    margin-top: 15px;
 }
 
 .stream-container .stream-info-container-1 {
@@ -204,6 +204,7 @@
     justify-content: space-between;
     flex-wrap: nowrap;
     gap: 40px;
+    margin-top: 15px;
 }
 
 .settings-left {

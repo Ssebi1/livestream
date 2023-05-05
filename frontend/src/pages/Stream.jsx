@@ -97,11 +97,17 @@ function Stream() {
                         height="auto"
                     />
                     <div className="stream-info-container">
-                        <div className="stream-tabs">
-                            <div ref={infoTabRef} onClick={() => { changeTab('info') }}>Info</div>
-                            <div ref={settingsTabRef} onClick={() => { changeTab('settings') }}>Settings</div>
-                            <div ref={statsTabRef} onClick={() => { changeTab('stats') }}>Stats</div>
-                        </div>
+                        {user && stream.user._id === user._id ? (
+                            <div className="stream-tabs">
+                                <div ref={infoTabRef} onClick={() => { changeTab('info') }}>Info</div>
+                                <div ref={settingsTabRef} onClick={() => { changeTab('settings') }}>Settings</div>
+                                <div ref={statsTabRef} onClick={() => { changeTab('stats') }}>Stats</div>
+                            </div>
+                        ) : (
+                            <></>
+                        )
+                        }
+
 
                         {currentTab === 'info' ? (
                             <div className="info-tab">
