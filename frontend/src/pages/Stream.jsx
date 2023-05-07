@@ -108,8 +108,8 @@ function Stream() {
                             {stream.engine === 'personal' ? (
                                 <ReactHlsPlayer className='stream-player'
                                     src={stream.hls_url}
-                                    autoPlay={false}
-                                    controls={true}
+                                    autoPlay={true}
+                                    controls={false}
                                     width="100%"
                                     height="auto"
                                 />
@@ -123,8 +123,8 @@ function Stream() {
                         <>
                             {stream.status === 'ended' ? (
                                 <ReactHlsPlayer className='stream-player'
-                                    src={stream.hls_url}
-                                    autoPlay={false}
+                                    src={stream.vod_recording_hls_url}
+                                    autoPlay={true}
                                     controls={true}
                                     width="100%"
                                     height="auto"

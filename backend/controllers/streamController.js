@@ -22,18 +22,40 @@ const getStreams = asyncHandler(async (req, res) => {
 // @route GET /api/stream/<id>
 // @access Public
 const getStream = asyncHandler(async (req, res) => {
-  const stream = await Stream.findById(req.params.id)
+  const stream = await Stream.findById(req.params.id).populate("user").populate("category")
   if (!stream) {
     res.status(400)
     throw new Error('Stream not found')
   }
-  const user = await User.findById(stream.user)
-  stream.user = user
-  let category = await Category.findById(stream.category)
-  if (!category) {
-    category = await Category.findOne({ name: 'GENERAL' })
+
+  if (stream.vod_recording_hls_url === undefined) {
+    try {
+      requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/vod_streams', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (requestResponse) {
+        vod_stream_id = requestResponse.data.vod_streams.filter(vod => vod.name.startsWith(stream.title)).slice(-1)[0].id
+        requestResponse2 = await axios.get('https://api.video.wowza.com/api/v1.10/vod_streams/' + vod_stream_id, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (requestResponse2) {
+          stream.vod_recording_hls_url = requestResponse2.data.vod_stream.playback_url
+          await Stream.findOneAndUpdate({ _id: req.params.id }, {
+            'vod_recording_hls_url': requestResponse2.data.vod_stream.playback_url,
+          })
+        }
+      }
+    } catch { }
   }
-  stream.category = category
+
   res.status(200).send(stream)
 })
 
@@ -87,7 +109,6 @@ const postStream = asyncHandler(async (req, res) => {
       "encoder": encoder,
       "name": req.body.title,
       "transcoder_type": "transcoded",
-      "recording": true,
       "hosted_page": {
         "enabled": false
       },
