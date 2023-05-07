@@ -21,11 +21,6 @@
 .stream-player {
     max-width: 100%;
     aspect-ratio: 16/9;
-    background-color: #cecfcd;
-    background-image: url('https://static-cdn.jtvnw.net/previews-ttv/live_user_topracingtv-440x248.jpg');
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
 }
 
 .stream-author-profile-picture {

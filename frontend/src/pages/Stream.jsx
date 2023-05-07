@@ -8,9 +8,9 @@ import { AiOutlineStar } from "react-icons/ai";
 import io from 'socket.io-client';
 import '../stream-page.css'
 import { followUser, unfollowUser } from '../features/auth/authSlice'
-import ReactHlsPlayer from 'react-hls-player';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import Player from '../components/play/Player'
+import ReactHlsPlayer from 'react-hls-player';
 
 const socket = io.connect('http://localhost:4000');
 
@@ -26,6 +26,14 @@ function Stream() {
     const infoTabRef = useRef(null)
     const settingsTabRef = useRef(null)
     const statsTabRef = useRef(null)
+
+    let config = {
+        WEBRTC_SDP_URL: stream.webrtc_url,
+        WEBRTC_APPLICATION_NAME: 'myWebRTCApp',
+        WEBRTC_FRAME_RATE: 29,
+        WEBRTC_AUDIO_BIT_RATE: 64,
+        WEBRTC_VIDEO_BIT_RATE: 360,
+    }
 
     useEffect(() => {
         if (isErrorStreams) {
@@ -95,13 +103,40 @@ function Stream() {
         <>
             <div className="stream-container">
                 <div className="stream-player-container">
-                    <ReactHlsPlayer className='stream-player'
-                        src={stream.hls_url}
-                        autoPlay={false}
-                        controls={true}
-                        width="100%"
-                        height="auto"
-                    />
+                    {stream.status === 'started' ? (
+                        <>
+                            {stream.engine === 'personal' ? (
+                                <ReactHlsPlayer className='stream-player'
+                                    src={stream.hls_url}
+                                    autoPlay={false}
+                                    controls={true}
+                                    width="100%"
+                                    height="auto"
+                                />
+                            ) : (
+                                <Player stream={stream} />
+                            )
+                            }
+                        </>
+
+                    ) : (
+                        <>
+                            {stream.status === 'ended' ? (
+                                <ReactHlsPlayer className='stream-player'
+                                    src={stream.hls_url}
+                                    autoPlay={false}
+                                    controls={true}
+                                    width="100%"
+                                    height="auto"
+                                />
+                            ) : (
+                                <div className="stream-player"></div>
+                            )
+                            }
+                        </>
+                    )
+                    }
+
                     <div className="stream-info-container">
                         {user && stream.user._id === user._id ? (
                             <div className="stream-tabs">
@@ -113,8 +148,6 @@ function Stream() {
                             <></>
                         )
                         }
-
-
                         {currentTab === 'info' ? (
                             <div className="info-tab">
                                 <div className="stream-info-container-1">

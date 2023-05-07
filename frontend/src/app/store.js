@@ -9,6 +9,9 @@ export const store = configureStore({
     auth: authReducer,
     streams: streamReducer,
     streamers: streamerReducer,
-    categories: categoriesReducer
+    categories: categoriesReducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: false
+  })
 })

@@ -35,6 +35,15 @@ const streamSchema = mongoose.Schema({
     },
     thumbnail_url: {
         type: String
+    },
+    webrtc_application_name: {
+        type: String
+    },
+    webrtc_stream_name: {
+        type: String
+    },
+    engine: {
+        type: String
     }
 }, {
     timestamps: true

@@ -71,37 +71,43 @@ const postStream = asyncHandler(async (req, res) => {
   let primary_server = ""
   let host_port = 10000
   let webrtc_url = ""
+  let webrtc_application_name = ""
+  let webrtc_stream_name = ""
   let hls_url = ""
-  if (req.body.engine == 'personal') {
-    requestResponse = await axios.post('https://api.video.wowza.com/api/v1.10/live_streams', {
-      "live_stream": {
-        "aspect_ratio_height": 1920,
-        "aspect_ratio_width": 1080,
-        "broadcast_location": "eu_germany",
-        "delivery_method": "push",
-        "encoder": "other_srt",
-        "name": req.body.title,
-        "transcoder_type": "transcoded",
-        "recording": true,
-        "low_latency": true,
-        "hosted_page": {
-          "enabled": false
-        }
-      }
-    }, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
+  let encoder = "other_webrtc"
+  if (req.body.engine == 'personal')
+    encoder = "other_srt"
 
-    if (requestResponse) {
-      stream_id = requestResponse.data.live_stream.id
-      primary_server = requestResponse.data.live_stream.source_connection_information.primary_server
-      host_port = requestResponse.data.live_stream.source_connection_information.host_port
-      hls_url = requestResponse.data.live_stream.direct_playback_urls.hls[0].url
-      webrtc_url = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].url
+  requestResponse = await axios.post('https://api.video.wowza.com/api/v1.10/live_streams', {
+    "live_stream": {
+      "aspect_ratio_height": 1920,
+      "aspect_ratio_width": 1080,
+      "broadcast_location": "eu_germany",
+      "delivery_method": "push",
+      "encoder": encoder,
+      "name": req.body.title,
+      "transcoder_type": "transcoded",
+      "recording": true,
+      "hosted_page": {
+        "enabled": false
+      },
+      "vod_stream": true
     }
+  }, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (requestResponse) {
+    stream_id = requestResponse.data.live_stream.id
+    primary_server = requestResponse.data.live_stream.source_connection_information.primary_server
+    host_port = requestResponse.data.live_stream.source_connection_information.host_port
+    hls_url = requestResponse.data.live_stream.direct_playback_urls.hls[0].url
+    webrtc_url = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].url
+    webrtc_application_name = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].application_name
+    webrtc_stream_name = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].stream_name
   }
 
   const stream = await Stream.create({
@@ -113,7 +119,10 @@ const postStream = asyncHandler(async (req, res) => {
     primary_server: primary_server,
     host_port: host_port,
     hls_url: hls_url,
-    webrtc_url: webrtc_url
+    webrtc_url: webrtc_url,
+    webrtc_application_name: webrtc_application_name,
+    webrtc_stream_name: webrtc_stream_name,
+    engine: req.body.engine
   })
   res.status(200).json(stream)
 })
@@ -139,8 +148,12 @@ const startStream = asyncHandler(async (req, res) => {
     }
   })
 
-  if (requestResponse) {
-    stream_status = 'started'
+  const startTime = new Date().getTime()
+  let currentTime = startTime
+
+  while (currentTime < startTime + 1000 * 1000 && stream_status != 'started') {
+    stream_status = await getStreamStatus(wowza_stream_id)
+    currentTime += 2000
   }
 
   await Stream.findOneAndUpdate({ _id: req.body.id }, {
@@ -171,12 +184,17 @@ const endStream = asyncHandler(async (req, res) => {
     }
   })
 
-  if (requestResponse) {
-    stream_status = 'ended'
+  const startTime = new Date().getTime()
+  let currentTime = startTime
+
+  while (currentTime < startTime + 1000 * 1000 && stream_status != 'stopped') {
+    stream_status = await getStreamStatus(wowza_stream_id)
+    console.log(stream_status)
+    currentTime += 2000
   }
 
   await Stream.findOneAndUpdate({ _id: req.body.id }, {
-    'status': stream_status,
+    'status': 'ended',
   })
   const updatedStream = await Stream.findOne({ _id: req.body.id }).populate("user").populate("category")
   res.status(200).send(updatedStream)
@@ -196,14 +214,14 @@ const setThumbnail = asyncHandler(async (req, res) => {
   let wowza_stream_id = stream.id
   let thumbnail_url = stream.thumbnail_url
 
-  try{
+  try {
     requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/live_streams/' + wowza_stream_id + '/thumbnail_url', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     })
-  } catch {}
+  } catch { }
 
   if (requestResponse) {
     if (requestResponse.data.live_stream.thumbnail_url != null)
@@ -257,23 +275,28 @@ const deleteStream = asyncHandler(async (req, res) => {
     res.status(400)
     throw new Error('Stream not found')
   }
-
-  // Check for user
-  if (!req.user) {
-    res.status(401)
-    throw new Error('User not found')
-  }
-
-  // Make sure the logged in user matches the stream user
-  if (stream.user.toString() !== req.user.id) {
-    res.status(401)
-    throw new Error('User not authorized')
-  }
-
   await stream.remove()
 
   res.status(200).json({ id: req.params.id })
 })
+
+const getStreamStatus = async (streamId) => {
+  try {
+    requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/live_streams/' + streamId + '/state', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+  } catch {
+    return ""
+  }
+
+  if (requestResponse) {
+    return requestResponse.data.live_stream.state
+  }
+  return ""
+}
 
 // export functions
 module.exports = {
