@@ -1,5 +1,7 @@
 // async handler
 const asyncHandler = require('express-async-handler')
+const https = require('https');
+const fs = require('fs');
 
 const token = process.env.WOWZA_TOKEN;
 
@@ -59,6 +61,21 @@ const getStream = asyncHandler(async (req, res) => {
   res.status(200).send(stream)
 })
 
+const download_image = (url, image_path) => {
+  axios({
+    url,
+    responseType: 'stream',
+  }).then(
+    response =>
+      new Promise((resolve, reject) => {
+        response.data
+          .pipe(fs.createWriteStream(image_path))
+          .on('finish', () => resolve())
+          .on('error', e => reject(e));
+      }),
+  );
+}
+
 // @desc Get user streams
 // @route GET /api/streams/user/<id>
 // @access Public
@@ -102,9 +119,9 @@ const postStream = asyncHandler(async (req, res) => {
 
   requestResponse = await axios.post('https://api.video.wowza.com/api/v1.10/live_streams', {
     "live_stream": {
-      "aspect_ratio_height": 1920,
+      "aspect_ratio_height": 720,
       "aspect_ratio_width": 1080,
-      "broadcast_location": "eu_germany",
+      "broadcast_location": "eu_belgium",
       "delivery_method": "push",
       "encoder": encoder,
       "name": req.body.title,
@@ -195,6 +212,9 @@ const endStream = asyncHandler(async (req, res) => {
     throw new Error('Stream not found')
   }
 
+  if (!fs.existsSync('./frontend/public/thumbnail-pictures/' + stream._id + '.png'))
+    download_image(stream.thumbnail_url, './frontend/public/thumbnail-pictures/' + stream._id + '.png')
+
 
   let wowza_stream_id = stream.id
   let stream_status = stream.status
@@ -208,9 +228,8 @@ const endStream = asyncHandler(async (req, res) => {
   const startTime = new Date().getTime()
   let currentTime = startTime
 
-  while (currentTime < startTime + 1000 * 1000 && stream_status != 'stopped') {
+  while(currentTime <startTime + 1000 * 1000 && stream_status != 'stopped') {
     stream_status = await getStreamStatus(wowza_stream_id)
-    console.log(stream_status)
     currentTime += 2000
   }
 
@@ -298,7 +317,8 @@ const deleteStream = asyncHandler(async (req, res) => {
   }
   await stream.remove()
 
-  res.status(200).json({ id: req.params.id })
+  const streams = await Stream.find()
+  res.status(200).json(streams)
 })
 
 const getStreamStatus = async (streamId) => {

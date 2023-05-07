@@ -51,6 +51,11 @@ const getUserStreams = async (id) => {
     return response.data
 }
 
+const deleteStream = async (id) => {
+    let response = await axios.delete(API_URL + '/' + id)
+    return response.data
+}
+
 const streamService = {
     createStream,
     startStream,
@@ -58,6 +63,7 @@ const streamService = {
     getStream,
     getUserStreams,
     endStream,
+    deleteStream,
     setThumbnail
 }
 

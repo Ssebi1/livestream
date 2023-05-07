@@ -21,7 +21,7 @@ router.post('/end', protect, endStream)
 router.put('/:id', protect, putStream)
 
 // DELETE
-router.delete('/:id', protect, deleteStream)
+router.delete('/:id', deleteStream)
 
 // PATCH
 router.patch('/thumbnail', setThumbnail)

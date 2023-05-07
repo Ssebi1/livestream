@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { endStream, getStream, reset, setThumbnail, startStream } from '../features/streams/streamSlice'
+import { deleteStream, endStream, getStream, reset, setThumbnail, startStream } from '../features/streams/streamSlice'
 import Spinner from '../components/Spinner'
 import StreamChat from '../components/StreamChat'
 import { AiOutlineStar } from "react-icons/ai";
@@ -204,7 +204,7 @@ function Stream() {
                                                     {stream.status === 'started' ? (
                                                         <div className="end-button settings-button" onClick={() => { dispatch(endStream(stream._id)) }}>End</div>
                                                     ) : (
-                                                        <div className="end-button settings-button">Delete</div>
+                                                        <div className="end-button settings-button" onClick={() => { dispatch(deleteStream(stream._id)); navigate('/') }}>Delete</div>
                                                     )
                                                     }
                                                 </>
