@@ -41,7 +41,7 @@ const getStream = asyncHandler(async (req, res) => {
 // @route GET /api/streams/user/<id>
 // @access Public
 const getUserStreams = asyncHandler(async (req, res) => {
-  const streams = await Stream.find({user: {_id: req.params.id}})
+  const streams = await Stream.find({ user: { _id: req.params.id } })
   for (let i = 0; i < streams.length; i++) {
     let category = await Category.findById(streams[i].category)
     if (!category) {
@@ -72,7 +72,6 @@ const postStream = asyncHandler(async (req, res) => {
   let host_port = 10000
   let webrtc_url = ""
   let hls_url = ""
-  let thumbnail_url = ""
   if (req.body.engine == 'personal') {
     requestResponse = await axios.post('https://api.video.wowza.com/api/v1.10/live_streams', {
       "live_stream": {
@@ -84,8 +83,11 @@ const postStream = asyncHandler(async (req, res) => {
         "name": req.body.title,
         "transcoder_type": "transcoded",
         "recording": true,
-        "low_latency": true
-     }
+        "low_latency": true,
+        "hosted_page": {
+          "enabled": false
+        }
+      }
     }, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -100,17 +102,6 @@ const postStream = asyncHandler(async (req, res) => {
       hls_url = requestResponse.data.live_stream.direct_playback_urls.hls[0].url
       webrtc_url = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].url
     }
-
-    requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/live_streams/' + stream_id + '/thumbnail_url', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (requestResponse) {
-      thumbnail_url = requestResponse.data.live_stream.thumbnail_url
-    }
   }
 
   const stream = await Stream.create({
@@ -122,10 +113,108 @@ const postStream = asyncHandler(async (req, res) => {
     primary_server: primary_server,
     host_port: host_port,
     hls_url: hls_url,
-    webrtc_url: webrtc_url,
-    thumbnail_url: thumbnail_url 
+    webrtc_url: webrtc_url
   })
   res.status(200).json(stream)
+})
+
+// @desc Start stream
+// @route POST /api/streams/start/:id
+// @access Private
+const startStream = asyncHandler(async (req, res) => {
+  const stream = await Stream.findById(req.body.id)
+
+  if (!stream || stream.status !== 'created') {
+    res.status(400)
+    throw new Error('Stream not found')
+  }
+
+
+  let wowza_stream_id = stream.id
+  let stream_status = stream.status
+  requestResponse = await axios.put('https://api.video.wowza.com/api/v1.10/live_streams/' + wowza_stream_id + '/start', null, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (requestResponse) {
+    stream_status = 'started'
+  }
+
+  await Stream.findOneAndUpdate({ _id: req.body.id }, {
+    'status': stream_status,
+  })
+  const updatedStream = await Stream.findOne({ _id: req.body.id }).populate("user").populate("category")
+  res.status(200).send(updatedStream)
+})
+
+// @desc End stream
+// @route POST /api/streams/end/:id
+// @access Private
+const endStream = asyncHandler(async (req, res) => {
+  const stream = await Stream.findById(req.body.id)
+
+  if (!stream || stream.status !== 'started') {
+    res.status(400)
+    throw new Error('Stream not found')
+  }
+
+
+  let wowza_stream_id = stream.id
+  let stream_status = stream.status
+  requestResponse = await axios.put('https://api.video.wowza.com/api/v1.10/live_streams/' + wowza_stream_id + '/stop', null, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (requestResponse) {
+    stream_status = 'ended'
+  }
+
+  await Stream.findOneAndUpdate({ _id: req.body.id }, {
+    'status': stream_status,
+  })
+  const updatedStream = await Stream.findOne({ _id: req.body.id }).populate("user").populate("category")
+  res.status(200).send(updatedStream)
+})
+
+// @desc Set stream thumbnail
+// @route PATCH /api/streams/thumbnail/:id
+// @access Private
+const setThumbnail = asyncHandler(async (req, res) => {
+  const stream = await Stream.findById(req.body.id)
+
+  if (!stream) {
+    res.status(400)
+    throw new Error('Stream not found')
+  }
+
+  let wowza_stream_id = stream.id
+  let thumbnail_url = stream.thumbnail_url
+
+  try{
+    requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/live_streams/' + wowza_stream_id + '/thumbnail_url', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+  } catch {}
+
+  if (requestResponse) {
+    if (requestResponse.data.live_stream.thumbnail_url != null)
+      thumbnail_url = requestResponse.data.live_stream.thumbnail_url
+  }
+
+  await Stream.findOneAndUpdate({ _id: req.body.id }, {
+    'thumbnail_url': thumbnail_url,
+  })
+  const updatedStream = await Stream.findOne({ _id: req.body.id }).populate("user").populate("category")
+  res.status(200).send(updatedStream)
 })
 
 // @desc Update stream
@@ -159,7 +248,7 @@ const putStream = asyncHandler(async (req, res) => {
 })
 
 // @desc Delete stream
-// @route DELETE /api/stream/:id
+// @route DELETE /api/stream
 // @access Private
 const deleteStream = asyncHandler(async (req, res) => {
   const stream = await Stream.findById(req.params.id)
@@ -193,5 +282,8 @@ module.exports = {
   postStream,
   putStream,
   deleteStream,
-  getUserStreams
+  getUserStreams,
+  startStream,
+  endStream,
+  setThumbnail
 }

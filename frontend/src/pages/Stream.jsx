@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { getStream, reset } from '../features/streams/streamSlice'
+import { endStream, getStream, reset, setThumbnail, startStream } from '../features/streams/streamSlice'
 import Spinner from '../components/Spinner'
 import StreamChat from '../components/StreamChat'
 import { AiOutlineStar } from "react-icons/ai";
@@ -20,6 +20,7 @@ function Stream() {
     const { id } = useParams()
     const { user } = useSelector((state) => state.auth)
     const { stream, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
+    let stream_primary_server = stream.primary_server + ':' + stream.host_port
 
     const [currentTab, setTab] = useState('info')
     const infoTabRef = useRef(null)
@@ -33,6 +34,7 @@ function Stream() {
         }
 
         dispatch(getStream(id))
+        dispatch(setThumbnail(id))
 
         return () => {
             dispatch(reset())
@@ -83,6 +85,10 @@ function Stream() {
             statsTabRef.current.style.backgroundColor = "#cacaca"
 
         setTab(tab)
+    }
+
+    const startStreamClick = () => {
+
     }
 
     return (
@@ -150,7 +156,7 @@ function Stream() {
                                         <div className="settings-left">
                                             <div className="settings-info-element">
                                                 <div className="settings-info-element-title">Publish server</div>
-                                                <input type="text" value={stream.primary_server} disabled />
+                                                <input type="text" value={stream_primary_server} disabled />
                                             </div>
                                             <div className="settings-info-element">
                                                 <div className="settings-info-element-title">Status</div>
@@ -158,7 +164,19 @@ function Stream() {
                                             </div>
                                         </div>
                                         <div className="settings-right">
-                                            <button className="start-button settings-button">Start</button>
+                                            {stream.status === 'created' ? (
+                                                <div className="start-button settings-button" onClick={() => { dispatch(startStream(stream._id)) }}>Start</div>
+                                            ) : (
+                                                <>
+                                                    {stream.status === 'started' ? (
+                                                        <div className="end-button settings-button" onClick={() => { dispatch(endStream(stream._id)) }}>End</div>
+                                                    ) : (
+                                                        <div className="end-button settings-button">Delete</div>
+                                                    )
+                                                    }
+                                                </>
+                                            )
+                                            }
                                         </div>
                                     </div>
                                 ) : (

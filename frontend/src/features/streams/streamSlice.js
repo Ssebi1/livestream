@@ -28,6 +28,44 @@ export const createStream = createAsyncThunk('streams/create', async (streamData
     }
 })
 
+export const startStream = createAsyncThunk('streams/start', async (streamId, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token
+        return await streamService.startStream(streamId, token)
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const endStream = createAsyncThunk('streams/end', async (streamId, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token
+        return await streamService.endStream(streamId, token)
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const setThumbnail = createAsyncThunk('streams/thumbnail', async (streamId, thunkAPI) => {
+    try {
+        return await streamService.setThumbnail(streamId)
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const getStreams = createAsyncThunk('streams/getAll', async (thunkAPI) => {
     try {
         return await streamService.getStreams()
@@ -83,6 +121,45 @@ export const streamSlice = createSlice({
                 state.stream = action.payload
             })
             .addCase(createStream.rejected, (state, action) => {
+                state.isLoadingStreams = false
+                state.isErrorStreams = true
+                state.messageStreams = action.payload
+            })
+            .addCase(startStream.pending, (state) => {
+                state.isLoadingStreams = true
+            })
+            .addCase(startStream.fulfilled, (state, action) => {
+                state.isLoadingStreams = false
+                state.isSuccessStreams = true
+                state.stream = action.payload
+            })
+            .addCase(startStream.rejected, (state, action) => {
+                state.isLoadingStreams = false
+                state.isErrorStreams = true
+                state.messageStreams = action.payload
+            })
+            .addCase(endStream.pending, (state) => {
+                state.isLoadingStreams = true
+            })
+            .addCase(endStream.fulfilled, (state, action) => {
+                state.isLoadingStreams = false
+                state.isSuccessStreams = true
+                state.stream = action.payload
+            })
+            .addCase(endStream.rejected, (state, action) => {
+                state.isLoadingStreams = false
+                state.isErrorStreams = true
+                state.messageStreams = action.payload
+            })
+            .addCase(setThumbnail.pending, (state) => {
+                state.isLoadingStreams = true
+            })
+            .addCase(setThumbnail.fulfilled, (state, action) => {
+                state.isLoadingStreams = false
+                state.isSuccessStreams = true
+                state.stream = action.payload
+            })
+            .addCase(setThumbnail.rejected, (state, action) => {
                 state.isLoadingStreams = false
                 state.isErrorStreams = true
                 state.messageStreams = action.payload

@@ -53,7 +53,6 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
     socket.on('join_room', (data) => {
         const { username, room } = data;
-        console.log(username, room)
         socket.join(room);
     });
 

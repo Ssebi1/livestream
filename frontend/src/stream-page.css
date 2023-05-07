@@ -244,6 +244,9 @@
     outline: none;
     border: none;
     cursor: pointer;   
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .start-button {
@@ -252,6 +255,14 @@
 
 .start-button:hover {
     background-color: #266c5e;
+}
+
+.end-button {
+    background-color: #ff4a26;
+}
+
+.end-button:hover {
+    background-color: #ff3810;
 }
 
 @media only screen and (min-width: 1601px) {
