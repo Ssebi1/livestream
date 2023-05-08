@@ -32,6 +32,8 @@ function Stream() {
     const settingsTabRef = useRef(null)
     const statsTabRef = useRef(null)
 
+    const [layout, setLayout] = useState(1)
+
     let config = {
         WEBRTC_SDP_URL: stream.webrtc_url,
         WEBRTC_APPLICATION_NAME: 'myWebRTCApp',
@@ -100,8 +102,16 @@ function Stream() {
         setTab(tab)
     }
 
-    const startStreamClick = () => {
+    const selectLayout = (index) => {
+        const layouts = document.querySelectorAll('.layout-item .layout-main')
+        layouts.forEach((layout) => {
+            layout.style.color = 'black'
+            layout.style.borderColor = '#E2E2E2'
+        })
 
+        layouts[index-1].style.color = '#2d806f'
+        layouts[index-1].style.borderColor = '#2d806f'
+        setLayout(index)
     }
 
     return (
@@ -238,59 +248,59 @@ function Stream() {
                                             <div className="settings-bottom">
                                                 <div className="settings-bottom-title">Layout</div>
                                                 <div className="layouts-container">
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(1)}}>
                                                         <div className="layout-main">1</div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(2)}}>
                                                         <div className="layout-main">2</div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(3)}}>
                                                         <div className="layout-main">1
                                                             <div className="layout-secondary" style={{ top: 10, right: 10 }}>2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(4)}}>
                                                         <div className="layout-main">1
                                                             <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(5)}}>
                                                         <div className="layout-main">1
                                                             <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(6)}}>
                                                         <div className="layout-main">1
                                                             <div className="layout-secondary" style={{ top: 10, left: 10 }}>2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(7)}}>
                                                         <div className="layout-main">2
                                                             <div className="layout-secondary" style={{ top: 10, right: 10 }}>1</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(8)}}>
                                                         <div className="layout-main">2
                                                             <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>1</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(9)}}>
                                                         <div className="layout-main">2
                                                             <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>1</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(10)}}>
                                                         <div className="layout-main">2
                                                             <div className="layout-secondary" style={{ top: 10, left: 10 }}>1</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(11)}}>
                                                         <div className="layout-main layout-halfs">
                                                             <div className="layout-half-left">1</div>
                                                             <div className="layout-half-right">2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item">
+                                                    <div className="layout-item" onClick={() => {selectLayout(12)}}>
                                                         <div className="layout-main layout-halfs">
                                                             <div className="layout-half-left">2</div>
                                                             <div className="layout-half-right">1</div>
