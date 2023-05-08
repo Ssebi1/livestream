@@ -47,6 +47,9 @@ const streamSchema = mongoose.Schema({
     },
     vod_recording_hls_url: {
         type: String
+    },
+    vod_duration: {
+        type: String
     }
 }, {
     timestamps: true

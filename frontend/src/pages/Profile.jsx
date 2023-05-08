@@ -341,7 +341,10 @@ function Profile() {
                                         <div className="profile-view-more" onClick={viewAllStreams}>View more <FaChevronRight size={14} /></div>
                                     </div>
                                     <section className="profile-streams">
-                                        {streams.slice(0, (streamsNumber)).map((stream) => (
+                                        {streams.filter(stream => stream.status === 'started').slice(0, (streamsNumber)).map((stream) => (
+                                            <StreamItemMinimal key={stream._id} stream={stream} />
+                                        ))}
+                                        {streams.filter(stream => stream.status !== 'started').slice(0, (streamsNumber)).map((stream) => (
                                             <StreamItemMinimal key={stream._id} stream={stream} />
                                         ))}
                                     </section>
@@ -402,7 +405,10 @@ function Profile() {
                                         ))}
                                     </select>
                                     <section className="profile-streams-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', marginTop: 10 }}>
-                                        {streams.filter(stream => stream.category.name === categoryFilter || categoryFilter === "all").map((stream) => (
+                                        {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'started').map((stream) => (
+                                            <StreamItemMinimal key={stream._id} stream={stream} />
+                                        ))}
+                                        {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status !== 'started').map((stream) => (
                                             <StreamItemMinimal key={stream._id} stream={stream} />
                                         ))}
                                     </section>

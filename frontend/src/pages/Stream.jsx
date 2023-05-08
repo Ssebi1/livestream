@@ -10,7 +10,6 @@ import '../stream-page.css'
 import { followUser, unfollowUser } from '../features/auth/authSlice'
 import React from 'react';
 import Player from '../components/play/Player'
-import ReactHlsPlayer from 'react-hls-player';
 import Flowplayer, { useFlowplayer } from "@flowplayer/react-flowplayer"
 import HLSPlugin from "@flowplayer/player/plugins/hls"
 import flowplayer from "@flowplayer/player"
@@ -112,8 +111,8 @@ function Stream() {
                     {stream.status === 'started' ? (
                         <>
                             {stream.engine === 'personal' ? (
-                                <div className="stream-player" style={{ position:"relative" }}>
-                                    <Flowplayer id="flow-player" src={stream.hls_url} opts={{ controls:true, live:true, retry: true, seekable: false }}/>
+                                <div className="stream-player" style={{ position: "relative" }}>
+                                    <Flowplayer id="flow-player" src={stream.hls_url} opts={{ controls: true, live: true, retry: true, seekable: false }} />
                                 </div>
                             ) : (
                                 <Player stream={stream} />
@@ -123,8 +122,8 @@ function Stream() {
                     ) : (
                         <>
                             {stream.status === 'ended' ? (
-                                <div className="stream-player" style={{ position:"relative" }}>
-                                    <Flowplayer id="flow-player" className="use-play-2 use-drag-handle" src={stream.vod_recording_hls_url} opts={{ controls:true }}/>
+                                <div className="stream-player" style={{ position: "relative" }}>
+                                    <Flowplayer id="flow-player" className="use-play-2 use-drag-handle" src={stream.vod_recording_hls_url} opts={{ controls: true }} />
                                 </div>
                             ) : (
                                 <div className="stream-player"></div>
@@ -148,12 +147,12 @@ function Stream() {
                         {currentTab === 'info' ? (
                             <div className="info-tab">
                                 <div className="stream-info-container-1">
-                                    <div className="stream-author-profile-picture" style={{ backgroundImage: `url('/profile-pictures/${stream.user._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}></div>
+                                    <Link to={{pathname: `/profile/${stream.user._id}`}}><div className="stream-author-profile-picture" style={{ backgroundImage: `url('/profile-pictures/${stream.user._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}></div></Link>
                                 </div>
                                 <div className="stream-info-container-2">
                                     <div className="stream-title">{stream.title}</div>
-                                    <div className="stream-author-username">{stream.user.name}</div>
-                                    <div className="stream-category">{stream.category.name}</div>
+                                    <Link to={{pathname: `/profile/${stream.user._id}`}}><div className="stream-author-username">{stream.user.name}</div></Link>
+                                    <Link to={{pathname: `/streams/${stream.category._id}`}}><div className="stream-category">{stream.category.name}</div></Link>
                                 </div>
                                 <div className="stream-info-container-3">
                                     {(() => {
@@ -216,7 +215,6 @@ function Stream() {
                                 }
                             </>
                         )
-
                         }
                     </div>
                 </div>

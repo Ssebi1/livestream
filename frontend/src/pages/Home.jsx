@@ -72,10 +72,13 @@ function Home() {
         <>
             <div className="home-section-title-container">
                 <div className="home-section-title">Recommended streams</div>
-                <Link to="/" className="home-section-subtitle">View more <FaChevronRight size={14}/></Link>
+                <Link to="/streams" className="home-section-subtitle">View more <FaChevronRight size={14}/></Link>
             </div>
             <section className="streams">
-                {streams.slice(0, (streamsNumber)).map((stream) => (
+                {streams.filter(stream => stream.status === 'started').slice(0, (streamsNumber)).map((stream) => (
+                    <StreamItem key={stream._id} stream={stream} />
+                ))}
+                {streams.filter(stream => stream.status !== 'started').slice(0, (streamsNumber)).map((stream) => (
                     <StreamItem key={stream._id} stream={stream} />
                 ))}
             </section>
@@ -102,7 +105,7 @@ function Home() {
 
             <div className="home-section-title-container">
                 <div className="home-section-title">Past streams</div>
-                <div className="home-section-subtitle">View more <FaChevronRight size={14}/></div>
+                <Link to="/streams" className="home-section-subtitle">View more <FaChevronRight size={14}/></Link>
             </div>
             <section className="streams">
                 {streams.slice(0, (streamsNumber)).map((stream) => (

@@ -30,7 +30,7 @@ const getStream = asyncHandler(async (req, res) => {
     throw new Error('Stream not found')
   }
 
-  if (stream.vod_recording_hls_url === undefined) {
+  if (stream.vod_recording_hls_url === undefined || stream.vod_duration == "0" || stream.vod_duration === undefined) {
     try {
       requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/vod_streams', {
         headers: {
@@ -50,8 +50,20 @@ const getStream = asyncHandler(async (req, res) => {
 
         if (requestResponse2) {
           stream.vod_recording_hls_url = requestResponse2.data.vod_stream.playback_url
+          let vod_duration = requestResponse2.data.vod_stream.duration
+          let vod_duration_formatted = '0:0'
+          let hours = Math.floor(vod_duration / (60*60))
+          let minutes = Math.floor((vod_duration % (60*60)) / 60)
+          let seconds = Math.floor((vod_duration % (60*60)) % 60)
+          if (hours === 0) {
+            vod_duration_formatted = minutes + ':' + seconds
+          } else {
+            vod_duration_formatted = hours + ':' + minutes + ':' + seconds
+          }
+          stream.vod_duration = vod_duration_formatted
           await Stream.findOneAndUpdate({ _id: req.params.id }, {
             'vod_recording_hls_url': requestResponse2.data.vod_stream.playback_url,
+            'vod_duration': vod_duration_formatted
           })
         }
       }
