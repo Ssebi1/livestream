@@ -224,6 +224,7 @@
     border-radius: 6px;
     width: 100%;
     max-width: 100%;
+    cursor: pointer;
 }
 
 .settings-right {

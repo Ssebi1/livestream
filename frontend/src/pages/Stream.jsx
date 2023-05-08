@@ -14,6 +14,8 @@ import Flowplayer, { useFlowplayer } from "@flowplayer/react-flowplayer"
 import HLSPlugin from "@flowplayer/player/plugins/hls"
 import flowplayer from "@flowplayer/player"
 import "@flowplayer/player/flowplayer.css";
+import getDevices from '../webrtc/getDevices'
+import getUserMedia from '../webrtc/getUserMedia'
 
 flowplayer(HLSPlugin)
 
@@ -33,6 +35,15 @@ function Stream() {
     const statsTabRef = useRef(null)
 
     const [layout, setLayout] = useState(1)
+    const [devicesLoading, setDevicesLoading] = useState(false)
+    const [cameras, setCameras] = useState([])
+    const [microphones, setMicrophones] = useState([])
+    const [gotPermissions, setGotPermissions] = useState(false)
+
+    const [videoSelected1, setVideoSelected1] = useState()
+    const [videoSelected2, setVideoSelected2] = useState()
+    const [microphoneSelected, setMicrophoneSelected] = useState()
+    
 
     let config = {
         WEBRTC_SDP_URL: stream.webrtc_url,
@@ -48,8 +59,13 @@ function Stream() {
             navigate('/')
         }
 
+        if (!gotPermissions) {
+            dispatch(getPermissions)
+        }
+
         dispatch(getStream(id))
         dispatch(setThumbnail(id))
+        dispatch(loadDevices)
 
         return () => {
             dispatch(reset())
@@ -109,9 +125,47 @@ function Stream() {
             layout.style.borderColor = '#E2E2E2'
         })
 
-        layouts[index-1].style.color = '#2d806f'
-        layouts[index-1].style.borderColor = '#2d806f'
+        layouts[index - 1].style.color = '#2d806f'
+        layouts[index - 1].style.borderColor = '#2d806f'
         setLayout(index)
+    }
+
+    const loadDevices = async () => {
+        if (stream.engine === 'browser' && stream.status !== 'ended' && user && stream.user._id === user._id)
+            return
+        setDevicesLoading(true)
+        try {
+            let { cameras, microphones } = await getDevices();
+            setCameras(cameras)
+            setMicrophones(microphones)
+            setDevicesLoading(false)
+            if (cameras.length > 0) {
+                setVideoSelected1(cameras[0])
+                setVideoSelected2(cameras[0])
+            }
+            if (microphones.length > 0) {
+                setMicrophoneSelected(microphones[0])
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getPermissions = async () => {
+        let gotPermissionsBool = false;
+        try {
+            await getUserMedia({
+                video: {
+                    width: { min: "640", ideal: "1280", max: "1920" },
+                    height: { min: "360", ideal: "720", max: "1080" },
+                    frameRate: "30"
+                }, audio: true
+            });
+            gotPermissionsBool = true;
+        }
+        catch { }
+        setGotPermissions(gotPermissionsBool)
     }
 
     return (
@@ -209,16 +263,26 @@ function Stream() {
                                                     <>
                                                         <div className="settings-info-element">
                                                             <div className="settings-info-element-title">Video source 1</div>
-                                                            <select>
-                                                                <option value="camera">Camera</option>
-                                                                <option value="camera">Screenshare</option>
+                                                            <select onChange={(e) => { setVideoSelected1(e.target.value) }}>
+                                                                {cameras.map((camera) => (
+                                                                    <option key={camera.label} value={camera}>{camera.label}</option>
+                                                                ))}
                                                             </select>
                                                         </div>
                                                         <div className="settings-info-element">
                                                             <div className="settings-info-element-title">Video source 2</div>
-                                                            <select>
-                                                                <option value="camera">Camera</option>
-                                                                <option value="camera">Screenshare</option>
+                                                            <select onChange={(e) => { setVideoSelected2(e.target.value) }}>
+                                                                {cameras.map((camera) => (
+                                                                    <option key={camera.label} value={camera}>{camera.label}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <div className="settings-info-element">
+                                                            <div className="settings-info-element-title">Microphone</div>
+                                                            <select onChange={(e) => { setMicrophoneSelected(e.target.value) }}>
+                                                                {microphones.map((microphone) => (
+                                                                    <option key={microphone.label} value={microphone}>{microphone.label}</option>
+                                                                ))}
                                                             </select>
                                                         </div>
                                                     </>
@@ -248,59 +312,59 @@ function Stream() {
                                             <div className="settings-bottom">
                                                 <div className="settings-bottom-title">Layout</div>
                                                 <div className="layouts-container">
-                                                    <div className="layout-item" onClick={() => {selectLayout(1)}}>
-                                                        <div className="layout-main">1</div>
+                                                    <div className="layout-item" onClick={() => { selectLayout(1) }}>
+                                                        <div className="layout-main" style={{color: '#2d806f', borderColor: '#2d806f'}}>1</div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(2)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(2) }}>
                                                         <div className="layout-main">2</div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(3)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(3) }}>
                                                         <div className="layout-main">1
                                                             <div className="layout-secondary" style={{ top: 10, right: 10 }}>2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(4)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(4) }}>
                                                         <div className="layout-main">1
                                                             <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(5)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(5) }}>
                                                         <div className="layout-main">1
                                                             <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(6)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(6) }}>
                                                         <div className="layout-main">1
                                                             <div className="layout-secondary" style={{ top: 10, left: 10 }}>2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(7)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(7) }}>
                                                         <div className="layout-main">2
                                                             <div className="layout-secondary" style={{ top: 10, right: 10 }}>1</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(8)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(8) }}>
                                                         <div className="layout-main">2
                                                             <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>1</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(9)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(9) }}>
                                                         <div className="layout-main">2
                                                             <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>1</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(10)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(10) }}>
                                                         <div className="layout-main">2
                                                             <div className="layout-secondary" style={{ top: 10, left: 10 }}>1</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(11)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(11) }}>
                                                         <div className="layout-main layout-halfs">
                                                             <div className="layout-half-left">1</div>
                                                             <div className="layout-half-right">2</div>
                                                         </div>
                                                     </div>
-                                                    <div className="layout-item" onClick={() => {selectLayout(12)}}>
+                                                    <div className="layout-item" onClick={() => { selectLayout(12) }}>
                                                         <div className="layout-main layout-halfs">
                                                             <div className="layout-half-left">2</div>
                                                             <div className="layout-half-right">1</div>
