@@ -11,6 +11,12 @@ import { followUser, unfollowUser } from '../features/auth/authSlice'
 import React from 'react';
 import Player from '../components/play/Player'
 import ReactHlsPlayer from 'react-hls-player';
+import Flowplayer, { useFlowplayer } from "@flowplayer/react-flowplayer"
+import HLSPlugin from "@flowplayer/player/plugins/hls"
+import flowplayer from "@flowplayer/player"
+import "@flowplayer/player/flowplayer.css";
+
+flowplayer(HLSPlugin)
 
 const socket = io.connect('http://localhost:4000');
 
@@ -106,29 +112,20 @@ function Stream() {
                     {stream.status === 'started' ? (
                         <>
                             {stream.engine === 'personal' ? (
-                                <ReactHlsPlayer className='stream-player'
-                                    src={stream.hls_url}
-                                    autoPlay={true}
-                                    controls={false}
-                                    width="100%"
-                                    height="auto"
-                                />
+                                <div className="stream-player" style={{ position:"relative" }}>
+                                    <Flowplayer id="flow-player" src={stream.hls_url} opts={{ controls:true, live:true, retry: true, seekable: false }}/>
+                                </div>
                             ) : (
                                 <Player stream={stream} />
                             )
                             }
                         </>
-
                     ) : (
                         <>
                             {stream.status === 'ended' ? (
-                                <ReactHlsPlayer className='stream-player'
-                                    src={stream.vod_recording_hls_url}
-                                    autoPlay={true}
-                                    controls={true}
-                                    width="100%"
-                                    height="auto"
-                                />
+                                <div className="stream-player" style={{ position:"relative" }}>
+                                    <Flowplayer id="flow-player" className="use-play-2 use-drag-handle" src={stream.vod_recording_hls_url} opts={{ controls:true }}/>
+                                </div>
                             ) : (
                                 <div className="stream-player"></div>
                             )

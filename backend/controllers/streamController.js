@@ -16,7 +16,7 @@ const { response } = require('express')
 // @route GET /api/streams
 // @access Public
 const getStreams = asyncHandler(async (req, res) => {
-  const streams = await Stream.find().populate("user").populate("category")
+  const streams = await Stream.find({}, null, {sort: {createdAt: -1}}).populate("user").populate("category")
   res.status(200).send(streams)
 })
 
@@ -80,14 +80,7 @@ const download_image = (url, image_path) => {
 // @route GET /api/streams/user/<id>
 // @access Public
 const getUserStreams = asyncHandler(async (req, res) => {
-  const streams = await Stream.find({ user: { _id: req.params.id } })
-  for (let i = 0; i < streams.length; i++) {
-    let category = await Category.findById(streams[i].category)
-    if (!category) {
-      category = await Category.findOne({ name: 'GENERAL' })
-    }
-    streams[i].category = category
-  }
+  const streams = await Stream.find({ user: { _id: req.params.id } }, null, {sort: {createdAt: -1}}).populate('category')
   res.status(200).send(streams)
 })
 
@@ -189,7 +182,7 @@ const startStream = asyncHandler(async (req, res) => {
   const startTime = new Date().getTime()
   let currentTime = startTime
 
-  while (currentTime < startTime + 1000 * 1000 && stream_status != 'started') {
+  while (currentTime < startTime + 1000 * 3000 && stream_status != 'started') {
     stream_status = await getStreamStatus(wowza_stream_id)
     currentTime += 2000
   }
@@ -206,6 +199,14 @@ const startStream = asyncHandler(async (req, res) => {
 // @access Private
 const endStream = asyncHandler(async (req, res) => {
   const stream = await Stream.findById(req.body.id)
+  let stream_status = await getStreamStatus(stream.id)
+  if (stream_status === 'stopped') {
+    await Stream.findOneAndUpdate({ _id: req.body.id }, {
+      'status': 'ended',
+    })
+    const updatedStream = await Stream.findOne({ _id: req.body.id }).populate("user").populate("category")
+    res.status(200).send(updatedStream)
+  }
 
   if (!stream || stream.status !== 'started') {
     res.status(400)
@@ -217,13 +218,15 @@ const endStream = asyncHandler(async (req, res) => {
 
 
   let wowza_stream_id = stream.id
-  let stream_status = stream.status
-  requestResponse = await axios.put('https://api.video.wowza.com/api/v1.10/live_streams/' + wowza_stream_id + '/stop', null, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  })
+  stream_status = stream.status
+  if (stream_status !== 'stopping') {
+    requestResponse = await axios.put('https://api.video.wowza.com/api/v1.10/live_streams/' + wowza_stream_id + '/stop', null, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+  }
 
   const startTime = new Date().getTime()
   let currentTime = startTime

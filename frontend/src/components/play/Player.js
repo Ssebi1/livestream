@@ -16,10 +16,7 @@ const Player = (props) => {
     signalingURL: stream.webrtc_url,
     applicationName: stream.webrtc_application_name,
     streamName: stream.webrtc_stream_name,
-    playStart: true,
-    playStarting: false,
-    playStop: false,
-    playStopping: false
+    playStarting: false
   })
 
   const [websocket, setWebsocket] = useState(undefined)
@@ -29,13 +26,11 @@ const Player = (props) => {
   const [connected, setConnected] = useState(undefined)
 
   useEffect(() => {
-    console.log(playSettings)
-
-    if (playSettings.playStart && !playSettings.playStarting && !connected) {
+    if (!playSettings.playStarting && !connected) {
       setPlayStatus('playStarting')
       startPlay(playSettings, websocket, {
         onError: (error) => {
-          console.log(error)
+          setPlayStatus('')
         },
         onConnectionStateChange: (result) => {
           setConnected(result.connected)
@@ -62,44 +57,14 @@ const Player = (props) => {
     if (playSettings.playStarting && connected) {
       setPlayStatus('playStarting')
     }
-
-    if (playSettings.playStop && !playSettings.playStopping && connected) {
-      setPlayStatus('playStopping')
-      stopPlay(peerConnection, websocket, {
-        onSetPeerConnection: (result) => {
-          setPeerConnection(result.peerConnection)
-        },
-        onSetWebsocket: (result) => {
-          setWebsocket(result.websocket)
-        },
-        onPlayStopped: () => {
-          setConnected(false)
-        }
-      });
-    }
-    if (playSettings.playStopping && !connected) {
-      setPlayStatus()
-    }
-
-
   }, [dispatch, videoElement, playSettings, peerConnection, websocket, connected]);
 
   const setPlayStatus = (status) => {
     let playSettingsCopy = playSettings
-    playSettingsCopy.playStart = false
     playSettingsCopy.playStarting = false
-    playSettingsCopy.playStop = false
-    playSettingsCopy.playStopping = false
 
-    if (status === 'playStart')
-      playSettingsCopy.playStart = true
-    else if (status === 'playStarting')
+    if (status === 'playStarting')
       playSettingsCopy.playStarting = true
-    else if (status === 'playStop')
-      playSettingsCopy.playStop = true
-    else if (status === 'playStopping')
-      playSettingsCopy.playStopping = true
-
     setPlaySettings(playSettingsCopy)
   }
 
@@ -125,7 +90,7 @@ const Player = (props) => {
 
   if (!connected)
     return(
-      <div className="stream-player"></div>
+      <div className="stream-player">Stream starting soon</div>
     )
 
   return (

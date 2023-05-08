@@ -15,8 +15,6 @@ function CreateStream() {
     const { stream, isErrorStreams, isLoadingStreams, isSuccessStreams, messageStreams } = useSelector((state) => state.streams)
     const browserEngineRef = useRef(null)
     const personalEngineRef = useRef(null)
-    const personalEngineCredsServerRef = useRef(null)
-    const personalEngineCredsKeyRef = useRef(null)
 
     const [title, setTitle] = useState('')
     const [category, setCategory] = useState('64248b6be2e2118622ea2984')
@@ -74,13 +72,9 @@ function CreateStream() {
         if (option == 'browser') {
             browserEngineRef.current.style.borderColor = "#2d806f"
             personalEngineRef.current.style.borderColor = "transparent"
-            personalEngineCredsServerRef.current.style.display = "none"
-            personalEngineCredsKeyRef.current.style.display = "none"
         } else {
             browserEngineRef.current.style.borderColor = "transparent"
             personalEngineRef.current.style.borderColor = "#2d806f"
-            personalEngineCredsServerRef.current.style.display = "flex"
-            personalEngineCredsKeyRef.current.style.display = "flex"
         }
     }
 
@@ -130,14 +124,6 @@ function CreateStream() {
                             <div className="create-stream-options-title">Personal engine</div>
                             <div className="create-stream-options-subtitle">For advanced</div>
                         </div>
-                    </div>
-                    <div className='input-1 personal-engine-creds' ref={personalEngineCredsServerRef}>
-                        <input type="text" name="server" id="server" className="input-1-field input-field-disabled" value={"rtmp://192.168.0.3:1935/live"} disabled />
-                        <label htmlFor="server" className="input-1-label input-label-disabled">Server</label>
-                    </div>
-                    <div className='input-1 personal-engine-creds' ref={personalEngineCredsKeyRef}>
-                        <input type="text" name="stream-key" id="stream-key" className="input-1-field input-field-disabled" value={"63e9005e910af79245cbd188"} disabled />
-                        <label htmlFor="stream-key" className="input-1-label input-label-disabled">Stream key</label>
                     </div>
                     <button type="submit" class="button-1 create-stream-submit-button">Create</button>
                 </form>
