@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 
 import startPlay from '../../webrtc/startPlay';
-import stopPlay from '../../webrtc/stopPlay';
 
 const Player = (props) => {
 

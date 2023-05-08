@@ -147,12 +147,12 @@ function Stream() {
                         {currentTab === 'info' ? (
                             <div className="info-tab">
                                 <div className="stream-info-container-1">
-                                    <Link to={{pathname: `/profile/${stream.user._id}`}}><div className="stream-author-profile-picture" style={{ backgroundImage: `url('/profile-pictures/${stream.user._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}></div></Link>
+                                    <Link to={{ pathname: `/profile/${stream.user._id}` }}><div className="stream-author-profile-picture" style={{ backgroundImage: `url('/profile-pictures/${stream.user._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}></div></Link>
                                 </div>
                                 <div className="stream-info-container-2">
                                     <div className="stream-title">{stream.title}</div>
-                                    <Link to={{pathname: `/profile/${stream.user._id}`}}><div className="stream-author-username">{stream.user.name}</div></Link>
-                                    <Link to={{pathname: `/streams/${stream.category._id}`}}><div className="stream-category">{stream.category.name}</div></Link>
+                                    <Link to={{ pathname: `/profile/${stream.user._id}` }}><div className="stream-author-username">{stream.user.name}</div></Link>
+                                    <Link to={{ pathname: `/streams/${stream.category._id}` }}><div className="stream-category">{stream.category.name}</div></Link>
                                 </div>
                                 <div className="stream-info-container-3">
                                     {(() => {
@@ -182,31 +182,124 @@ function Stream() {
                             <>
                                 {currentTab === 'settings' ? (
                                     <div className='settings'>
-                                        <div className="settings-left">
-                                            <div className="settings-info-element">
-                                                <div className="settings-info-element-title">Publish server</div>
-                                                <input type="text" value={stream_primary_server} disabled />
+                                        <div className="settings-top">
+                                            <div className="settings-left">
+                                                {stream.engine === 'personal' ? (
+                                                    <>
+                                                        <div className="settings-info-element">
+                                                            <div className="settings-info-element-title">Publish server</div>
+                                                            <input type="text" value={stream_primary_server} disabled />
+                                                        </div>
+                                                        <div className="settings-info-element">
+                                                            <div className="settings-info-element-title">Status</div>
+                                                            <input type="text" value={stream.status} disabled />
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="settings-info-element">
+                                                            <div className="settings-info-element-title">Video source 1</div>
+                                                            <select>
+                                                                <option value="camera">Camera</option>
+                                                                <option value="camera">Screenshare</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="settings-info-element">
+                                                            <div className="settings-info-element-title">Video source 2</div>
+                                                            <select>
+                                                                <option value="camera">Camera</option>
+                                                                <option value="camera">Screenshare</option>
+                                                            </select>
+                                                        </div>
+                                                    </>
+                                                )
+                                                }
+
                                             </div>
-                                            <div className="settings-info-element">
-                                                <div className="settings-info-element-title">Status</div>
-                                                <input type="text" value={stream.status} disabled />
+                                            <div className="settings-right">
+                                                {stream.status === 'created' ? (
+                                                    <div className="start-button settings-button" onClick={() => { dispatch(startStream(stream._id)) }}>Start</div>
+                                                ) : (
+                                                    <>
+                                                        {stream.status === 'started' ? (
+                                                            <div className="end-button settings-button" onClick={() => { dispatch(endStream(stream._id)) }}>End</div>
+                                                        ) : (
+                                                            <div className="end-button settings-button" onClick={() => { dispatch(deleteStream(stream._id)); navigate('/') }}>Delete</div>
+                                                        )
+                                                        }
+                                                    </>
+                                                )
+                                                }
                                             </div>
                                         </div>
-                                        <div className="settings-right">
-                                            {stream.status === 'created' ? (
-                                                <div className="start-button settings-button" onClick={() => { dispatch(startStream(stream._id)) }}>Start</div>
-                                            ) : (
-                                                <>
-                                                    {stream.status === 'started' ? (
-                                                        <div className="end-button settings-button" onClick={() => { dispatch(endStream(stream._id)) }}>End</div>
-                                                    ) : (
-                                                        <div className="end-button settings-button" onClick={() => { dispatch(deleteStream(stream._id)); navigate('/') }}>Delete</div>
-                                                    )
-                                                    }
-                                                </>
-                                            )
-                                            }
-                                        </div>
+                                        {stream.engine === 'personal' ? (
+                                            <></>
+                                        ) : (
+                                            <div className="settings-bottom">
+                                                <div className="settings-bottom-title">Layout</div>
+                                                <div className="layouts-container">
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">1</div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">2</div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">1
+                                                            <div className="layout-secondary" style={{ top: 10, right: 10 }}>2</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">1
+                                                            <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>2</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">1
+                                                            <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>2</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">1
+                                                            <div className="layout-secondary" style={{ top: 10, left: 10 }}>2</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">2
+                                                            <div className="layout-secondary" style={{ top: 10, right: 10 }}>1</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">2
+                                                            <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>1</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">2
+                                                            <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>1</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main">2
+                                                            <div className="layout-secondary" style={{ top: 10, left: 10 }}>1</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main layout-halfs">
+                                                            <div className="layout-half-left">1</div>
+                                                            <div className="layout-half-right">2</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="layout-item">
+                                                        <div className="layout-main layout-halfs">
+                                                            <div className="layout-half-left">2</div>
+                                                            <div className="layout-half-right">1</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                        }
                                     </div>
                                 ) : (
                                     <div>Stats</div>
