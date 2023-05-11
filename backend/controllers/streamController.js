@@ -30,7 +30,7 @@ const getStream = asyncHandler(async (req, res) => {
     throw new Error('Stream not found')
   }
 
-  if (stream.vod_recording_hls_url === undefined || stream.vod_duration == "0" || stream.vod_duration === undefined) {
+  if (stream.vod_recording_hls_url === undefined || stream.vod_duration == "0" || stream.vod_duration == "0:0" || stream.vod_duration === undefined) {
     try {
       requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/vod_streams', {
         headers: {
@@ -218,6 +218,7 @@ const endStream = asyncHandler(async (req, res) => {
     })
     const updatedStream = await Stream.findOne({ _id: req.body.id }).populate("user").populate("category")
     res.status(200).send(updatedStream)
+    return
   }
 
   if (!stream || stream.status !== 'started') {
@@ -225,9 +226,10 @@ const endStream = asyncHandler(async (req, res) => {
     throw new Error('Stream not found')
   }
 
-  if (!fs.existsSync('./frontend/public/thumbnail-pictures/' + stream._id + '.png'))
+  try {
+    if (!fs.existsSync('./frontend/public/thumbnail-pictures/' + stream._id + '.png'))
     download_image(stream.thumbnail_url, './frontend/public/thumbnail-pictures/' + stream._id + '.png')
-
+  } catch {}
 
   let wowza_stream_id = stream.id
   stream_status = stream.status
@@ -243,7 +245,7 @@ const endStream = asyncHandler(async (req, res) => {
   const startTime = new Date().getTime()
   let currentTime = startTime
 
-  while(currentTime <startTime + 1000 * 1000 && stream_status != 'stopped') {
+  while(currentTime < startTime + 1000 * 1000 && stream_status != 'stopped') {
     stream_status = await getStreamStatus(wowza_stream_id)
     currentTime += 2000
   }

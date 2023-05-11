@@ -137,8 +137,8 @@ const websocketOnMessage = (event, playSettings, peerConnection, websocket, call
 }
 
 const websocketOnError = (error, callbacks) => {
-  console.log('Websocket Error');
-  console.log(error);
+  // console.log('Websocket Error');
+  // console.log(error);
   if (callbacks.onError)
     callbacks.onError({message:'Websocket Error: '+error.message});
 }
