@@ -199,6 +199,10 @@
     padding: 0 15px;
 }
 
+.settings-title {
+    font-size: 22px;
+}
+
 .settings-top {
     display: flex;
     flex-direction: row;
@@ -344,6 +348,39 @@
     border: 2px solid #949494;
     background-color: #949494;
     color: white;
+}
+
+
+.settings-bottom-2-columns {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 20px;
+    width: 100%;
+    position: relative;
+    margin-top: 20px;
+}
+
+#publisher-canvas {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background-color: gray;
+}
+
+.settings-bottom-column-2 {
+    flex: 1 1;
+}
+
+.settings-bottom-column-1 {
+    flex: 1 1;
+}
+
+.settings-bottom-column-2 input {
+    width: 100%;
+}
+
+.settings-bottom-column-1 .settings-title, .settings-bottom-column-2 .settings-title {
+    margin-bottom: 10px;
 }
 
 @media only screen and (min-width: 1601px) {

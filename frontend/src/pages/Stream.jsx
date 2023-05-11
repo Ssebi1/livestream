@@ -194,9 +194,11 @@ function Stream() {
 
     // Set up canvas captureStream when component mounts.
     useEffect(() => {
-        let ctx = canvasElement.current.getContext('2d');
-        let canvasStream = canvasElement.current.captureStream(30);
-        setCompositeVideoTrack(canvasStream.getTracks()[0])
+        if (stream && stream.engine == 'browser') {
+            let ctx = canvasElement.current.getContext('2d');
+            let canvasStream = canvasElement.current.captureStream(30);
+            setCompositeVideoTrack(canvasStream.getTracks()[0])
+        }
     }, [dispatch]);
 
     if (isLoadingStreams) {
@@ -290,7 +292,7 @@ function Stream() {
         setGotPermissions(gotPermissionsBool)
     }
 
-    const pipScale = (1 / 4);
+    const pipScale = (1 / 2);
     const padding = (1 / 16);
 
     const fillSize = (srcSize, dstSize, scale = 1) => {
@@ -321,28 +323,28 @@ function Stream() {
         let paddingHorz = canvasSize.width * padding;
 
         // PIP Top-Right
-        if (layout === 2 || layout === 3) {
+        if (layout === 3 || layout === 7) {
             return {
                 top: paddingVert,
                 left: canvasSize.width - pipSize.width - paddingHorz
             }
         }
         // PIP Top-Left
-        if (layout === 4) {
+        if (layout === 6 || layout === 10) {
             return {
                 top: paddingVert,
                 left: paddingHorz
             }
         }
         // PIP Bottom-Left
-        if (layout === 5) {
+        if (layout === 5 || layout === 9) {
             return {
                 top: canvasSize.height - pipSize.height - paddingVert,
                 left: paddingHorz
             }
         }
         // PIP Bottom-Right
-        if (layout === 6) {
+        if (layout === 4 || layout === 8) {
             return {
                 top: canvasSize.height - pipSize.height - paddingVert,
                 left: canvasSize.width - pipSize.width - paddingHorz
@@ -356,7 +358,7 @@ function Stream() {
     const renderFrame = (video1, video2, canvas, layout, video1ScaleMode) => {
         try {
             layout = parseInt(layout)
-        } catch {}
+        } catch { }
         let context = canvas.getContext('2d');
 
         // set canvas size to 720p
@@ -366,10 +368,10 @@ function Stream() {
         context.fillStyle = "gray";
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        let video1Full = layout === 0 || layout === 2 || layout === 4 || layout === 5 || layout === 6;
-        let video1Pip = layout === 3;
-        let video2Full = layout === 1 || layout === 3;
-        let video2Pip = layout === 2 || layout === 4 || layout === 5 || layout === 6;
+        let video1Full = layout === 1 || layout === 3 || layout === 4 || layout === 5 || layout === 6;
+        let video1Pip = layout === 7 || layout === 8 || layout === 9 || layout === 10;
+        let video2Full = layout === 2 || layout === 7 || layout === 8 || layout === 9 || layout === 10;
+        let video2Pip = layout === 3 || layout === 4 || layout === 5 || layout === 6;;
 
         let canvasSize = { width: canvas.width, height: canvas.height };
         let video1Size = { width: video1.videoWidth, height: video1.videoHeight };
@@ -406,7 +408,7 @@ function Stream() {
         }
 
         // 2-up
-        if (layout === 7) {
+        if (layout === 11) {
             if (video1.readyState === video1.HAVE_ENOUGH_DATA) {
                 let renderSize = fitSize(video1Size, canvasSize, 0.5);
                 let xOffset = (canvasSize.width / 2 - renderSize.width) / 2;
@@ -421,6 +423,20 @@ function Stream() {
             }
         }
 
+        if (layout === 12) {
+            if (video2.readyState === video2.HAVE_ENOUGH_DATA) {
+                let renderSize = fitSize(video2Size, canvasSize, 0.5);
+                let xOffset = (canvasSize.width / 2 - renderSize.width) / 2;
+                let yOffset = canvasSize.height / 2 - renderSize.height / 2;
+                context.drawImage(video2, xOffset, yOffset, renderSize.width, renderSize.height);
+            }
+            if (video1.readyState === video1.HAVE_ENOUGH_DATA) {
+                let renderSize = fitSize(video1Size, canvasSize, 0.5);
+                let xOffset = (canvasSize.width - renderSize.width) + ((canvasSize.width / 2 - renderSize.width) / 2);
+                let yOffset = canvasSize.height / 2 - renderSize.height / 2;
+                context.drawImage(video1, xOffset, yOffset, renderSize.width, renderSize.height);
+            }
+        }
     }
 
     const loadUserMediaForCameras = async (cameras) => {
@@ -500,12 +516,6 @@ function Stream() {
                         </>
                     )
                     }
-
-                    <>
-                        <canvas ref={canvasElement} id="publisher-canvas"></canvas>
-                        <video ref={video1Element} id="publisher-video1" autoPlay style={{display:'none'}}></video>
-                        <video ref={video2Element} id="publisher-video2" autoPlay style={{display:'none'}}></video>
-                    </>
 
                     <div className="stream-info-container">
                         {user && stream.user._id === user._id ? (
@@ -624,8 +634,8 @@ function Stream() {
                                             <></>
                                         ) : (
                                             <div className="settings-bottom">
-                                                <div className="settings-bottom-title">Layout</div>
-                                                <input type="text" value={layoutSelected} ref={layoutSelectedRef}></input>
+                                                <div className="settings-title">Layout</div>
+                                                <input type="text" value={layoutSelected} ref={layoutSelectedRef} hidden></input>
                                                 <div className="layouts-container">
                                                     <div className="layout-item" onClick={() => { selectLayout(1) }}>
                                                         <div className="layout-main" style={{ color: '#2d806f', borderColor: '#2d806f' }}>1</div>
@@ -686,6 +696,22 @@ function Stream() {
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div className="settings-bottom-2-columns">
+                                                    <div className="settings-bottom-column-1">
+                                                        <div className="settings-title">Preview</div>
+                                                        <canvas ref={canvasElement} id="publisher-canvas"></canvas>
+                                                        <video ref={video1Element} id="publisher-video1" autoPlay style={{ display: 'none' }}></video>
+                                                        <video ref={video2Element} id="publisher-video2" autoPlay style={{ display: 'none' }}></video>
+                                                    </div>
+                                                    <div className="settings-bottom-column-2">
+                                                        <div className="settings-title">Options</div>
+                                                        <div className="settings-subtitle">Padding</div>
+                                                        <input type="range" min="1" max="100" step="1"/>
+                                                        <div className="settings-subtitle">Scale</div>
+                                                        <input type="range" min="1" max="100" step="1"/>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         )
                                         }
