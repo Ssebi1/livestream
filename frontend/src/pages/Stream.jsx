@@ -60,6 +60,7 @@ function Stream() {
     const [compositeVideoTrack, setCompositeVideoTrack] = useState(undefined)
     const [optionsPadding, setPadding] = useState(1 / 16)
     const [optionsScale, setScale] = useState(1 / 4)
+    const [optionsZoom, setZoom] = useState(1)
 
     const video1Element = useRef(null);
     const video1ScaleMode = useRef('fill');
@@ -69,6 +70,7 @@ function Stream() {
     const layoutSelectedRef = useRef(null)
     const paddingRef = useRef(null)
     const scaleRef = useRef(null)
+    const zoomRef = useRef(null)
 
     const [running, setRunning] = useState(false);
 
@@ -85,25 +87,56 @@ function Stream() {
             navigate('/')
         }
 
-        if (!gotPermissions) {
-            dispatch(getPermissions)
-        }
-
         dispatch(getStream(id))
         dispatch(setThumbnail(id))
-        try {
-            dispatch(loadDevices)
-        } catch { }
 
         return () => {
             dispatch(reset())
         }
     }, [user, navigate, isErrorStreams, messageStreams, dispatch])
 
-    const publishCompositionStream = () => {
-        setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0])
+    const loadDevices = async () => {
+        if (!user || stream.user._id !== user._id || stream.engine !== 'browser' || stream.status !== 'started') {
+
+        } else {
+            setDevicesLoading(true)
+            try {
+                let { cameras, microphones } = await getDevices();
+                setCameras(cameras)
+                setMicrophones(microphones)
+                setDevicesLoading(false)
+                await loadUserMediaForCameras(cameras)
+                await loadUserMediaForMicrophones(microphones)
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
     }
 
+    const getPermissions = async () => {
+        if (!user || stream.user._id !== user._id || stream.engine !== 'browser' || stream.status !== 'started' || gotPermissions) {
+        } else {
+            let gotPermissionsBool = false;
+            try {
+                await getUserMedia({
+                    video: {
+                        width: { min: "640", ideal: "1280", max: "1920" },
+                        height: { min: "360", ideal: "720", max: "1080" },
+                        frameRate: "30"
+                    }, audio: true
+                });
+                gotPermissionsBool = true;
+            }
+            catch { }
+            setGotPermissions(gotPermissionsBool)
+        }
+    }
+
+    useEffect(() => {
+        dispatch(getPermissions)
+        dispatch(loadDevices)
+    }, [stream])
 
     useEffect(() => {
         if (publish && !publishStarting && !connected) {
@@ -210,7 +243,7 @@ function Stream() {
 
     // Set up canvas captureStream when component mounts.
     useEffect(() => {
-        
+
     }, [dispatch])
 
     if (isLoadingStreams) {
@@ -269,40 +302,6 @@ function Stream() {
         layouts[index - 1].style.color = '#2d806f'
         layouts[index - 1].style.borderColor = '#2d806f'
         setLayout(index)
-    }
-
-    const loadDevices = async () => {
-        if (stream.engine === 'browser' && stream.status !== 'ended' && user && stream.user._id === user._id)
-            return
-        setDevicesLoading(true)
-        try {
-            let { cameras, microphones } = await getDevices();
-            setCameras(cameras)
-            setMicrophones(microphones)
-            setDevicesLoading(false)
-            await loadUserMediaForCameras(cameras)
-            await loadUserMediaForMicrophones(microphones)
-        }
-        catch (error) {
-            console.log(error);
-        }
-
-    }
-
-    const getPermissions = async () => {
-        let gotPermissionsBool = false;
-        try {
-            await getUserMedia({
-                video: {
-                    width: { min: "640", ideal: "1280", max: "1920" },
-                    height: { min: "360", ideal: "720", max: "1080" },
-                    frameRate: "30"
-                }, audio: true
-            });
-            gotPermissionsBool = true;
-        }
-        catch { }
-        setGotPermissions(gotPermissionsBool)
     }
 
     const fillSize = (srcSize, dstSize, scale = 1) => {
@@ -368,6 +367,7 @@ function Stream() {
     const renderFrame = (video1, video2, canvas, layout, video1ScaleMode) => {
         let padding = paddingRef.current.value
         let pipScale = scaleRef.current.value
+        let zoomScale = zoomRef.current.value
         try {
             layout = parseInt(layout)
         } catch { }
@@ -379,6 +379,10 @@ function Stream() {
 
         context.fillStyle = "gray";
         context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.translate(-canvas.width*(zoomScale - 1)/2, -canvas.height*(zoomScale - 1)/2)
+        context.scale(zoomScale,zoomScale)
+        
 
         let video1Full = layout === 1 || layout === 3 || layout === 4 || layout === 5 || layout === 6;
         let video1Pip = layout === 7 || layout === 8 || layout === 9 || layout === 10;
@@ -498,6 +502,10 @@ function Stream() {
         setAudioTracksMap(newAudioTracksMap)
     }
 
+    const setCanvas = () => {
+        setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]);
+    }
+
     return (
         <>
             <div className="stream-container">
@@ -538,6 +546,7 @@ function Stream() {
                             <></>
                         )
                         }
+
                         {currentTab === 'info' ? (
                             <div className="info-tab">
                                 <div className="stream-info-container-1">
@@ -550,10 +559,10 @@ function Stream() {
                                 </div>
                                 <div className="stream-info-container-3">
                                     {(() => {
-                                        if (!user || stream.user._id !== user._id) {
+                                        if (user && stream.user._id !== user._id) {
                                             return (
                                                 <>
-                                                    {user.following.includes(stream.user._id) ? (
+                                                    {user && user.following.includes(stream.user._id) ? (
                                                         <div className="follow-button-wrapper">
                                                             <div className="follow-button unfollow-button" onClick={unfollow}>UNFOLLOW <AiOutlineStar size={20} /></div>
                                                         </div>
@@ -574,172 +583,217 @@ function Stream() {
                             </div>
                         ) : (
                             <>
-                                {currentTab === 'settings' ? (
-                                    <div className='settings'>
-                                        <div className="settings-top">
-                                            <div className="settings-left">
-                                                {stream.engine === 'personal' ? (
-                                                    <>
-                                                        <div className="settings-info-element">
-                                                            <div className="settings-info-element-title">Publish server</div>
-                                                            <input type="text" value={stream_primary_server} disabled />
-                                                        </div>
-                                                        <div className="settings-info-element">
-                                                            <div className="settings-info-element-title">Status</div>
-                                                            <input type="text" value={stream.status} disabled />
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <div className="settings-info-element">
-                                                            <div className="settings-info-element-title">Video source 1</div>
-                                                            <select onChange={(e) => { setVideoSelected1(e.target.value); setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]); }}>
-                                                                <option value="0" selected>None</option>
-                                                                {cameras.map((camera) => (
-                                                                    <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                        <div className="settings-info-element">
-                                                            <div className="settings-info-element-title">Video source 2</div>
-                                                            <select onChange={(e) => { setVideoSelected2(e.target.value); setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]); }}>
-                                                                <option value="0" selected>None</option>
-                                                                {cameras.map((camera) => (
-                                                                    <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                        <div className="settings-info-element">
-                                                            <div className="settings-info-element-title">Microphone</div>
-                                                            <select onChange={(e) => { setMicrophoneSelected(e.target.value); setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]); }}>
-                                                                <option value="0" selected>None</option>
-                                                                {microphones.map((microphone) => (
-                                                                    <option key={microphone.deviceId} value={microphone.deviceId}>{microphone.label}</option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                    </>
-                                                )
-                                                }
-
-                                            </div>
-                                            <div className="settings-right">
-                                                {stream.status === 'created' ? (
-                                                    <div className="start-button settings-button" onClick={() => { dispatch(startStream(stream._id)) }}>Start</div>
-                                                ) : (
-                                                    <>
-                                                        {stream.status === 'started' ? (
-                                                            <div className="end-button settings-button" onClick={() => { dispatch(endStream(stream._id)) }}>End</div>
+                                {user && stream && stream.user._id === user._id ? (
+                                    <>
+                                        {currentTab === 'settings' ? (
+                                            <div className='settings'>
+                                                <div className="settings-top">
+                                                    <div className="settings-left">
+                                                        {stream.engine === 'personal' ? (
+                                                            <>
+                                                                <div className="settings-info-element">
+                                                                    <div className="settings-info-element-title">Publish server</div>
+                                                                    <input type="text" value={stream_primary_server} disabled />
+                                                                </div>
+                                                                <div className="settings-info-element">
+                                                                    <div className="settings-info-element-title">Status</div>
+                                                                    <input type="text" value={stream.status} disabled />
+                                                                </div>
+                                                            </>
                                                         ) : (
-                                                            <div className="end-button settings-button" onClick={() => { dispatch(deleteStream(stream._id)); navigate('/') }}>Delete</div>
+                                                            <>
+                                                                <div className="settings-info-element">
+                                                                    <div className="settings-info-element-title">Video source 1</div>
+                                                                    {stream.engine === 'browser' && stream.status === 'started' ? (
+                                                                        <select onChange={(e) => { setVideoSelected1(e.target.value); setCanvas(); }}>
+                                                                            <option value="0" selected>None</option>
+                                                                            {cameras.map((camera) => (
+                                                                                <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    ) : (
+                                                                        <select disabled>
+                                                                        </select>
+                                                                    )
+                                                                    }
+                                                                </div>
+                                                                <div className="settings-info-element">
+                                                                    <div className="settings-info-element-title">Video source 2</div>
+                                                                    {stream.engine === 'browser' && stream.status === 'started' ? (
+                                                                        <select onChange={(e) => { setVideoSelected2(e.target.value); setCanvas(); }}>
+                                                                            <option value="0" selected>None</option>
+                                                                            {cameras.map((camera) => (
+                                                                                <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    ) : (
+                                                                        <select disabled>
+                                                                        </select>
+                                                                    )
+                                                                    }
+                                                                </div>
+                                                                <div className="settings-info-element">
+                                                                    <div className="settings-info-element-title">Microphone</div>
+                                                                    {stream.engine === 'browser' && stream.status === 'started' ? (
+                                                                        <select onChange={(e) => { setMicrophoneSelected(e.target.value); setCanvas() }}>
+                                                                            <option value="0" selected>None</option>
+                                                                            {microphones.map((microphone) => (
+                                                                                <option key={microphone.deviceId} value={microphone.deviceId}>{microphone.label}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    ) : (
+                                                                        <select disabled>
+                                                                        </select>
+                                                                    )
+                                                                    }
+                                                                </div>
+                                                            </>
+                                                        )
+                                                        }
+                                                    </div>
+                                                    <div className="settings-right">
+                                                        {stream.status === 'created' ? (
+                                                            <div className="start-button settings-button" onClick={() => { dispatch(startStream(stream._id)) }}>Start</div>
+                                                        ) : (
+                                                            <>
+                                                                {stream.status === 'started' ? (
+                                                                    <div className="end-button settings-button" onClick={() => { dispatch(endStream(stream._id)) }}>End</div>
+                                                                ) : (
+                                                                    <div className="end-button settings-button" onClick={() => { dispatch(deleteStream(stream._id)); navigate('/') }}>Delete</div>
+                                                                )
+                                                                }
+                                                            </>
+                                                        )
+                                                        }
+                                                        {stream.engine === 'browser' && stream.status === 'started' ? (
+                                                            <>
+                                                                {!publishStarting && !connected ? (
+                                                                    <div className="publish-button settings-button" onClick={() => { setPublish(true) }}>Publish</div>
+                                                                ) : (
+                                                                    <>
+                                                                        {!connected ? (
+                                                                            <div className="publish-button settings-button">...</div>
+                                                                        ) : (
+                                                                            <div className="publish-button settings-button">Unpublish</div>
+                                                                        )
+                                                                        }
+                                                                    </>
+                                                                )
+                                                                }
+                                                            </>
+                                                        ) : (
+                                                            <></>
+                                                        )
+                                                        }
+                                                    </div>
+                                                </div>
+                                                {stream.engine === 'personal' ? (
+                                                    <></>
+                                                ) : (
+                                                    <>
+                                                        {stream.engine === 'browser' && stream.status === 'started' && user && stream.user._id === user._id ? (
+                                                            <div className="settings-bottom">
+                                                                <div className="settings-title">Layout</div>
+                                                                <input type="text" value={layoutSelected} ref={layoutSelectedRef} hidden readOnly></input>
+                                                                <div className="layouts-container">
+                                                                    <div className="layout-item" onClick={() => { selectLayout(1) }}>
+                                                                        <div className="layout-main" style={{ color: '#2d806f', borderColor: '#2d806f' }}>1</div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(2) }}>
+                                                                        <div className="layout-main">2</div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(3) }}>
+                                                                        <div className="layout-main">1
+                                                                            <div className="layout-secondary" style={{ top: 10, right: 10 }}>2</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(4) }}>
+                                                                        <div className="layout-main">1
+                                                                            <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>2</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(5) }}>
+                                                                        <div className="layout-main">1
+                                                                            <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>2</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(6) }}>
+                                                                        <div className="layout-main">1
+                                                                            <div className="layout-secondary" style={{ top: 10, left: 10 }}>2</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(7) }}>
+                                                                        <div className="layout-main">2
+                                                                            <div className="layout-secondary" style={{ top: 10, right: 10 }}>1</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(8) }}>
+                                                                        <div className="layout-main">2
+                                                                            <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>1</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(9) }}>
+                                                                        <div className="layout-main">2
+                                                                            <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>1</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(10) }}>
+                                                                        <div className="layout-main">2
+                                                                            <div className="layout-secondary" style={{ top: 10, left: 10 }}>1</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(11) }}>
+                                                                        <div className="layout-main layout-halfs">
+                                                                            <div className="layout-half-left">1</div>
+                                                                            <div className="layout-half-right">2</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="layout-item" onClick={() => { selectLayout(12) }}>
+                                                                        <div className="layout-main layout-halfs">
+                                                                            <div className="layout-half-left">2</div>
+                                                                            <div className="layout-half-right">1</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="settings-bottom-2-columns">
+                                                                    <div className="settings-bottom-column-1">
+                                                                        <div className="settings-title">Preview</div>
+                                                                        <canvas ref={canvasElement} id="publisher-canvas"></canvas>
+                                                                        <video ref={video1Element} id="publisher-video1" autoPlay style={{ display: 'none' }}></video>
+                                                                        <video ref={video2Element} id="publisher-video2" autoPlay style={{ display: 'none' }}></video>
+                                                                    </div>
+                                                                    <div className="settings-bottom-column-2">
+                                                                        <div className="settings-title">Options</div>
+                                                                        <div className="settings-subtitle">Padding</div>
+                                                                        <input type="range" min="0" max="0.2" step="0.01" defaultValue="0.0625" ref={paddingRef} onChange={(e) => setPadding(e.target.value)} />
+                                                                        <div className="settings-subtitle">Scale</div>
+                                                                        <input type="range" min="0.2" max="0.5" step="0.01" defaultValue="0.25" ref={scaleRef} onChange={(e) => setScale(e.target.value)} />
+                                                                        <div className="settings-subtitle">Zoom</div>
+                                                                        <input type="range" min="1" max="1.5" step="0.01" defaultValue="1" ref={zoomRef} onChange={(e) => setZoom(e.target.value)} />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <></>
                                                         )
                                                         }
                                                     </>
                                                 )
                                                 }
-                                                <div className="publish-button settings-button" onClick={() => { setPublish(true) }}>Publish</div>
                                             </div>
-                                        </div>
-                                        {stream.engine === 'personal' ? (
-                                            <></>
                                         ) : (
-                                            <div className="settings-bottom">
-                                                <div className="settings-title">Layout</div>
-                                                <input type="text" value={layoutSelected} ref={layoutSelectedRef} hidden readOnly></input>
-                                                <div className="layouts-container">
-                                                    <div className="layout-item" onClick={() => { selectLayout(1) }}>
-                                                        <div className="layout-main" style={{ color: '#2d806f', borderColor: '#2d806f' }}>1</div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(2) }}>
-                                                        <div className="layout-main">2</div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(3) }}>
-                                                        <div className="layout-main">1
-                                                            <div className="layout-secondary" style={{ top: 10, right: 10 }}>2</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(4) }}>
-                                                        <div className="layout-main">1
-                                                            <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>2</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(5) }}>
-                                                        <div className="layout-main">1
-                                                            <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>2</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(6) }}>
-                                                        <div className="layout-main">1
-                                                            <div className="layout-secondary" style={{ top: 10, left: 10 }}>2</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(7) }}>
-                                                        <div className="layout-main">2
-                                                            <div className="layout-secondary" style={{ top: 10, right: 10 }}>1</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(8) }}>
-                                                        <div className="layout-main">2
-                                                            <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>1</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(9) }}>
-                                                        <div className="layout-main">2
-                                                            <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>1</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(10) }}>
-                                                        <div className="layout-main">2
-                                                            <div className="layout-secondary" style={{ top: 10, left: 10 }}>1</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(11) }}>
-                                                        <div className="layout-main layout-halfs">
-                                                            <div className="layout-half-left">1</div>
-                                                            <div className="layout-half-right">2</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="layout-item" onClick={() => { selectLayout(12) }}>
-                                                        <div className="layout-main layout-halfs">
-                                                            <div className="layout-half-left">2</div>
-                                                            <div className="layout-half-right">1</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="settings-bottom-2-columns">
-                                                    <div className="settings-bottom-column-1">
-                                                        <div className="settings-title">Preview</div>
-                                                        <canvas ref={canvasElement} id="publisher-canvas"></canvas>
-                                                        <video ref={video1Element} id="publisher-video1" autoPlay style={{ display: 'none' }}></video>
-                                                        <video ref={video2Element} id="publisher-video2" autoPlay style={{ display: 'none' }}></video>
-                                                    </div>
-                                                    <div className="settings-bottom-column-2">
-                                                        <div className="settings-title">Options</div>
-                                                        <div className="settings-subtitle">Padding</div>
-                                                        <input type="range" min="0" max="0.2" step="0.01" defaultValue="0.0625" onChange={(e) => setPadding(e.target.value)} />
-                                                        <input type="number" value={optionsPadding} ref={paddingRef} hidden readOnly />
-                                                        <div className="settings-subtitle">Scale</div>
-                                                        <input type="range" min="0.2" max="0.5" step="0.01" defaultValue="0.25" ref={scaleRef} onChange={(e) => setScale(e.target.value)} />
-                                                        <input type="number" value={optionsScale} hidden readOnly />
-                                                    </div>
-                                                </div>
-
-                                            </div>
+                                            <div>Stats</div>
                                         )
                                         }
-                                    </div>
-                                ) : (
-                                    <div>Stats</div>
-                                )
-
-                                }
+                                    </>
+                                ) : (<></>)}
                             </>
                         )
                         }
                     </div>
                 </div>
                 <StreamChat socket={socket} stream={stream} />
-            </div>
+            </div >
         </>
     )
 }

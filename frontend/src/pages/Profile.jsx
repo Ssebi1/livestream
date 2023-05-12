@@ -309,7 +309,7 @@ function Profile() {
                         <div className="name">{streamer.name}</div>
                         <div className="followers">{streamer.followersNr} followers</div>
                     </div>
-                    {isOwnProfile === true ? (
+                    {isOwnProfile || !user ? (
                         <></>
                     ) : (<>
                         {user.following.includes(streamer._id) ? (

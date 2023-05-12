@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import streamService from './streamService'
 
 const initialState = {
@@ -71,9 +71,9 @@ export const getStreams = createAsyncThunk('streams/getAll', async (thunkAPI) =>
         return await streamService.getStreams()
     } catch (error) {
         const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString()
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
         return thunkAPI.rejectWithValue(message)
     }
 })
@@ -83,9 +83,9 @@ export const getStream = createAsyncThunk('streams/get', async (id, thunkAPI) =>
         return await streamService.getStream(id)
     } catch (error) {
         const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString()
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
         return thunkAPI.rejectWithValue(message)
     }
 })
@@ -95,9 +95,9 @@ export const getUserStreams = createAsyncThunk('streams/getUserStreams', async (
         return await streamService.getUserStreams(id)
     } catch (error) {
         const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString()
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
         return thunkAPI.rejectWithValue(message)
     }
 })
@@ -107,9 +107,9 @@ export const deleteStream = createAsyncThunk('streams/delete', async (id, thunkA
         return await streamService.deleteStream(id)
     } catch (error) {
         const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString()
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
         return thunkAPI.rejectWithValue(message)
     }
 })
@@ -231,5 +231,5 @@ export const streamSlice = createSlice({
     }
 })
 
-export const {reset} = streamSlice.actions
+export const { reset } = streamSlice.actions
 export default streamSlice.reducer

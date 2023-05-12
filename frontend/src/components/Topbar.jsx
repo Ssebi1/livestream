@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '../features/auth/authSlice'
 import { FaUser, FaSignOutAlt } from 'react-icons/fa'
 import { GiHamburgerMenu } from 'react-icons/gi'
-import {AiFillVideoCamera} from 'react-icons/ai'
+import { AiFillVideoCamera } from 'react-icons/ai'
 import { useRef, useState } from 'react'
 
 function Topbar() {
@@ -15,7 +15,9 @@ function Topbar() {
 
     window.addEventListener('click', (e) => {
         if (e.target.className !== 'account-link' && e.target.parentNode.className !== 'account-link' && e.target.parentNode.className !== 'account') {
-            accountDropdownRef.current.style.height = '0px'
+            try {
+                accountDropdownRef.current.style.height = '0px'
+            } catch { }
         }
     })
 
@@ -40,7 +42,7 @@ function Topbar() {
             accountDropdown.style.height = 'auto'
         } else {
             accountDropdown.style.height = '0px'
-        } 
+        }
     }
 
     const closeTopbar = () => {
@@ -73,14 +75,14 @@ function Topbar() {
                 {user ? (
                     <>
                         <ul className='right'>
-                            <div className='account-link' onClick={() => {closeTopbar(); toggleAccountDropdown()}}>
+                            <div className='account-link' onClick={() => { closeTopbar(); toggleAccountDropdown() }}>
                                 <li className="account">
                                     <div className="username">{user.name}</div>
-                                    <div className="profile-picture-topbar"  style={{backgroundImage: `url('/profile-pictures/${user._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}></div>
+                                    <div className="profile-picture-topbar" style={{ backgroundImage: `url('/profile-pictures/${user._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}></div>
                                 </li>
                                 <ul className="account-dropdown" ref={accountDropdownRef}>
                                     <Link to="/account" onClick={() => { closeTopbar(); closeAccount() }}>Account</Link>
-                                    <Link to={{pathname: `/profile/${user._id}`}} onClick={() => { closeTopbar(); closeAccount() }}>Profile</Link>
+                                    <Link to={{ pathname: `/profile/${user._id}` }} onClick={() => { closeTopbar(); closeAccount() }}>Profile</Link>
                                     <li onClick={() => { closeTopbar(); closeAccount(); onLogout() }}>Logout</li>
                                 </ul>
                             </div>
@@ -108,7 +110,7 @@ function Topbar() {
                     {user ? (
                         <>
                             <Link to='/account' onClick={() => { closeTopbar(); closeAccount() }} className="topbar-link">Account</Link>
-                            <div onClick={() => {closeTopbar(); closeAccount(); navigate("/profile/" + user._id)} } className="topbar-link">Profile</div>
+                            <div onClick={() => { closeTopbar(); closeAccount(); navigate("/profile/" + user._id) }} className="topbar-link">Profile</div>
                             <div onClick={() => { closeTopbar(); closeAccount(); onLogout() }} className="topbar-link">Logout</div>
                             <Link to="/create-stream" className='start-stream-link topbar-link' onClick={() => { closeTopbar(); closeAccount() }}>Start stream</Link>
                         </>
