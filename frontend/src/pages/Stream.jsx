@@ -61,6 +61,9 @@ function Stream() {
     const [optionsPadding, setPadding] = useState(1 / 16)
     const [optionsScale, setScale] = useState(1 / 4)
     const [optionsZoom, setZoom] = useState(1)
+    const [chatPosition, setChatPosition] = useState('none')
+    const [chatPrimaryColor, setChatPrimaryColor] = useState('#00539C')
+    const [chatSecondaryColor, setChatSecondaryColor] = useState('#EEA47F')
 
     const video1Element = useRef(null);
     const video1ScaleMode = useRef('fill');
@@ -72,9 +75,11 @@ function Stream() {
     const scaleRef = useRef(null)
     const zoomRef = useRef(null)
     const chatMessagesRef = useRef(null)
+    const chatPositionRef = useRef(null)
+    const chatPrimaryColorRef = useRef(null)
+    const chatSecondaryColorRef = useRef(null)
 
     const [chatMessages, setChatMessages] = useState([])
-
     const [running, setRunning] = useState(false);
 
     let config = {
@@ -305,13 +310,6 @@ function Stream() {
         layouts[index - 1].style.color = '#2d806f'
         layouts[index - 1].style.borderColor = '#2d806f'
         setLayout(index)
-
-        // TODO: just for debugging
-        let messagesCopy = structuredClone(chatMessages)
-        if (messagesCopy === undefined)
-            messagesCopy = []
-        messagesCopy.push({ username: 'user-test-' + index, message: 'message-test-' + index })
-        setChatMessages(messagesCopy)
     }
 
     const fillSize = (srcSize, dstSize, scale = 1) => {
@@ -469,18 +467,34 @@ function Stream() {
         context.fillStyle = "red";
         try {
             let messages = JSON.parse(chatMessagesRef.current.value)
-            let marginLeft = 30 + canvas.width * (zoomScale - 1) / 3, marginTop = 30 + canvas.height * (zoomScale - 1) / 3;
-            messages.map(message => {
-                context.font = 20 * (2 - zoomScale) + "px poppins";
-                context.fillStyle = "red";
-                context.fillText(message.username + ' ', marginLeft, marginTop)
-                context.font = 18 * (2 - zoomScale) + "px poppins";
-                context.fillStyle = "pink";
-                context.fillText(message.message, marginLeft + context.measureText(message.username + ' ').width + 15, marginTop)
-                marginTop += 25 * (2 - zoomScale)
-            })
-        } catch { }
+            let position = chatPositionRef.current.value
+            if (!position || position === 'none') {
 
+            } else {
+                let marginLeft = 0, marginTop = 0;
+                if (position === 'top-left')
+                    {marginLeft = 30 + canvas.width * (zoomScale - 1) / 3; marginTop = 30 + canvas.height * (zoomScale - 1) / 3;}
+                else if (position === 'bottom-left')
+                    {marginLeft = 30 + canvas.width * (zoomScale - 1) / 3; marginTop = canvas.height / 2;}
+                else if (position === 'top-right')
+                    {marginLeft = canvas.width / 2; marginTop = 30 + canvas.height * (zoomScale - 1) / 3;}
+                else if (position === 'bottom-right')
+                    {marginLeft = canvas.width / 2; marginTop = 30 + canvas.height / 2;}
+
+                const primaryColor = chatPrimaryColorRef.current.value;
+                const secondaryColor = chatSecondaryColorRef.current.value;
+
+                messages.map(message => {
+                    context.font = 20 * (2 - zoomScale) + "px poppins";
+                    context.fillStyle = primaryColor;
+                    context.fillText(message.username + ' ', marginLeft, marginTop)
+                    context.font = 16 * (2 - zoomScale) + "px poppins";
+                    context.fillStyle = secondaryColor;
+                    context.fillText(message.message, marginLeft + context.measureText(message.username + ' ').width + 15, marginTop)
+                    marginTop += 25 * (2 - zoomScale)
+                })
+            }
+        } catch { }
     }
 
     const loadUserMediaForCameras = async (cameras) => {
@@ -532,6 +546,33 @@ function Stream() {
 
     const setCanvas = () => {
         setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]);
+    }
+
+    const selectChatPosition = (position, index) => {
+        setChatPosition(position)
+
+        const chatPositions = document.querySelectorAll('.position-container')
+        chatPositions.forEach((position) => {
+            position.style.borderColor = '#E2E2E2'
+        })
+
+        chatPositions[index - 1].style.borderColor = '#2d806f'
+    }
+
+    const selectChatColor = (primary, secondary, index) => {
+        setChatPrimaryColor(primary)
+        setChatSecondaryColor(secondary)
+
+        const chatColors = document.querySelectorAll('.color-container')
+        chatColors.forEach((color) => {
+            color.style.borderColor = '#E2E2E2'
+        })
+
+        chatColors[index - 1].style.borderColor = '#2d806f'
+    }
+
+    const onMessageSent = (message) => {
+        setChatMessages(chatMessages => [...chatMessages, message])
     }
 
     return (
@@ -721,113 +762,146 @@ function Stream() {
                                                     <>
                                                         {stream.engine === 'browser' && stream.status === 'started' && user && stream.user._id === user._id ? (
                                                             <>
-                                                            <div className="settings-bottom">
-                                                                <div className="settings-title">Layout</div>
-                                                                <input type="text" value={layoutSelected} ref={layoutSelectedRef} hidden readOnly></input>
-                                                                <div className="layouts-container">
-                                                                    <div className="layout-item" onClick={() => { selectLayout(1) }}>
-                                                                        <div className="layout-main" style={{ color: '#2d806f', borderColor: '#2d806f' }}>1</div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(2) }}>
-                                                                        <div className="layout-main">2</div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(3) }}>
-                                                                        <div className="layout-main">1
-                                                                            <div className="layout-secondary" style={{ top: 10, right: 10 }}>2</div>
+                                                                <div className="settings-bottom">
+                                                                    <div className="settings-title">Layout</div>
+                                                                    <input type="text" value={layoutSelected} ref={layoutSelectedRef} hidden readOnly></input>
+                                                                    <div className="layouts-container">
+                                                                        <div className="layout-item" onClick={() => { selectLayout(1) }}>
+                                                                            <div className="layout-main" style={{ color: '#2d806f', borderColor: '#2d806f' }}>1</div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(2) }}>
+                                                                            <div className="layout-main">2</div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(3) }}>
+                                                                            <div className="layout-main">1
+                                                                                <div className="layout-secondary" style={{ top: 10, right: 10 }}>2</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(4) }}>
+                                                                            <div className="layout-main">1
+                                                                                <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>2</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(5) }}>
+                                                                            <div className="layout-main">1
+                                                                                <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>2</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(6) }}>
+                                                                            <div className="layout-main">1
+                                                                                <div className="layout-secondary" style={{ top: 10, left: 10 }}>2</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(7) }}>
+                                                                            <div className="layout-main">2
+                                                                                <div className="layout-secondary" style={{ top: 10, right: 10 }}>1</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(8) }}>
+                                                                            <div className="layout-main">2
+                                                                                <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>1</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(9) }}>
+                                                                            <div className="layout-main">2
+                                                                                <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>1</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(10) }}>
+                                                                            <div className="layout-main">2
+                                                                                <div className="layout-secondary" style={{ top: 10, left: 10 }}>1</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(11) }}>
+                                                                            <div className="layout-main layout-halfs">
+                                                                                <div className="layout-half-left">1</div>
+                                                                                <div className="layout-half-right">2</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="layout-item" onClick={() => { selectLayout(12) }}>
+                                                                            <div className="layout-main layout-halfs">
+                                                                                <div className="layout-half-left">2</div>
+                                                                                <div className="layout-half-right">1</div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(4) }}>
-                                                                        <div className="layout-main">1
-                                                                            <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>2</div>
+                                                                    <div className="settings-bottom-2-columns">
+                                                                        <div className="settings-bottom-column-1">
+                                                                            <div className="settings-title">Preview</div>
+                                                                            <canvas ref={canvasElement} id="publisher-canvas"></canvas>
+                                                                            <video ref={video1Element} id="publisher-video1" autoPlay style={{ display: 'none' }}></video>
+                                                                            <video ref={video2Element} id="publisher-video2" autoPlay style={{ display: 'none' }}></video>
+                                                                        </div>
+                                                                        <div className="settings-bottom-column-2">
+                                                                            <div className="settings-title">Options</div>
+                                                                            <div className="settings-subtitle">Padding</div>
+                                                                            <input type="range" min="0" max="0.2" step="0.01" defaultValue="0.0625" ref={paddingRef} onChange={(e) => setPadding(e.target.value)} />
+                                                                            <div className="settings-subtitle">Scale</div>
+                                                                            <input type="range" min="0.2" max="0.5" step="0.01" defaultValue="0.25" ref={scaleRef} onChange={(e) => setScale(e.target.value)} />
+                                                                            <div className="settings-subtitle">Zoom</div>
+                                                                            <input type="range" min="1" max="1.5" step="0.01" defaultValue="1" ref={zoomRef} onChange={(e) => setZoom(e.target.value)} />
                                                                         </div>
                                                                     </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(5) }}>
-                                                                        <div className="layout-main">1
-                                                                            <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>2</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(6) }}>
-                                                                        <div className="layout-main">1
-                                                                            <div className="layout-secondary" style={{ top: 10, left: 10 }}>2</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(7) }}>
-                                                                        <div className="layout-main">2
-                                                                            <div className="layout-secondary" style={{ top: 10, right: 10 }}>1</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(8) }}>
-                                                                        <div className="layout-main">2
-                                                                            <div className="layout-secondary" style={{ bottom: 10, right: 10 }}>1</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(9) }}>
-                                                                        <div className="layout-main">2
-                                                                            <div className="layout-secondary" style={{ bottom: 10, left: 10 }}>1</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(10) }}>
-                                                                        <div className="layout-main">2
-                                                                            <div className="layout-secondary" style={{ top: 10, left: 10 }}>1</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(11) }}>
-                                                                        <div className="layout-main layout-halfs">
-                                                                            <div className="layout-half-left">1</div>
-                                                                            <div className="layout-half-right">2</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="layout-item" onClick={() => { selectLayout(12) }}>
-                                                                        <div className="layout-main layout-halfs">
-                                                                            <div className="layout-half-left">2</div>
-                                                                            <div className="layout-half-right">1</div>
-                                                                        </div>
-                                                                    </div>
+                                                                    <input type="text" ref={chatMessagesRef} value={JSON.stringify(chatMessages.slice(-4))} hidden></input>
                                                                 </div>
-                                                                <div className="settings-bottom-2-columns">
-                                                                    <div className="settings-bottom-column-1">
-                                                                        <div className="settings-title">Preview</div>
-                                                                        <canvas ref={canvasElement} id="publisher-canvas"></canvas>
-                                                                        <video ref={video1Element} id="publisher-video1" autoPlay style={{ display: 'none' }}></video>
-                                                                        <video ref={video2Element} id="publisher-video2" autoPlay style={{ display: 'none' }}></video>
-                                                                    </div>
-                                                                    <div className="settings-bottom-column-2">
-                                                                        <div className="settings-title">Options</div>
-                                                                        <div className="settings-subtitle">Padding</div>
-                                                                        <input type="range" min="0" max="0.2" step="0.01" defaultValue="0.0625" ref={paddingRef} onChange={(e) => setPadding(e.target.value)} />
-                                                                        <div className="settings-subtitle">Scale</div>
-                                                                        <input type="range" min="0.2" max="0.5" step="0.01" defaultValue="0.25" ref={scaleRef} onChange={(e) => setScale(e.target.value)} />
-                                                                        <div className="settings-subtitle">Zoom</div>
-                                                                        <input type="range" min="1" max="1.5" step="0.01" defaultValue="1" ref={zoomRef} onChange={(e) => setZoom(e.target.value)} />
-                                                                    </div>
-                                                                </div>
-                                                                <input type="text" ref={chatMessagesRef} value={JSON.stringify(chatMessages.slice(-4))} hidden></input>
-                                                            </div>
 
-                                                            <div className="settings-bottom-2">
-                                                                <div className="settings-title" style={{marginTop: 20}}>Chat</div>
-                                                                <div className="settings-subtitle">Position</div>
-                                                                <div className="chat-positions">
-                                                                    <div className="position-container">
-                                                                        <div className="chat-position-none">
-                                                                            <div className="chat-position-line"></div>
+                                                                <div className="settings-bottom-2">
+                                                                    <div className="settings-title" style={{ marginTop: 20 }}>Chat</div>
+                                                                    <div className="settings-subtitle">Position</div>
+                                                                    <div className="chat-positions">
+                                                                        <input type="text" value={chatPosition} ref={chatPositionRef} hidden />
+                                                                        <div className="position-container" onClick={() => { selectChatPosition('none', 1) }} style={{ borderColor: '#2d806f' }}>
+                                                                            <div className="chat-position-none">
+                                                                                <div className="chat-position-line"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="position-container" onClick={() => { selectChatPosition('top-right', 2) }}>
+                                                                            <div className="chat-position-chat" style={{ top: 5, right: 5 }}></div>
+                                                                        </div>
+                                                                        <div className="position-container" onClick={() => { selectChatPosition('bottom-right', 3) }}>
+                                                                            <div className="chat-position-chat" style={{ bottom: 5, right: 5 }}></div>
+                                                                        </div>
+                                                                        <div className="position-container" onClick={() => { selectChatPosition('bottom-left', 4) }}>
+                                                                            <div className="chat-position-chat" style={{ bottom: 10, left: 5 }}></div>
+                                                                        </div>
+                                                                        <div className="position-container" onClick={() => { selectChatPosition('top-left', 5) }}>
+                                                                            <div className="chat-position-chat" style={{ top: 5, left: 5 }}></div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="position-container">
-                                                                        <div className="chat-position-chat" style={{ top: 5, right: 5 }}></div>
-                                                                    </div>
-                                                                    <div className="position-container">
-                                                                        <div className="chat-position-chat" style={{ bottom: 5, right: 5 }}></div>
-                                                                    </div>
-                                                                    <div className="position-container">
-                                                                        <div className="chat-position-chat" style={{ bottom: 10, left: 5 }}></div>
-                                                                    </div>
-                                                                    <div className="position-container">
-                                                                        <div className="chat-position-chat" style={{ top: 5, left: 5 }}></div>
+                                                                    <div className="settings-subtitle" style={{ marginTop: 10 }}>Color</div>
+                                                                    <input type="text" value={chatPrimaryColor} ref={chatPrimaryColorRef} hidden />
+                                                                    <input type="text" value={chatSecondaryColor} ref={chatSecondaryColorRef} hidden />
+                                                                    <div className="colors">
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#00539C','#EEA47F' , 1) }} style={{ borderColor: '#2d806f' }}>
+                                                                            <div className="color-1" style={{ backgroundColor: '#00539C' }}></div>
+                                                                            <div className="color-2" style={{ backgroundColor: '#EEA47F' }}></div>
+                                                                        </div>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#2F3C7E','#FBEAEB' , 2) }}>
+                                                                            <div className="color-1" style={{ backgroundColor: '#2F3C7E' }}></div>
+                                                                            <div className="color-2" style={{ backgroundColor: '#FBEAEB' }}></div>
+                                                                        </div>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#101820','#FEE715' , 3) }}>
+                                                                            <div className="color-1" style={{ backgroundColor: '#101820' }}></div>
+                                                                            <div className="color-2" style={{ backgroundColor: '#FEE715' }}></div>
+                                                                        </div>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#F96167','#F9E795' , 4) }}>
+                                                                            <div className="color-1" style={{ backgroundColor: '#F96167' }}></div>
+                                                                            <div className="color-2" style={{ backgroundColor: '#F9E795' }}></div>
+                                                                        </div>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#CCF381','#4831D4' , 5) }}>
+                                                                            <div className="color-1" style={{ backgroundColor: '#CCF381' }}></div>
+                                                                            <div className="color-2" style={{ backgroundColor: '#4831D4' }}></div>
+                                                                        </div>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#E2D1F9','#317773' , 6) }}>
+                                                                            <div className="color-1" style={{ backgroundColor: '#E2D1F9' }}></div>
+                                                                            <div className="color-2" style={{ backgroundColor: '#317773' }}></div>
+                                                                        </div>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#FCEDDA','#EE4E34' , 7) }}>
+                                                                            <div className="color-1" style={{ backgroundColor: '#FCEDDA' }}></div>
+                                                                            <div className="color-2" style={{ backgroundColor: '#EE4E34' }}></div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="settings-subtitle" style={{marginTop: 10}}>Color</div>
-                                                            </div>
                                                             </>
                                                         ) : (
                                                             <></>
@@ -848,7 +922,7 @@ function Stream() {
                         }
                     </div>
                 </div>
-                <StreamChat socket={socket} stream={stream} />
+                <StreamChat socket={socket} stream={stream} onSendMessage={onMessageSent} />
             </div >
         </>
     )

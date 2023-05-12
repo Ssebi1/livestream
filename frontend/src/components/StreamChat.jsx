@@ -34,6 +34,7 @@ function StreamChat(props) {
             let username = user.name
             let room = props.stream._id
             props.socket.emit('send_message', { username, room, message});
+            props.onSendMessage({username: username, message: message})
             setMessage('');
         }
     };
