@@ -119,6 +119,7 @@ const postStream = asyncHandler(async (req, res) => {
   let webrtc_stream_name = ""
   let hls_url = ""
   let encoder = "other_webrtc"
+  let webrtc_publish_stream_name = ""
   if (req.body.engine == 'personal')
     encoder = "other_srt"
 
@@ -151,6 +152,7 @@ const postStream = asyncHandler(async (req, res) => {
     webrtc_url = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].url
     webrtc_application_name = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].application_name
     webrtc_stream_name = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].stream_name
+    webrtc_publish_stream_name = requestResponse.data.live_stream.source_connection_information.stream_name
   }
 
   const stream = await Stream.create({
@@ -165,7 +167,8 @@ const postStream = asyncHandler(async (req, res) => {
     webrtc_url: webrtc_url,
     webrtc_application_name: webrtc_application_name,
     webrtc_stream_name: webrtc_stream_name,
-    engine: req.body.engine
+    engine: req.body.engine,
+    webrtc_publish_stream_name: webrtc_publish_stream_name
   })
   res.status(200).json(stream)
 })

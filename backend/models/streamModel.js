@@ -50,6 +50,9 @@ const streamSchema = mongoose.Schema({
     },
     vod_duration: {
         type: String
+    },
+    webrtc_publish_stream_name: {
+        type: String
     }
 }, {
     timestamps: true

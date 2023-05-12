@@ -58,6 +58,8 @@ function Stream() {
     const [audioTracksMap, setAudioTracksMap] = useState(undefined)
     const [compositeAudioTrack, setCompositeAudioTrack] = useState(undefined)
     const [compositeVideoTrack, setCompositeVideoTrack] = useState(undefined)
+    const [optionsPadding, setPadding] = useState(1 / 16)
+    const [optionsScale, setScale] = useState(1 / 4)
 
     const video1Element = useRef(null);
     const video1ScaleMode = useRef('fill');
@@ -65,6 +67,8 @@ function Stream() {
     const canvasElement = useRef(null);
     const layoutRef = useRef(null);
     const layoutSelectedRef = useRef(null)
+    const paddingRef = useRef(null)
+    const scaleRef = useRef(null)
 
     const [running, setRunning] = useState(false);
 
@@ -87,17 +91,33 @@ function Stream() {
 
         dispatch(getStream(id))
         dispatch(setThumbnail(id))
-        dispatch(loadDevices)
+        try {
+            dispatch(loadDevices)
+        } catch { }
 
-        // Publish video and audio
+        return () => {
+            dispatch(reset())
+        }
+    }, [user, navigate, isErrorStreams, messageStreams, dispatch])
+
+    const publishCompositionStream = () => {
+        setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0])
+    }
+
+
+    useEffect(() => {
         if (publish && !publishStarting && !connected) {
+            setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]);
             startPublish({
                 signalingURL: stream.webrtc_url,
                 applicationName: stream.webrtc_application_name,
-                streamName: stream.webrtc_stream_name
+                streamName: stream.webrtc_publish_stream_name,
+                audioTrack: compositeAudioTrack,
+                videoTrack: compositeVideoTrack
             }, websocket, {
                 onError: (error) => {
                     console.log(error)
+                    setPublishStarting(false)
                 },
                 onConnectionStateChange: (result) => {
                     setConnected(result.connected)
@@ -117,11 +137,7 @@ function Stream() {
         if (publishStarting && connected) {
             setPublishStarting(false)
         }
-
-        return () => {
-            dispatch(reset())
-        }
-    }, [user, navigate, isErrorStreams, messageStreams, dispatch, connected, publish, publishStarting])
+    }, [connected, publish, publishStarting])
 
     // Handle videoTrack1 changes
     useEffect(() => {
@@ -194,12 +210,8 @@ function Stream() {
 
     // Set up canvas captureStream when component mounts.
     useEffect(() => {
-        if (stream && stream.engine == 'browser') {
-            let ctx = canvasElement.current.getContext('2d');
-            let canvasStream = canvasElement.current.captureStream(30);
-            setCompositeVideoTrack(canvasStream.getTracks()[0])
-        }
-    }, [dispatch]);
+        
+    }, [dispatch])
 
     if (isLoadingStreams) {
         return <Spinner />
@@ -274,6 +286,7 @@ function Stream() {
         catch (error) {
             console.log(error);
         }
+
     }
 
     const getPermissions = async () => {
@@ -291,9 +304,6 @@ function Stream() {
         catch { }
         setGotPermissions(gotPermissionsBool)
     }
-
-    const pipScale = (1 / 2);
-    const padding = (1 / 16);
 
     const fillSize = (srcSize, dstSize, scale = 1) => {
 
@@ -356,6 +366,8 @@ function Stream() {
 
     // Grab frames from video1 and video2, composite on the canvas
     const renderFrame = (video1, video2, canvas, layout, video1ScaleMode) => {
+        let padding = paddingRef.current.value
+        let pipScale = scaleRef.current.value
         try {
             layout = parseInt(layout)
         } catch { }
@@ -497,9 +509,7 @@ function Stream() {
                                     <Flowplayer id="flow-player" src={stream.hls_url} opts={{ controls: true, live: true, retry: true, seekable: false }} />
                                 </div>
                             ) : (
-                                <>
-                                </>
-                                // <Player stream={stream} />
+                                <Player stream={stream} />
                             )
                             }
                         </>
@@ -583,7 +593,7 @@ function Stream() {
                                                     <>
                                                         <div className="settings-info-element">
                                                             <div className="settings-info-element-title">Video source 1</div>
-                                                            <select onChange={(e) => { setVideoSelected1(e.target.value) }}>
+                                                            <select onChange={(e) => { setVideoSelected1(e.target.value); setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]); }}>
                                                                 <option value="0" selected>None</option>
                                                                 {cameras.map((camera) => (
                                                                     <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
@@ -592,7 +602,7 @@ function Stream() {
                                                         </div>
                                                         <div className="settings-info-element">
                                                             <div className="settings-info-element-title">Video source 2</div>
-                                                            <select onChange={(e) => { setVideoSelected2(e.target.value) }}>
+                                                            <select onChange={(e) => { setVideoSelected2(e.target.value); setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]); }}>
                                                                 <option value="0" selected>None</option>
                                                                 {cameras.map((camera) => (
                                                                     <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
@@ -601,7 +611,7 @@ function Stream() {
                                                         </div>
                                                         <div className="settings-info-element">
                                                             <div className="settings-info-element-title">Microphone</div>
-                                                            <select onChange={(e) => { setMicrophoneSelected(e.target.value) }}>
+                                                            <select onChange={(e) => { setMicrophoneSelected(e.target.value); setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]); }}>
                                                                 <option value="0" selected>None</option>
                                                                 {microphones.map((microphone) => (
                                                                     <option key={microphone.deviceId} value={microphone.deviceId}>{microphone.label}</option>
@@ -635,7 +645,7 @@ function Stream() {
                                         ) : (
                                             <div className="settings-bottom">
                                                 <div className="settings-title">Layout</div>
-                                                <input type="text" value={layoutSelected} ref={layoutSelectedRef} hidden></input>
+                                                <input type="text" value={layoutSelected} ref={layoutSelectedRef} hidden readOnly></input>
                                                 <div className="layouts-container">
                                                     <div className="layout-item" onClick={() => { selectLayout(1) }}>
                                                         <div className="layout-main" style={{ color: '#2d806f', borderColor: '#2d806f' }}>1</div>
@@ -706,9 +716,11 @@ function Stream() {
                                                     <div className="settings-bottom-column-2">
                                                         <div className="settings-title">Options</div>
                                                         <div className="settings-subtitle">Padding</div>
-                                                        <input type="range" min="1" max="100" step="1"/>
+                                                        <input type="range" min="0" max="0.2" step="0.01" defaultValue="0.0625" onChange={(e) => setPadding(e.target.value)} />
+                                                        <input type="number" value={optionsPadding} ref={paddingRef} hidden readOnly />
                                                         <div className="settings-subtitle">Scale</div>
-                                                        <input type="range" min="1" max="100" step="1"/>
+                                                        <input type="range" min="0.2" max="0.5" step="0.01" defaultValue="0.25" ref={scaleRef} onChange={(e) => setScale(e.target.value)} />
+                                                        <input type="number" value={optionsScale} hidden readOnly />
                                                     </div>
                                                 </div>
 

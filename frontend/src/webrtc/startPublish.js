@@ -92,6 +92,7 @@ const websocketOnOpen = (publishSettings, websocket, callbacks) => {
 
     let audioSender = undefined;
     let videoSender = undefined;
+    console.log(publishSettings.videoTrack)
     if (publishSettings.audioTrack != null)
       audioSender = peerConnection.addTrack(publishSettings.audioTrack);
     if (publishSettings.videoTrack != null)
