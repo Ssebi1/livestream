@@ -89,7 +89,7 @@ const Player = (props) => {
 
   if (!connected)
     return(
-      <div className="stream-player">Stream starting soon</div>
+      <div className="stream-player starting-soon-player">Stream starting soon</div>
     )
 
   return (

@@ -71,6 +71,9 @@ function Stream() {
     const paddingRef = useRef(null)
     const scaleRef = useRef(null)
     const zoomRef = useRef(null)
+    const chatMessagesRef = useRef(null)
+
+    const [chatMessages, setChatMessages] = useState([])
 
     const [running, setRunning] = useState(false);
 
@@ -302,6 +305,13 @@ function Stream() {
         layouts[index - 1].style.color = '#2d806f'
         layouts[index - 1].style.borderColor = '#2d806f'
         setLayout(index)
+
+        // TODO: just for debugging
+        let messagesCopy = structuredClone(chatMessages)
+        if (messagesCopy === undefined)
+            messagesCopy = []
+        messagesCopy.push({ username: 'user-test-' + index, message: 'message-test-' + index })
+        setChatMessages(messagesCopy)
     }
 
     const fillSize = (srcSize, dstSize, scale = 1) => {
@@ -377,12 +387,12 @@ function Stream() {
         canvas.width = 1280;
         canvas.height = 720;
 
-        context.fillStyle = "gray";
+        context.fillStyle = "#2d806f";
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        context.translate(-canvas.width*(zoomScale - 1)/2, -canvas.height*(zoomScale - 1)/2)
-        context.scale(zoomScale,zoomScale)
-        
+        context.translate(-canvas.width * (zoomScale - 1) / 2, -canvas.height * (zoomScale - 1) / 2)
+        context.scale(zoomScale, zoomScale)
+
 
         let video1Full = layout === 1 || layout === 3 || layout === 4 || layout === 5 || layout === 6;
         let video1Pip = layout === 7 || layout === 8 || layout === 9 || layout === 10;
@@ -453,6 +463,24 @@ function Stream() {
                 context.drawImage(video1, xOffset, yOffset, renderSize.width, renderSize.height);
             }
         }
+
+        // chat
+        context.font = 20 * (2 - zoomScale) + "px poppins";
+        context.fillStyle = "red";
+        try {
+            let messages = JSON.parse(chatMessagesRef.current.value)
+            let marginLeft = 30 + canvas.width * (zoomScale - 1) / 3, marginTop = 30 + canvas.height * (zoomScale - 1) / 3;
+            messages.map(message => {
+                context.font = 20 * (2 - zoomScale) + "px poppins";
+                context.fillStyle = "red";
+                context.fillText(message.username + ' ', marginLeft, marginTop)
+                context.font = 18 * (2 - zoomScale) + "px poppins";
+                context.fillStyle = "pink";
+                context.fillText(message.message, marginLeft + context.measureText(message.username + ' ').width + 15, marginTop)
+                marginTop += 25 * (2 - zoomScale)
+            })
+        } catch { }
+
     }
 
     const loadUserMediaForCameras = async (cameras) => {
@@ -692,6 +720,7 @@ function Stream() {
                                                 ) : (
                                                     <>
                                                         {stream.engine === 'browser' && stream.status === 'started' && user && stream.user._id === user._id ? (
+                                                            <>
                                                             <div className="settings-bottom">
                                                                 <div className="settings-title">Layout</div>
                                                                 <input type="text" value={layoutSelected} ref={layoutSelectedRef} hidden readOnly></input>
@@ -772,7 +801,34 @@ function Stream() {
                                                                         <input type="range" min="1" max="1.5" step="0.01" defaultValue="1" ref={zoomRef} onChange={(e) => setZoom(e.target.value)} />
                                                                     </div>
                                                                 </div>
+                                                                <input type="text" ref={chatMessagesRef} value={JSON.stringify(chatMessages.slice(-4))} hidden></input>
                                                             </div>
+
+                                                            <div className="settings-bottom-2">
+                                                                <div className="settings-title" style={{marginTop: 20}}>Chat</div>
+                                                                <div className="settings-subtitle">Position</div>
+                                                                <div className="chat-positions">
+                                                                    <div className="position-container">
+                                                                        <div className="chat-position-none">
+                                                                            <div className="chat-position-line"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="position-container">
+                                                                        <div className="chat-position-chat" style={{ top: 5, right: 5 }}></div>
+                                                                    </div>
+                                                                    <div className="position-container">
+                                                                        <div className="chat-position-chat" style={{ bottom: 5, right: 5 }}></div>
+                                                                    </div>
+                                                                    <div className="position-container">
+                                                                        <div className="chat-position-chat" style={{ bottom: 10, left: 5 }}></div>
+                                                                    </div>
+                                                                    <div className="position-container">
+                                                                        <div className="chat-position-chat" style={{ top: 5, left: 5 }}></div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="settings-subtitle" style={{marginTop: 10}}>Color</div>
+                                                            </div>
+                                                            </>
                                                         ) : (
                                                             <></>
                                                         )
