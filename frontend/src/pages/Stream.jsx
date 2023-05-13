@@ -15,6 +15,7 @@ import HLSPlugin from "@flowplayer/player/plugins/hls"
 import flowplayer from "@flowplayer/player"
 import "@flowplayer/player/flowplayer.css";
 import getDevices from '../webrtc/getDevices'
+import getDisplayScreen from '../webrtc/getDisplayScreen'
 import getUserMedia from '../webrtc/getUserMedia'
 import startPublish from '../webrtc/startPublish';
 
@@ -64,6 +65,7 @@ function Stream() {
     const [chatPosition, setChatPosition] = useState('none')
     const [chatPrimaryColor, setChatPrimaryColor] = useState('#00539C')
     const [chatSecondaryColor, setChatSecondaryColor] = useState('#EEA47F')
+    const [screenTrack, setScreenTrack] = useState(null)
 
     const video1Element = useRef(null);
     const video1ScaleMode = useRef('fill');
@@ -78,6 +80,7 @@ function Stream() {
     const chatPositionRef = useRef(null)
     const chatPrimaryColorRef = useRef(null)
     const chatSecondaryColorRef = useRef(null)
+    const video1SelectRef = useRef(null)
 
     const [chatMessages, setChatMessages] = useState([])
     const [running, setRunning] = useState(false);
@@ -183,15 +186,19 @@ function Stream() {
     // Handle videoTrack1 changes
     useEffect(() => {
         let video1Stream = undefined;
-        try {
+        if (videoSelected1 === 'screen' && screenTrack != undefined && screenTrack != null) {
+            video1Stream = new MediaStream();
+            video1Stream.addTrack(screenTrack);
+            video1ScaleMode.current = 'fit';
+        } else if (videoSelected1 !== '' && videoSelected1 !== 'screen' && videoTracksMap !== undefined && videoTracksMap[videoSelected1] != null) {
             video1Stream = new MediaStream();
             video1Stream.addTrack(videoTracksMap[videoSelected1]);
             video1ScaleMode.current = 'fill';
-        } catch { }
+        }
         if (video1Element != null && video1Element.current != null)
             video1Element.current.srcObject = video1Stream;
 
-    }, [videoTracksMap, videoSelected1, video1Element])
+    }, [videoTracksMap, videoSelected1, video1Element, screenTrack])
 
     // Handle videoTrack2 changes
     useEffect(() => {
@@ -253,6 +260,31 @@ function Stream() {
     useEffect(() => {
 
     }, [dispatch])
+
+    // start screen sharing for 'composite' example
+    useEffect(() => {
+        if (videoSelected1 === 'screen' && screenTrack == null) {
+            loadDisplayScreenTrack();
+        }
+    }, [dispatch, videoSelected1, screenTrack])
+
+    const loadDisplayScreenTrack = async () => {
+        getDisplayScreen()
+            .then((stream) => {
+                let screenTrack = stream.getVideoTracks()[0];
+                screenTrack.onended = () => { onScreenShareEnded(dispatch); };
+                setScreenTrack(screenTrack)
+            })
+            .catch((e) => {
+
+            });
+    }
+
+    const onScreenShareEnded = () => {
+        console.log('onScreenShareEnded');
+        setVideoSelected1('0')
+        setScreenTrack(null)
+      }
 
     if (isLoadingStreams) {
         return <Spinner />
@@ -472,14 +504,10 @@ function Stream() {
 
             } else {
                 let marginLeft = 0, marginTop = 0;
-                if (position === 'top-left')
-                    {marginLeft = 30 + canvas.width * (zoomScale - 1) / 3; marginTop = 30 + canvas.height * (zoomScale - 1) / 3;}
-                else if (position === 'bottom-left')
-                    {marginLeft = 30 + canvas.width * (zoomScale - 1) / 3; marginTop = canvas.height / 2;}
-                else if (position === 'top-right')
-                    {marginLeft = canvas.width / 2; marginTop = 30 + canvas.height * (zoomScale - 1) / 3;}
-                else if (position === 'bottom-right')
-                    {marginLeft = canvas.width / 2; marginTop = 30 + canvas.height / 2;}
+                if (position === 'top-left') { marginLeft = 30 + canvas.width * (zoomScale - 1) / 3; marginTop = 30 + canvas.height * (zoomScale - 1) / 3; }
+                else if (position === 'bottom-left') { marginLeft = 30 + canvas.width * (zoomScale - 1) / 3; marginTop = canvas.height / 2; }
+                else if (position === 'top-right') { marginLeft = canvas.width / 2; marginTop = 30 + canvas.height * (zoomScale - 1) / 3; }
+                else if (position === 'bottom-right') { marginLeft = canvas.width / 2; marginTop = 30 + canvas.height / 2; }
 
                 const primaryColor = chatPrimaryColorRef.current.value;
                 const secondaryColor = chatSecondaryColorRef.current.value;
@@ -597,7 +625,7 @@ function Stream() {
                                     <Flowplayer id="flow-player" className="use-play-2 use-drag-handle" src={stream.vod_recording_hls_url} opts={{ controls: true }} />
                                 </div>
                             ) : (
-                                <div className="stream-player"></div>
+                                <div className="stream-player starting-soon-player">Stream starting soon</div>
                             )
                             }
                         </>
@@ -674,11 +702,12 @@ function Stream() {
                                                                 <div className="settings-info-element">
                                                                     <div className="settings-info-element-title">Video source 1</div>
                                                                     {stream.engine === 'browser' && stream.status === 'started' ? (
-                                                                        <select onChange={(e) => { setVideoSelected1(e.target.value); setCanvas(); }}>
+                                                                        <select onChange={(e) => { setVideoSelected1(e.target.value); setCanvas(); }} ref={video1SelectRef}>
                                                                             <option value="0" selected>None</option>
                                                                             {cameras.map((camera) => (
                                                                                 <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
                                                                             ))}
+                                                                            <option value='screen'>Screen Share</option>
                                                                         </select>
                                                                     ) : (
                                                                         <select disabled>
@@ -872,31 +901,31 @@ function Stream() {
                                                                     <input type="text" value={chatPrimaryColor} ref={chatPrimaryColorRef} hidden />
                                                                     <input type="text" value={chatSecondaryColor} ref={chatSecondaryColorRef} hidden />
                                                                     <div className="colors">
-                                                                        <div className="color-container" onClick={() => { selectChatColor('#00539C','#EEA47F' , 1) }} style={{ borderColor: '#2d806f' }}>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#00539C', '#EEA47F', 1) }} style={{ borderColor: '#2d806f' }}>
                                                                             <div className="color-1" style={{ backgroundColor: '#00539C' }}></div>
                                                                             <div className="color-2" style={{ backgroundColor: '#EEA47F' }}></div>
                                                                         </div>
-                                                                        <div className="color-container" onClick={() => { selectChatColor('#2F3C7E','#FBEAEB' , 2) }}>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#2F3C7E', '#FBEAEB', 2) }}>
                                                                             <div className="color-1" style={{ backgroundColor: '#2F3C7E' }}></div>
                                                                             <div className="color-2" style={{ backgroundColor: '#FBEAEB' }}></div>
                                                                         </div>
-                                                                        <div className="color-container" onClick={() => { selectChatColor('#101820','#FEE715' , 3) }}>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#101820', '#FEE715', 3) }}>
                                                                             <div className="color-1" style={{ backgroundColor: '#101820' }}></div>
                                                                             <div className="color-2" style={{ backgroundColor: '#FEE715' }}></div>
                                                                         </div>
-                                                                        <div className="color-container" onClick={() => { selectChatColor('#F96167','#F9E795' , 4) }}>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#F96167', '#F9E795', 4) }}>
                                                                             <div className="color-1" style={{ backgroundColor: '#F96167' }}></div>
                                                                             <div className="color-2" style={{ backgroundColor: '#F9E795' }}></div>
                                                                         </div>
-                                                                        <div className="color-container" onClick={() => { selectChatColor('#CCF381','#4831D4' , 5) }}>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#CCF381', '#4831D4', 5) }}>
                                                                             <div className="color-1" style={{ backgroundColor: '#CCF381' }}></div>
                                                                             <div className="color-2" style={{ backgroundColor: '#4831D4' }}></div>
                                                                         </div>
-                                                                        <div className="color-container" onClick={() => { selectChatColor('#E2D1F9','#317773' , 6) }}>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#E2D1F9', '#317773', 6) }}>
                                                                             <div className="color-1" style={{ backgroundColor: '#E2D1F9' }}></div>
                                                                             <div className="color-2" style={{ backgroundColor: '#317773' }}></div>
                                                                         </div>
-                                                                        <div className="color-container" onClick={() => { selectChatColor('#FCEDDA','#EE4E34' , 7) }}>
+                                                                        <div className="color-container" onClick={() => { selectChatColor('#FCEDDA', '#EE4E34', 7) }}>
                                                                             <div className="color-1" style={{ backgroundColor: '#FCEDDA' }}></div>
                                                                             <div className="color-2" style={{ backgroundColor: '#EE4E34' }}></div>
                                                                         </div>
