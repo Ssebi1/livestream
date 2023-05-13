@@ -286,7 +286,7 @@ function Profile() {
                     </div>
                 </div>
 
-                <div className="banner" style={{ backgroundImage: `url('/banner-pictures/${streamer._id}.png'), url('/banner-pictures/banner-image.png')` }}>
+                <div className="banner" style={{ backgroundImage: `url('/banner-pictures/${streamer._id}.png'), url('/defaults/banner-image.png')` }}>
                     {isOwnProfile ? (
                         <div className="upload">
                             <input className="upload-input" name="profileFile" id="profileFile" filename={file} onChange={(e) => { submitProfileBanner(e) }} type="file" accept="image/*"></input>
@@ -296,7 +296,7 @@ function Profile() {
                     }
                 </div>
                 <div className="profile-box">
-                    <div className="profile-user-picture" style={{ backgroundImage: `url('/profile-pictures/${streamer._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}>
+                    <div className="profile-user-picture" style={{ backgroundImage: `url('/profile-pictures/${streamer._id}.png'), url('/defaults/profile-image.png')` }}>
                         {isOwnProfile ? (
                             <div className="upload">
                                 <input className="upload-input" name="bannerFile" id="bannerFile" filename={file} onChange={(e) => { submitProfilePicture(e) }} type="file" accept="image/*"></input>

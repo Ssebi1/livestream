@@ -57,7 +57,7 @@ function Account() {
     return (
         <>
             <section className='form account-form'>
-                <div className="profile-picture" style={{backgroundImage: `url('/profile-pictures/${user._id}.png'), url('/profile-pictures/blank-profile-picture.png')`}}>
+                <div className="profile-picture" style={{backgroundImage: `url('/profile-pictures/${user._id}.png'), url('/defaults/profile-image.png')`}}>
                     <div className="upload">
                         <input className="upload-input" name="file" id="file" filename={file} onChange={(e) => {submitProfilePicture(e)}} type="file" accept="image/*"></input>
                         <label className='upload-icon' htmlFor="file"><AiOutlineCloudUpload size={40}/></label>

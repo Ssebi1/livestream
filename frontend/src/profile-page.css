@@ -1,7 +1,6 @@
 .banner {
     width: 100%;
     aspect-ratio: 7/1;
-    background-image: url("../public/banner-pictures/banner-image.png");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;

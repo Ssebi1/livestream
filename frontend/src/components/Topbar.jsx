@@ -66,7 +66,7 @@ function Topbar() {
         <>
             <div className='topbar'>
                 <ul className='left'>
-                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="logo">LIVESTREAM</li></Link>
+                    <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="logo">LEVEN<span style={{color: '#47ccb2'}}>TV</span></li></Link>
                     <Link to='/streams' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streams')}>STREAMS</li></Link>
                     <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>FOLLOWING</li></Link>
                     <Link to='/streamers' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streamers')}>STREAMERS</li></Link>
