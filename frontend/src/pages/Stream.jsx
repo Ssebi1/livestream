@@ -284,7 +284,7 @@ function Stream() {
         console.log('onScreenShareEnded');
         setVideoSelected1('0')
         setScreenTrack(null)
-      }
+    }
 
     if (isLoadingStreams) {
         return <Spinner />
@@ -504,22 +504,35 @@ function Stream() {
 
             } else {
                 let marginLeft = 0, marginTop = 0;
-                if (position === 'top-left') { marginLeft = 30 + canvas.width * (zoomScale - 1) / 3; marginTop = 30 + canvas.height * (zoomScale - 1) / 3; }
-                else if (position === 'bottom-left') { marginLeft = 30 + canvas.width * (zoomScale - 1) / 3; marginTop = canvas.height / 2; }
-                else if (position === 'top-right') { marginLeft = canvas.width / 2; marginTop = 30 + canvas.height * (zoomScale - 1) / 3; }
-                else if (position === 'bottom-right') { marginLeft = canvas.width / 2; marginTop = 30 + canvas.height / 2; }
+                if (position === 'top-left') { marginLeft = 30; marginTop = canvas.height / 2; }
+                else if (position === 'bottom-left') { marginLeft = 30; marginTop = canvas.height - 30; }
+                else if (position === 'top-right') { marginLeft = canvas.width - 400; marginTop = canvas.height / 2; }
+                else if (position === 'bottom-right') { marginLeft = canvas.width - 400; marginTop = canvas.height - 30; }
 
                 const primaryColor = chatPrimaryColorRef.current.value;
                 const secondaryColor = chatSecondaryColorRef.current.value;
 
                 messages.map(message => {
-                    context.font = 20 * (2 - zoomScale) + "px poppins";
+                    context.font = 20 + "px poppins";
                     context.fillStyle = primaryColor;
-                    context.fillText(message.username + ' ', marginLeft, marginTop)
-                    context.font = 16 * (2 - zoomScale) + "px poppins";
+                    if (position === 'bottom-left' || position === 'bottom-right') {
+                        if (marginTop > canvas.height / 2) {
+                            context.fillText(message.username + ' ', marginLeft, marginTop - (25 * (message.message.length - 1)))
+                        }
+                    } else {context.fillText(message.username + ' ', marginLeft, marginTop - (25 * (message.message.length - 1)))}
+                    context.font = 16 + "px poppins";
                     context.fillStyle = secondaryColor;
-                    context.fillText(message.message, marginLeft + context.measureText(message.username + ' ').width + 15, marginTop)
-                    marginTop += 25 * (2 - zoomScale)
+                    message.message.map(split_message => {
+                        if (position === 'bottom-left' || position === 'bottom-right') {
+                            if (marginTop > canvas.height / 2) {
+                                context.fillText(split_message, marginLeft + context.measureText(message.username + ' ').width + 15, marginTop)
+                                marginTop -= 25
+                            }
+                        } else {
+                            context.fillText(split_message, marginLeft + context.measureText(message.username + ' ').width + 15, marginTop)
+                            marginTop -= 25
+                        }
+                    })
                 })
             }
         } catch { }
@@ -600,7 +613,17 @@ function Stream() {
     }
 
     const onMessageSent = (message) => {
+        let message_split = splitter(message.message, 32)
+        message.message = message_split.reverse()
         setChatMessages(chatMessages => [...chatMessages, message])
+    }
+
+    const splitter = (text, length) => {
+        let text_split = []
+        for (let i = 0; i * length <= text.length; i++) {
+            text_split.push(text.slice(i * length, (i + 1) * length))
+        }
+        return text_split
     }
 
     return (
@@ -871,7 +894,7 @@ function Stream() {
                                                                             <input type="range" min="1" max="1.5" step="0.01" defaultValue="1" ref={zoomRef} onChange={(e) => setZoom(e.target.value)} />
                                                                         </div>
                                                                     </div>
-                                                                    <input type="text" ref={chatMessagesRef} value={JSON.stringify(chatMessages.slice(-4))} hidden></input>
+                                                                    <input type="text" ref={chatMessagesRef} value={JSON.stringify(chatMessages.slice(-8).reverse())} hidden></input>
                                                                 </div>
 
                                                                 <div className="settings-bottom-2">
