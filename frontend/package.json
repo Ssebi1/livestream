@@ -1,7 +1,10 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "proxy": "http://localhost:4040",
+  "options": {
+    "allowedHosts": ["localhost", ".localhost"],
+    "proxy": "http://localhost:4040/"
+  },
   "private": true,
   "dependencies": {
     "@flowplayer/player": "^3.5.2",
