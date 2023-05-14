@@ -21,7 +21,7 @@ function CreateStream() {
     const [engine, setEngine] = useState('browser')
 
     useEffect(() => {
-        if (!user || !user.streamerMode) {
+        if (!user) {
             navigate('/')
         }
 

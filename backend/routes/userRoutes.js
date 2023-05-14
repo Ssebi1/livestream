@@ -22,7 +22,7 @@ router.post('/unfollow', unfollowUser)
 
 var profileStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'frontend/public/profile-pictures/')
+    cb(null, 'build/profile-pictures/')
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname) //Appending extension
@@ -36,7 +36,7 @@ router.post('/upload/profile-picture', multer({ storage: profileStorage }).singl
 
 var bannerStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'frontend/public/banner-pictures/')
+    cb(null, 'build/banner-pictures/')
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname) //Appending extension
