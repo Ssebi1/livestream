@@ -206,6 +206,10 @@ const startStream = asyncHandler(async (req, res) => {
     'status': stream_status,
   })
   const updatedStream = await Stream.findOne({ _id: req.body.id }).populate("user").populate("category")
+
+  await User.findOneAndUpdate({_id: stream.user._id}, {
+    'streamerMode': true
+  })
   res.status(200).send(updatedStream)
 })
 
@@ -338,6 +342,11 @@ const deleteStream = asyncHandler(async (req, res) => {
   await stream.remove()
 
   const streams = await Stream.find()
+  if (streams.length == 0) {
+    await User.findOneAndUpdate({_id: stream.user._id}, {
+      'streamerMode': false
+    })
+  }
   res.status(200).json(streams)
 })
 
