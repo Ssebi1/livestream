@@ -15,8 +15,16 @@ jobs:
       - run: npm install
       - run: npm install --prefix frontend
       - run: npm run build
-      - run: ls frontend/
-      - name: Deploy to production
+      - name: Deploy CLIENT to production
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USERNAME }}
+          password: ${{ secrets.PRODUCTION_PASSWORD }}
+          key: ${{secrets.PRODUCTION_KEY}}
+          source: "frontend/build"
+          target: "/home/leventvadmin/leventv"
+      - name: Deploy API to production
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PRODUCTION_HOST }}
@@ -26,5 +34,4 @@ jobs:
           script: |
             cd /home/leventvadmin/leventv
             git pull origin live
-            npm install && npm run build
             pm2 reload all
