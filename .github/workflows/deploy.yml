@@ -6,6 +6,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: live
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
