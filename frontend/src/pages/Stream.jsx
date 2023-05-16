@@ -98,6 +98,8 @@ function Stream() {
             navigate('/')
         }
 
+        console.log(process.env.FLOWPLAYER_TOKEN)
+
         dispatch(getStream(id))
         dispatch(setThumbnail(id))
 
