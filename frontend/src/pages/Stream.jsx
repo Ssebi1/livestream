@@ -21,7 +21,7 @@ import startPublish from '../webrtc/startPublish';
 
 flowplayer(HLSPlugin)
 
-const socket = io.connect('http://localhost:4000');
+const socket = io.connect('/ws');
 
 function Stream() {
     const navigate = useNavigate()

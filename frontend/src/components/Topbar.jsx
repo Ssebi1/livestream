@@ -78,7 +78,7 @@ function Topbar() {
                             <div className='account-link' onClick={() => { closeTopbar(); toggleAccountDropdown() }}>
                                 <li className="account">
                                     <div className="username">{user.name}</div>
-                                    <div className="profile-picture-topbar" style={{ backgroundImage: `url('/profile-pictures/${user._id}.png'), url('/profile-pictures/blank-profile-picture.png')` }}></div>
+                                    <div className="profile-picture-topbar" style={{ backgroundImage: `url('/profile-pictures/${user._id}.png'), url('/defaults/profile-image.png')` }}></div>
                                 </li>
                                 <ul className="account-dropdown" ref={accountDropdownRef}>
                                     <Link to="/account" onClick={() => { closeTopbar(); closeAccount() }}>Account</Link>

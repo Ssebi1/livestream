@@ -43,12 +43,7 @@ const { Server } = require('socket.io')
 const http = require('http');
 const server = http.createServer(app);
 
-const io = new Server(server, {
-    cors: {
-        origin: 'https://leven-tv.com',
-        methods: ['GET', 'POST'],
-    },
-});
+const io = new Server(server);
 
 io.on('connection', (socket) => {
     socket.on('join_room', (data) => {
