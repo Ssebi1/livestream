@@ -21,7 +21,7 @@ import startPublish from '../webrtc/startPublish';
 
 flowplayer(HLSPlugin)
 
-const socket = io.connect('http://127.0.0.1:4000');
+const socket = io.connect('https://leven-tv.com/ws');
 
 function Stream() {
     const navigate = useNavigate()
