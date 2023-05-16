@@ -30,7 +30,7 @@ const getStream = asyncHandler(async (req, res) => {
     throw new Error('Stream not found')
   }
 
-  if (stream.vod_recording_hls_url === undefined || stream.vod_duration == "0" || stream.vod_duration == "0:0" || stream.vod_duration === undefined) {
+  if (stream.vod_recording_hls_url === undefined || stream.vod_duration == "0" || stream.vod_duration == "0:0" || stream.vod_duration == "00:00:00" || stream.vod_duration === undefined) {
     try {
       requestResponse = await axios.get('https://api.video.wowza.com/api/v1.10/vod_streams', {
         headers: {
@@ -55,7 +55,11 @@ const getStream = asyncHandler(async (req, res) => {
           let hours = Math.floor(vod_duration / (60*60))
           let minutes = Math.floor((vod_duration % (60*60)) / 60)
           let seconds = Math.floor((vod_duration % (60*60)) % 60)
-          if (hours === 0) {
+          if (hours < 10) hours = '0' + hours
+          if (minutes < 10) minutes = '0' + minutes
+          if (seconds < 10) seconds = '0' + seconds
+
+          if (hours === 0 || hours === '00') {
             vod_duration_formatted = minutes + ':' + seconds
           } else {
             vod_duration_formatted = hours + ':' + minutes + ':' + seconds
@@ -235,7 +239,7 @@ const endStream = asyncHandler(async (req, res) => {
 
   try {
     if (!fs.existsSync('./frontend/public/thumbnail-pictures/' + stream._id + '.png'))
-      download_image(stream.thumbnail_url, './frontend/build/thumbnail-pictures/' + stream._id + '.png')
+      download_image(stream.thumbnail_url, './frontend/public/thumbnail-pictures/' + stream._id + '.png')
   } catch {}
 
   let wowza_stream_id = stream.id

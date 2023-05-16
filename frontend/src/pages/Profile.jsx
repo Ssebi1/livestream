@@ -205,10 +205,10 @@ function Profile() {
         setCategoryFilter('all')
     }
 
-    const viewCategoryStreams = (category_name) => {
+    const viewCategoryStreams = (category_id) => {
         setPage('streams')
         selectPage('streams')
-        setCategoryFilter(category_name)
+        setCategoryFilter(category_id)
     }
 
     const follow = () => {
@@ -226,17 +226,19 @@ function Profile() {
     }
 
     const onClickOutside = (e) => {
-        let parentModal = document.querySelector('.edit-links-modal')
-        if (!e.target.className.includes('link-delete-button') && !parentModal.contains(e.target) && !e.target.className.includes('edit-button')) {
-            setLinks(streamer.links)
-            linkModalRef.current.style.display = 'none'
-        }
+        try {
+            let parentModal = document.querySelector('.edit-links-modal')
+            if (!e.target.className.includes('link-delete-button') && !parentModal.contains(e.target) && !e.target.className.includes('edit-button')) {
+                setLinks(streamer.links)
+                linkModalRef.current.style.display = 'none'
+            }
 
-        parentModal = document.querySelector('.description-modal')
-        if (!parentModal.contains(e.target) && !e.target.className.includes('edit-button')) {
-            setEditDescription(streamer.description)
-            descriptionModalWrapper.current.style.display = 'none'
-        }
+            parentModal = document.querySelector('.description-modal')
+            if (!parentModal.contains(e.target) && !e.target.className.includes('edit-button')) {
+                setEditDescription(streamer.description)
+                descriptionModalWrapper.current.style.display = 'none'
+            }
+        } catch { }
     };
 
     return (
@@ -341,10 +343,18 @@ function Profile() {
                                         <div className="profile-view-more" onClick={viewAllStreams}>View more <FaChevronRight size={14} /></div>
                                     </div>
                                     <section className="profile-streams">
+                                        {user && user._id === streamer._id ? (
+                                            <>{
+                                                streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'created').slice(0, (streamsNumber)).map((stream) => (
+                                                    <StreamItemMinimal key={stream._id} stream={stream} />
+                                                ))
+                                            }</>
+                                        ) : (<></>)
+                                        }
                                         {streams.filter(stream => stream.status === 'started').slice(0, (streamsNumber)).map((stream) => (
                                             <StreamItemMinimal key={stream._id} stream={stream} />
                                         ))}
-                                        {streams.filter(stream => stream.status !== 'started').slice(0, (streamsNumber)).map((stream) => (
+                                        {streams.filter(stream => stream.status === 'ended').slice(0, (streamsNumber)).map((stream) => (
                                             <StreamItemMinimal key={stream._id} stream={stream} />
                                         ))}
                                     </section>
@@ -356,7 +366,7 @@ function Profile() {
                                     </div>
                                     <section className="profile-categories">
                                         {categories.slice(0, (categoriesNumber)).map((category) => (
-                                            <CategoryItem key={category._id} category={category} onPress={() => { viewCategoryStreams(category.name) }} />
+                                            <CategoryItem key={category._id} category={category} onPress={() => { viewCategoryStreams(category._id) }} />
                                         ))}
                                     </section>
                                 </div>
@@ -397,10 +407,10 @@ function Profile() {
                                     <select className="stream-category-filter" onChange={(e) => { setCategoryFilter(e.target.value) }}>
                                         <option value="all">All categories</option>
                                         {categories.map((category) => (
-                                            categoryFilter === category.name ? (
-                                                <option value={category.name} selected>{category.name}</option>
+                                            categoryFilter === category._id ? (
+                                                <option value={category._id} selected>{category.name}</option>
                                             ) : (
-                                                <option value={category.name}>{category.name}</option>
+                                                <option value={category._id}>{category.name}</option>
                                             )
                                         ))}
                                     </select>
