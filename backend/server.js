@@ -44,10 +44,15 @@ const http = require('http');
 const server = http.createServer(app);
 
 const io = new Server(server, {
-    cors: {
-        origin: 'https://leven-tv.com',
-        methods: ['GET', 'POST'],
-    },
+    handlePreflightRequest: (req, res) => {
+        const headers = {
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Origin": req.headers.origin,
+            "Access-Control-Allow-Credentials": true
+        };
+        res.writeHead(200, headers);
+        res.end();
+    }
 });
 
 io.on('connection', (socket) => {
