@@ -11,9 +11,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '17.0.1'
-      - run: cd frontend/ & ls & npm install
+      - run: npm install --prefix frontend
       - run: npm run build
-      - run: cd frontend/ & ls
+      - run: ls frontend/
       - name: Deploy to production
         uses: appleboy/ssh-action@master
         with:
