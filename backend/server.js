@@ -53,11 +53,13 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
     socket.on('join_room', (data) => {
         const { username, room } = data;
+        console.log(username, room)
         socket.join(room);
     });
 
     socket.on('send_message', (data) => {
         const { message, username, room} = data;
+        console.log(message, username, room)
         io.in(room).emit('receive_message', data);
     });
 });
