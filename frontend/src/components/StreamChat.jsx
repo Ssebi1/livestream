@@ -49,7 +49,7 @@ function StreamChat(props) {
             <div className="stream-chat-input">
                 {user ? (
                     <>
-                        {stream.status === 'started' ? (
+                        {props.stream.status === 'started' ? (
                             <input type="text" name="stream-message" id="stream-message" placeholder="Send a message" onKeyDown={handleKeyDown} onChange={(e) => setMessage(e.target.value)} value={message} />
 
                         ) : (
