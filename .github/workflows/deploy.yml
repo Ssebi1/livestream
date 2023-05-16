@@ -12,9 +12,9 @@ jobs:
         with:
           node-version: '17'
       - run: cd frontend/
-      - run: rm -rf package-lock.json
       - run: npm install
       - run: npm run build
+      - run: ls
       - name: Deploy to production
         uses: appleboy/ssh-action@master
         with:
