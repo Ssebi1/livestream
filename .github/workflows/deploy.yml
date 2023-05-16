@@ -6,11 +6,15 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '17.0.1'
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
       - run: npm install --prefix frontend
       - run: npm run build
       - run: ls frontend/
