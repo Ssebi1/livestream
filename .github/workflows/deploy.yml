@@ -12,6 +12,7 @@ jobs:
         with:
           node-version: '17.0.1'
       - run: cd frontend/
+      - run: ls
       - run: npm install
       - run: npm run build
       - run: ls
