@@ -43,28 +43,16 @@ const { Server } = require('socket.io')
 const http = require('http');
 const server = http.createServer(app);
 
-const io = new Server(server, {
-    handlePreflightRequest: (req, res) => {
-        const headers = {
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-            "Access-Control-Allow-Origin": req.headers.origin,
-            "Access-Control-Allow-Credentials": true
-        };
-        res.writeHead(200, headers);
-        res.end();
-    }
-});
+const io = new Server(server, { cors: { origin: '*' } });
 
 io.on('connection', (socket) => {
     socket.on('join_room', (data) => {
         const { username, room } = data;
-        console.log(username, room)
         socket.join(room);
     });
 
     socket.on('send_message', (data) => {
         const { message, username, room} = data;
-        console.log(message, username, room)
         io.in(room).emit('receive_message', data);
     });
 });

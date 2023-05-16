@@ -53,8 +53,7 @@ function StreamChat(props) {
                             <input type="text" name="stream-message" id="stream-message" placeholder="Send a message" onKeyDown={handleKeyDown} onChange={(e) => setMessage(e.target.value)} value={message} />
 
                         ) : (
-                            <input type="text" name="stream-message" id="stream-message" placeholder="Send a message" onKeyDown={handleKeyDown} onChange={(e) => setMessage(e.target.value)} value={message} />
-                            // <input type="text" name="stream-message" id="stream-message" placeholder="Cannot send messages right now" disabled />
+                            <input type="text" name="stream-message" id="stream-message" placeholder="Cannot send messages right now" disabled />
                         )
                         }
                     </>
