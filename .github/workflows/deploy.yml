@@ -19,6 +19,7 @@ jobs:
           host: ${{ secrets.PRODUCTION_HOST }}
           username: ${{ secrets.PRODUCTION_USERNAME }}
           password: ${{ secrets.PRODUCTION_PASSWORD }}
+          key: ${{secrets.PRODUCTION_KEY}}
           script: |
             cd /home/leventvadmin/leventv
             git pull origin live
