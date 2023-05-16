@@ -634,7 +634,7 @@ function Stream() {
                         <>
                             {stream.engine === 'personal' ? (
                                 <div className="stream-player" style={{ position: "relative" }}>
-                                    <Flowplayer id="flow-player" src={stream.hls_url} opts={{ controls: true, live: true, retry: true, seekable: false }} />
+                                    <Flowplayer token={process.env.FLOWPLAYER_TOKEN} id="flow-player" src={stream.hls_url} opts={{ controls: true, live: true, retry: true, seekable: false }} />
                                 </div>
                             ) : (
                                 <Player stream={stream} />
@@ -645,7 +645,7 @@ function Stream() {
                         <>
                             {stream.status === 'ended' ? (
                                 <div className="stream-player" style={{ position: "relative" }}>
-                                    <Flowplayer id="flow-player" className="use-play-2 use-drag-handle" src={stream.vod_recording_hls_url} opts={{ controls: true }} />
+                                    <Flowplayer token={process.env.FLOWPLAYER_TOKEN} id="flow-player" className="use-play-2 use-drag-handle" src={stream.vod_recording_hls_url} opts={{ controls: true }} />
                                 </div>
                             ) : (
                                 <div className="stream-player starting-soon-player">Stream starting soon</div>
