@@ -150,6 +150,11 @@ function Stream() {
     }, [stream])
 
     useEffect(() => {
+        if (gotPermissions)
+            dispatch(loadDevices)
+    }, [gotPermissions])
+
+    useEffect(() => {
         if (publish && !publishStarting && !connected) {
             setCompositeVideoTrack(canvasElement.current.captureStream(30).getTracks()[0]);
             startPublish({

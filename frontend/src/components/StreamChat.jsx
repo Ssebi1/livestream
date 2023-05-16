@@ -32,8 +32,8 @@ function StreamChat(props) {
         if (message !== '') {
             let username = user.name
             let room = props.stream._id
-            props.socket.emit('send_message', { username, room, message});
-            props.onSendMessage({username: username, message: message})
+            props.socket.emit('send_message', { username, room, message });
+            props.onSendMessage({ username: username, message: message })
             setMessage('');
         }
     };
@@ -48,7 +48,15 @@ function StreamChat(props) {
             </div>
             <div className="stream-chat-input">
                 {user ? (
-                    <input type="text" name="stream-message" id="stream-message" placeholder="Send a message" onKeyDown={handleKeyDown} onChange={(e) => setMessage(e.target.value)} value={message} />
+                    <>
+                        {stream.status === 'started' ? (
+                            <input type="text" name="stream-message" id="stream-message" placeholder="Send a message" onKeyDown={handleKeyDown} onChange={(e) => setMessage(e.target.value)} value={message} />
+
+                        ) : (
+                            <input type="text" name="stream-message" id="stream-message" placeholder="Cannot send messages right now" disabled />
+                        )
+                        }
+                    </>
                 ) : (
                     <input type="text" name="stream-message" id="stream-message" placeholder="Login to send messages" disabled />
                 )}
