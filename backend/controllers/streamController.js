@@ -235,7 +235,7 @@ const endStream = asyncHandler(async (req, res) => {
 
   try {
     if (!fs.existsSync('./frontend/public/thumbnail-pictures/' + stream._id + '.png'))
-    download_image(stream.thumbnail_url, './frontend/public/thumbnail-pictures/' + stream._id + '.png')
+      download_image(stream.thumbnail_url, './frontend/build/thumbnail-pictures/' + stream._id + '.png')
   } catch {}
 
   let wowza_stream_id = stream.id
