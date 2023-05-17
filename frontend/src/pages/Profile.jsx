@@ -10,6 +10,7 @@ import StreamItemMinimal from '../components/StreamItemMinimal'
 import { FaChevronRight } from 'react-icons/fa'
 import CategoryItem from '../components/CategoryItem'
 import { BsFillTrashFill, BsInstagram, BsDiscord } from 'react-icons/bs'
+import { BiLinkExternal } from 'react-icons/bi'
 import { AiOutlineClose, AiOutlinePlus } from 'react-icons/ai'
 import { AiOutlineCloudUpload } from 'react-icons/ai'
 import { uploadProfilePicture, uploadBannerPicture, followUser, unfollowUser } from '../features/auth/authSlice'
@@ -64,7 +65,7 @@ function Profile() {
         dispatch(getStreamer(id))
         dispatch(getUserStreams(id))
         dispatch(getUserCategories(id))
-        setLinkTypes(['Instagram', 'Facebook', 'Youtube', 'Discord'])
+        setLinkTypes(['Instagram', 'Facebook', 'Youtube', 'Discord', 'Website', 'Linkedin'])
 
         return () => {
             dispatch(reset())
@@ -350,7 +351,7 @@ function Profile() {
                                                 ))
                                             }</>
                                         ) : (<>
-                                            {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'ended' || stream.status === 'started').slice(0, (streamsNumber)).map((stream) => (
+                                            {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && (stream.status === 'started' || stream.status === 'ended')).slice(0, (streamsNumber)).map((stream) => (
                                                 <StreamItemMinimal key={stream._id} stream={stream} />
                                             ))}
                                         </>)
@@ -380,13 +381,13 @@ function Profile() {
 
                                     <div className="stats">
                                         <div className="column-1">
-                                            <div className="latest-stream">Latest stream: <span className='stats-subtitle'>13 Januray 2023</span></div>
-                                            <div className="first-stream">Frist stream: <span className='stats-subtitle'>1 Januray 2023</span></div>
-                                            <div className="account-created">Account created: <span className='stats-subtitle'>1 Januray 2022</span></div>
+                                            <div className="latest-stream">Latest stream: <span className='stats-subtitle'>{streams[0].createdAt.substring(0, 10)}</span></div>
+                                            <div className="first-stream">Frist stream: <span className='stats-subtitle'>{streams[streams.length - 1].createdAt.substring(0, 10)}</span></div>
+                                            <div className="account-created">Account created: <span className='stats-subtitle'>{streamer.createdAt.substring(0, 10)}</span></div>
                                         </div>
-                                        <div className="columne-2">
+                                        <div className="column-2">
                                             {streamer.links.map((link) => (
-                                                <div>{link.type}</div>
+                                                <a href={link.url} target="_blank" className='profile-link'>{link.type}<span className="profile-link-icon"><BiLinkExternal/></span></a>
                                             ))}
                                         </div>
                                     </div>
@@ -413,9 +414,18 @@ function Profile() {
                                         ))}
                                     </select>
                                     <section className="profile-streams-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', marginTop: 10 }}>
-                                        {streams.filter(stream => stream.category._id === categoryFilter || categoryFilter === "all").map((stream) => (
-                                            <StreamItemMinimal key={stream._id} stream={stream} />
-                                        ))}
+                                        {user && user._id === streamer._id ? (
+                                            <>{
+                                                streams.filter(stream => stream.category._id === categoryFilter || categoryFilter === "all").map((stream) => (
+                                                    <StreamItemMinimal key={stream._id} stream={stream} />
+                                                ))
+                                            }</>
+                                        ) : (<>
+                                            {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && (stream.status === 'started' || stream.status === 'ended')).map((stream) => (
+                                                <StreamItemMinimal key={stream._id} stream={stream} />
+                                            ))}
+                                        </>)
+                                        }
                                     </section>
                                 </>
                             )

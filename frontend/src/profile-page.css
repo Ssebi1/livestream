@@ -340,6 +340,34 @@
     cursor: pointer;
 }
 
+.column-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.profile-link {
+    color: black;
+    cursor: pointer;
+    display: block;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: 0.5s ease;
+}
+
+.profile-link-icon {
+    display: none;
+}
+
+.profile-link:hover > .profile-link-icon {
+    display: block;
+}
+
 @media only screen and (max-width: 600px) {
 
     .profile-streams, .profile-categories{
