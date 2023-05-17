@@ -238,6 +238,7 @@ const endStream = asyncHandler(async (req, res) => {
   }
 
   try {
+    console.log(process.env.NODE_ENV)
     if (process.env.NODE_ENV === 'development') {
       if (!fs.existsSync('./frontend/public/thumbnail-pictures/' + stream._id + '.png'))
         download_image(stream.thumbnail_url, './frontend/public/thumbnail-pictures/' + stream._id + '.png')

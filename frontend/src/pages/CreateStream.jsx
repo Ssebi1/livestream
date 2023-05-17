@@ -17,7 +17,7 @@ function CreateStream() {
     const personalEngineRef = useRef(null)
 
     const [title, setTitle] = useState('')
-    const [category, setCategory] = useState('64248b6be2e2118622ea2984')
+    const [category, setCategory] = useState('6460f1eaeaed7eb6ff9d6215')
     const [engine, setEngine] = useState('browser')
 
     useEffect(() => {
