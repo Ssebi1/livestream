@@ -183,20 +183,22 @@ const postStream = asyncHandler(async (req, res) => {
 const startStream = asyncHandler(async (req, res) => {
   const stream = await Stream.findById(req.body.id)
 
-  if (!stream || stream.status !== 'created') {
+  if (!stream) {
     res.status(400)
     throw new Error('Stream not found')
   }
 
-
   let wowza_stream_id = stream.id
   let stream_status = stream.status
-  requestResponse = await axios.put('https://api.video.wowza.com/api/v1.10/live_streams/' + wowza_stream_id + '/start', null, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  })
+  if (stream_status === 'created') {
+    requestResponse = await axios.put('https://api.video.wowza.com/api/v1.10/live_streams/' + wowza_stream_id + '/start', null, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+  }
+
 
   const startTime = new Date().getTime()
   let currentTime = startTime
