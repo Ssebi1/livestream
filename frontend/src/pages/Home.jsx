@@ -75,10 +75,7 @@ function Home() {
                 <Link to="/streams" className="home-section-subtitle">View more <FaChevronRight size={14}/></Link>
             </div>
             <section className="streams">
-                {streams.slice(0, (streamsNumber)).filter(stream => stream.status === 'started').map((stream) => (
-                    <StreamItem key={stream._id} stream={stream} />
-                ))}
-                {streams.slice(0, (streamsNumber)).filter(stream => stream.status === 'ended').map((stream) => (
+                {streams.filter(stream => stream.status === 'ended' || stream.status === 'started').slice(0, (streamsNumber)).map((stream) => (
                     <StreamItem key={stream._id} stream={stream} />
                 ))}
             </section>

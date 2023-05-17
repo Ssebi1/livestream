@@ -345,18 +345,16 @@ function Profile() {
                                     <section className="profile-streams">
                                         {user && user._id === streamer._id ? (
                                             <>{
-                                                streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'created').slice(0, (streamsNumber)).map((stream) => (
+                                                streams.filter(stream => stream.category._id === categoryFilter || categoryFilter === "all").slice(0, (streamsNumber)).map((stream) => (
                                                     <StreamItemMinimal key={stream._id} stream={stream} />
                                                 ))
                                             }</>
-                                        ) : (<></>)
+                                        ) : (<>
+                                            {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'ended' || stream.status === 'started').slice(0, (streamsNumber)).map((stream) => (
+                                                <StreamItemMinimal key={stream._id} stream={stream} />
+                                            ))}
+                                        </>)
                                         }
-                                        {streams.filter(stream => stream.status === 'started').slice(0, (streamsNumber)).map((stream) => (
-                                            <StreamItemMinimal key={stream._id} stream={stream} />
-                                        ))}
-                                        {streams.filter(stream => stream.status === 'ended').slice(0, (streamsNumber)).map((stream) => (
-                                            <StreamItemMinimal key={stream._id} stream={stream} />
-                                        ))}
                                     </section>
                                 </div>
 
@@ -415,10 +413,7 @@ function Profile() {
                                         ))}
                                     </select>
                                     <section className="profile-streams-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', marginTop: 10 }}>
-                                        {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'started').map((stream) => (
-                                            <StreamItemMinimal key={stream._id} stream={stream} />
-                                        ))}
-                                        {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status !== 'started').map((stream) => (
+                                        {streams.filter(stream => stream.category._id === categoryFilter || categoryFilter === "all").map((stream) => (
                                             <StreamItemMinimal key={stream._id} stream={stream} />
                                         ))}
                                     </section>

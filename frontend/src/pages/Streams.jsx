@@ -59,11 +59,7 @@ function Streams() {
             </select>
 
             <section className="streams" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', marginTop: 10 }}>
-                {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'started').map((stream) => (
-                    <StreamItem key={stream._id} stream={stream} />
-                ))}
-
-                {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'ended').map((stream) => (
+                {streams.filter(stream => (stream.category._id === categoryFilter || categoryFilter === "all") && stream.status === 'started' && stream.status === 'ended').map((stream) => (
                     <StreamItem key={stream._id} stream={stream} />
                 ))}
             </section>

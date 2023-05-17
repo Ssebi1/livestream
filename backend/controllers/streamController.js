@@ -16,7 +16,7 @@ const { response } = require('express')
 // @route GET /api/streams
 // @access Public
 const getStreams = asyncHandler(async (req, res) => {
-  const streams = await Stream.find({}, null, {sort: {createdAt: -1}}).populate("user").populate("category")
+  const streams = await Stream.find({}, null, {sort: {createdAt: -1, status: -1}}).populate("user").populate("category")
   res.status(200).send(streams)
 })
 
@@ -96,7 +96,7 @@ const download_image = (url, image_path) => {
 // @route GET /api/streams/user/<id>
 // @access Public
 const getUserStreams = asyncHandler(async (req, res) => {
-  const streams = await Stream.find({ user: { _id: req.params.id } }, null, {sort: {createdAt: -1}}).populate('category')
+  const streams = await Stream.find({ user: { _id: req.params.id } }, null, {sort: {createdAt: -1, status: -1}}).populate('category')
   res.status(200).send(streams)
 })
 
