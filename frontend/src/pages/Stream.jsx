@@ -408,6 +408,17 @@ function Stream() {
         return { top: 0, left: 0 };
     }
 
+    const RGBToHSB = (r, g, b) => {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        const v = Math.max(r, g, b),
+          n = v - Math.min(r, g, b);
+        const h =
+          n === 0 ? 0 : n && v === r ? (g - b) / n : v === g ? 2 + (b - r) / n : 4 + (r - g) / n;
+        return [60 * (h < 0 ? h + 6 : h), v && (n / v) * 100, v * 100];
+    };
+
     // Grab frames from video1 and video2, composite on the canvas
     const renderFrame = (video1, video2, canvas, layout, video1ScaleMode) => {
         let padding = paddingRef.current.value
@@ -416,7 +427,7 @@ function Stream() {
         try {
             layout = parseInt(layout)
         } catch { }
-        let context = canvas.getContext('2d');
+        let context = canvas.getContext('2d',{ willReadFrequently: true });
 
         // set canvas size to 720p
         canvas.width = 1280;
@@ -458,7 +469,23 @@ function Stream() {
         if (video1Pip && video1.readyState === video1.HAVE_ENOUGH_DATA) {
             let renderSize = fitSize(video1Size, canvasSize, pipScale);
             let offset = pipOffset(layout, canvasSize, renderSize, padding);
+            const initial_frame_rgb = context.getImageData(offset.left, offset.top, renderSize.width, renderSize.height)
             context.drawImage(video1, offset.left, offset.top, renderSize.width, renderSize.height);
+            let current_frame_rgb = context.getImageData(offset.left, offset.top, renderSize.width, renderSize.height)
+
+            for (let i = 0; i < current_frame_rgb.data.length; i+=4) {
+                const red = current_frame_rgb.data[i], green = current_frame_rgb.data[i+1], blue = current_frame_rgb.data[i+2];
+                let h, s, b;
+                [h, s, b] = RGBToHSB(red, green, blue)
+
+                if (h >= 60 && h <= 150 && s >= 30 && b >= 30) {
+                    current_frame_rgb.data[i] = initial_frame_rgb.data[i]
+                    current_frame_rgb.data[i+1] = initial_frame_rgb.data[i+1]
+                    current_frame_rgb.data[i+2] = initial_frame_rgb.data[i+2]
+                }
+            }
+            
+            context.putImageData(current_frame_rgb, offset.left, offset.top)
         }
 
         // render video2 as pip
