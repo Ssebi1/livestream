@@ -83,12 +83,16 @@ function Stream() {
     const chatSecondaryColorRef = useRef(null)
     const video1SelectRef = useRef(null)
     const toleranceRef = useRef(null)
+    const hueRef = useRef(null)
+    const softnessRef = useRef(null)
 
     const [chatMessages, setChatMessages] = useState([])
     const [running, setRunning] = useState(false);
 
     const [greenScreenSource, setGreenScreenSource] = useState();
     const [tolerance, setTolerance] = useState(1)
+    const [hue, setHue] = useState(1)
+    const [softness, setSoftness] = useState(0)
 
     let config = {
         WEBRTC_SDP_URL: stream.webrtc_url,
@@ -422,21 +426,106 @@ function Stream() {
         const h =
             n === 0 ? 0 : n && v === r ? (g - b) / n : v === g ? 2 + (b - r) / n : 4 + (r - g) / n;
         return [60 * (h < 0 ? h + 6 : h), v && (n / v) * 100, v * 100];
-    };
+    }
 
-    const remove_green_screen = (context, initial_frame_rgb, current_frame_rgb, offset_left, offset_top) => {
+    const HSBToRGB = (h, s, b) => {
+        s /= 100;
+        b /= 100;
+        const k = (n) => (n + h / 60) % 6;
+        const f = (n) => b * (1 - s * Math.max(0, Math.min(k(n), 4 - k(n), 1)));
+        return [255 * f(5), 255 * f(3), 255 * f(1)];
+    }
+
+    const mix_rgba = (r1, g1, b1, a1, r2, g2, b2, a2) => {
+        let r, g, b, a;
+        a = 1 - (1 - a2) * (1 - a1); // alpha
+        r = Math.round((r2 * a2 / a) + (r1 * a1 * (1 - a2) / a)); // red
+        g = Math.round((g2 * a2 / a) + (g1 * a1 * (1 - a2) / a)); // green
+        b = Math.round((b2 * a2 / a) + (b1 * a1 * (1 - a2) / a)); // blue
+        return [r, g, b]
+    }
+
+    const remove_green_screen = (context, initial_frame_rgb, current_frame_rgb, offset_left, offset_top, height, width) => {
         const tolerance = toleranceRef.current.value
+        const hue = hueRef.current.value
+        const softness = softnessRef.current.value
+        let intermediary_frame = structuredClone(current_frame_rgb)
 
-        for (let i = 0; i < current_frame_rgb.data.length; i += 4) {
-            const red = current_frame_rgb.data[i], green = current_frame_rgb.data[i + 1], blue = current_frame_rgb.data[i + 2];
-            let h, s, b;
-            [h, s, b] = RGBToHSB(red, green, blue)
+        for (let row = 0; row < height; row++) {
+            for (let col = 0; col < width; col++) {
+                let i = (col + (row * width)) * 4
 
-            if (h >= 60 * (2 - tolerance) && h <= 150 * tolerance && s >= 30 * tolerance && b >= 30 * tolerance) {
-                current_frame_rgb.data[i] = initial_frame_rgb.data[i]
-                current_frame_rgb.data[i + 1] = initial_frame_rgb.data[i + 1]
-                current_frame_rgb.data[i + 2] = initial_frame_rgb.data[i + 2]
-            }
+                const red = current_frame_rgb.data[i], green = current_frame_rgb.data[i + 1], blue = current_frame_rgb.data[i + 2];
+                let h, s, b;
+                [h, s, b] = RGBToHSB(red, green, blue)
+
+                if (h >= 60 * (2 - tolerance) && h <= 130 * tolerance && s >= 40 * (2 - tolerance) && b >= 30 * (2 - tolerance)) {
+                    current_frame_rgb.data[i] = initial_frame_rgb.data[i]
+                    current_frame_rgb.data[i + 1] = initial_frame_rgb.data[i + 1]
+                    current_frame_rgb.data[i + 2] = initial_frame_rgb.data[i + 2]
+                    current_frame_rgb.data[i + 3] = 254
+                } else if (h >= 60 * (2 - tolerance) && h <= 130 * tolerance && s >= 15 * (2 - tolerance) && b >= 15 * (2 - tolerance)) {
+                    if ((red * blue) != 0 && (green * green) / (red * blue) > 1.5) {
+                        current_frame_rgb.data[i] = red * 1.4
+                        current_frame_rgb.data[i + 1] = green
+                        current_frame_rgb.data[i + 2] = blue * 1.4
+                    } else {
+                        current_frame_rgb.data[i] = red * 1.2
+                        current_frame_rgb.data[i + 1] = green
+                        current_frame_rgb.data[i + 2] = blue * 1.2
+                    }
+                } else if (hue != 1) {
+                    h = Math.max(Math.min(h * hue, 360), 0)
+                    let r_hue, g_hue, b_hue
+                    [r_hue, g_hue, b_hue] = HSBToRGB(h, s, b)
+                    current_frame_rgb.data[i] = r_hue
+                    current_frame_rgb.data[i + 1] = g_hue
+                    current_frame_rgb.data[i + 2] = b_hue
+                }
+
+                // alpha boundary
+                try {
+                    if (softness == 0) continue
+
+                    let pixel1_i = ((col-1) + (row * width)) * 4
+                    let pixel2_i = ((col-2) + (row * width)) * 4
+                    let r_a, g_a, b_a
+
+                    if (current_frame_rgb.data[i + 3] == 254 && current_frame_rgb.data[pixel1_i + 3] != 254 && (softness == 1 || current_frame_rgb.data[pixel2_i + 3] != 254)) {
+                        [r_a, g_a, b_a] = mix_rgba(initial_frame_rgb.data[pixel1_i], initial_frame_rgb.data[pixel1_i + 1], initial_frame_rgb.data[pixel1_i + 2], 255,
+                            intermediary_frame.data[pixel1_i], intermediary_frame.data[pixel1_i + 1], intermediary_frame.data[pixel1_i + 2], 200)
+                        current_frame_rgb.data[pixel1_i] = r_a
+                        current_frame_rgb.data[pixel1_i + 1] = g_a
+                        current_frame_rgb.data[pixel1_i + 2] = b_a
+                        current_frame_rgb.data[pixel1_i + 3] = 255
+
+                        if (softness == 2) {
+                            [r_a, g_a, b_a] = mix_rgba(initial_frame_rgb.data[pixel2_i], initial_frame_rgb.data[pixel2_i + 1], initial_frame_rgb.data[pixel2_i + 2], 255,
+                                intermediary_frame.data[pixel2_i], intermediary_frame.data[pixel2_i + 1], intermediary_frame.data[pixel2_i + 2], 100)
+                            current_frame_rgb.data[pixel2_i] = r_a
+                            current_frame_rgb.data[pixel2_i + 1] = g_a
+                            current_frame_rgb.data[pixel2_i + 2] = b_a
+                            current_frame_rgb.data[pixel2_i + 3] = 255
+                        }
+                    } else if ((softness == 1 || current_frame_rgb.data[i + 3] != 254) && current_frame_rgb.data[pixel1_i + 3] != 254 && current_frame_rgb.data[pixel2_i + 3] == 254) {                        
+                        [r_a, g_a, b_a] = mix_rgba(initial_frame_rgb.data[pixel1_i], initial_frame_rgb.data[pixel1_i + 1], initial_frame_rgb.data[pixel1_i + 2], 255,
+                            intermediary_frame.data[pixel1_i], intermediary_frame.data[pixel1_i + 1], intermediary_frame.data[pixel1_i + 2], 200)
+                        current_frame_rgb.data[pixel1_i] = r_a
+                        current_frame_rgb.data[pixel1_i + 1] = g_a
+                        current_frame_rgb.data[pixel1_i + 2] = b_a
+                        current_frame_rgb.data[pixel1_i + 3] = 255
+
+                        if (softness == 2) {
+                            [r_a, g_a, b_a] = mix_rgba(initial_frame_rgb.data[i], initial_frame_rgb.data[i + 1], initial_frame_rgb.data[i + 2], 255,
+                                intermediary_frame.data[i], intermediary_frame.data[i + 1], intermediary_frame.data[i + 2], 100)
+                            current_frame_rgb.data[i] = r_a
+                            current_frame_rgb.data[i + 1] = g_a
+                            current_frame_rgb.data[i + 2] = b_a
+                            current_frame_rgb.data[i + 3] = 255
+                        }
+                    }
+                } catch(e) {}
+            }     
         }
 
         context.putImageData(current_frame_rgb, offset_left, offset_top)
@@ -483,7 +572,7 @@ function Stream() {
             if (greenScreenSource == 1) initial_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
             context.drawImage(video1, xOffset, yOffset, renderSize.width, renderSize.height);
             if (greenScreenSource == 1) current_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
-            if (greenScreenSource == 1) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset)
+            if (greenScreenSource == 1) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset, renderSize.width, renderSize.height)
         }
 
         // render video2 to fill canvas
@@ -494,7 +583,7 @@ function Stream() {
             if (greenScreenSource == 2) initial_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
             context.drawImage(video2, xOffset, yOffset, renderSize.width, renderSize.height);
             if (greenScreenSource == 2) current_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
-            if (greenScreenSource == 2) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset)
+            if (greenScreenSource == 2) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset, renderSize.width, renderSize.height)
         }
 
         // render video1 as pip
@@ -504,7 +593,7 @@ function Stream() {
             if (greenScreenSource == 1) initial_frame_rgb = context.getImageData(offset.left, offset.top, renderSize.width, renderSize.height)
             context.drawImage(video1, offset.left, offset.top, renderSize.width, renderSize.height);
             if (greenScreenSource == 1) current_frame_rgb = context.getImageData(offset.left, offset.top, renderSize.width, renderSize.height)
-            if (greenScreenSource == 1) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, offset.left, offset.top)
+            if (greenScreenSource == 1) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, offset.left, offset.top, renderSize.width, renderSize.height)
         }
 
         // render video2 as pip
@@ -514,7 +603,7 @@ function Stream() {
             if (greenScreenSource == 2) initial_frame_rgb = context.getImageData(offset.left, offset.top, renderSize.width, renderSize.height)
             context.drawImage(video2, offset.left, offset.top, renderSize.width, renderSize.height);
             if (greenScreenSource == 2) current_frame_rgb = context.getImageData(offset.left, offset.top, renderSize.width, renderSize.height)
-            if (greenScreenSource == 2) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, offset.left, offset.top)
+            if (greenScreenSource == 2) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, offset.left, offset.top, renderSize.width, renderSize.height)
         }
 
         // 2-up
@@ -526,7 +615,7 @@ function Stream() {
                 if (greenScreenSource == 1) initial_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
                 context.drawImage(video1, xOffset, yOffset, renderSize.width, renderSize.height);
                 if (greenScreenSource == 1) current_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
-                if (greenScreenSource == 1) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset)
+                if (greenScreenSource == 1) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset, renderSize.width, renderSize.height)
             }
             if (video2.readyState === video2.HAVE_ENOUGH_DATA) {
                 let renderSize = fitSize(video2Size, canvasSize, 0.5);
@@ -535,7 +624,7 @@ function Stream() {
                 if (greenScreenSource == 2) initial_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
                 context.drawImage(video2, xOffset, yOffset, renderSize.width, renderSize.height)
                 if (greenScreenSource == 2) current_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
-                if (greenScreenSource == 2) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset);
+                if (greenScreenSource == 2) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset, renderSize.width, renderSize.height);
             }
         }
 
@@ -547,7 +636,7 @@ function Stream() {
                 if (greenScreenSource == 2) initial_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
                 context.drawImage(video2, xOffset, yOffset, renderSize.width, renderSize.height)
                 if (greenScreenSource == 2) current_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
-                if (greenScreenSource == 2) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset);
+                if (greenScreenSource == 2) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset, renderSize.width, renderSize.height);
             }
             if (video1.readyState === video1.HAVE_ENOUGH_DATA) {
                 let renderSize = fitSize(video1Size, canvasSize, 0.5);
@@ -556,7 +645,7 @@ function Stream() {
                 if (greenScreenSource == 1) initial_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
                 context.drawImage(video1, xOffset, yOffset, renderSize.width, renderSize.height);
                 if (greenScreenSource == 1) current_frame_rgb = context.getImageData(xOffset, yOffset, renderSize.width, renderSize.height)
-                if (greenScreenSource == 1) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset);
+                if (greenScreenSource == 1) remove_green_screen(context, initial_frame_rgb, current_frame_rgb, xOffset, yOffset, renderSize.width, renderSize.height);
             }
         }
 
@@ -1003,14 +1092,16 @@ function Stream() {
                                                                         <div className="settings-bottom-column-2">
                                                                             <div className="settings-subtitle">Options</div>
                                                                             <div className="settings-subtitle">Tolerance</div>
-                                                                            <input className='range-input' type="range" min="0.2" max="2" step="0.025" defaultValue="1" onChange={(e) => setTolerance(e.target.value)}/>
+                                                                            <input className='range-input' type="range" min="0.2" max="2" step="0.025" defaultValue="1" onChange={(e) => setTolerance(e.target.value)} />
                                                                             <div className="settings-subtitle">Softness</div>
-                                                                            <input type="range" min="0" max="0.2" step="0.01" defaultValue="0.0625"/>
+                                                                            <input type="range" min="0" max="2" step="1" defaultValue="0" onChange={(e) => setSoftness(e.target.value)} />
                                                                             <div className="settings-subtitle">Hue</div>
-                                                                            <input type="range" min="0" max="0.2" step="0.01" defaultValue="0.0625"/>
+                                                                            <input type="range" min="0" max="2" step="0.025" defaultValue="1" onChange={(e) => setHue(e.target.value)} />
                                                                         </div>
                                                                         <input type="text" value={greenScreenSource} ref={greenScreenSourceRef} hidden />
                                                                         <input type="text" value={tolerance} ref={toleranceRef} hidden />
+                                                                        <input type="text" value={hue} ref={hueRef} hidden />
+                                                                        <input type="text" value={softness} ref={softnessRef} hidden />
                                                                     </div>
                                                                 </div>
 
