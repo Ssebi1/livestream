@@ -508,9 +508,6 @@ a {
 }
 
 .live-badge {
-    float: right;
-    margin-top: 5px;
-    margin-right: 5px;
     font-size: 12px;
     color: white;
     background-color: red;
@@ -519,9 +516,6 @@ a {
 }
 
 .vod-badge {
-    float: right;
-    margin-top: 5px;
-    margin-right: 5px;
     font-size: 12px;
     color: white;
     background-color: rgb(67, 67, 67);
@@ -531,4 +525,20 @@ a {
 
 .stream-item {
     min-width: 150px;
+}
+
+.thumbnail-labels {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    padding: 4px;
+}
+
+.stream-date {
+    font-size: 12px;
+    color: white;
+    background-color: rgb(67, 67, 67);
+    padding: 2px 6px;
+    border-radius: 6px;
 }

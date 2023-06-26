@@ -29,6 +29,8 @@ function Topbar() {
 
     const toggleTopbar = () => {
         let downbar = downbarRef.current
+        if (!downbar)
+            return
         if (downbar.clientHeight < 0.1) {
             downbar.style.height = 'auto'
         } else {
@@ -38,6 +40,8 @@ function Topbar() {
 
     const toggleAccountDropdown = () => {
         let accountDropdown = accountDropdownRef.current
+        if (!accountDropdown)
+            return
         if (accountDropdown.clientHeight < 0.1) {
             accountDropdown.style.height = 'auto'
         } else {
@@ -47,12 +51,14 @@ function Topbar() {
 
     const closeTopbar = () => {
         let downbar = downbarRef.current
-        downbar.style.height = '0px'
+        if (downbar)
+            downbar.style.height = '0px'
     }
 
     const closeAccount = () => {
         let accountDropdown = accountDropdownRef.current
-        accountDropdown.style.height = '0px'
+        if (accountDropdown)
+            accountDropdown.style.height = '0px'
     }
 
     const getActivePage = (page) => {
@@ -68,7 +74,11 @@ function Topbar() {
                 <ul className='left'>
                     <Link to='/' onClick={() => { closeTopbar(); closeAccount() }}><li className="logo">LEVEN<span style={{color: '#47ccb2'}}>TV</span></li></Link>
                     <Link to='/streams' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streams')}>STREAMS</li></Link>
-                    <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>FOLLOWING</li></Link>
+                    {user ? (
+                        <Link to='/following' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('following')}>FOLLOWING</li></Link>
+                    ) : (
+                        <></>
+                    )}
                     <Link to='/streamers' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('streamers')}>STREAMERS</li></Link>
                     <Link to='/categories' onClick={() => { closeTopbar(); closeAccount() }}><li className={getActivePage('categories')}>CATEGORIES</li></Link>
                 </ul>
