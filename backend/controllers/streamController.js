@@ -135,7 +135,6 @@ const postStream = asyncHandler(async (req, res) => {
       "delivery_method": "push",
       "encoder": encoder,
       "name": req.body.title,
-      "transcoder_type": "passthrough",
       "hosted_page": {
         "enabled": false
       },
@@ -148,6 +147,8 @@ const postStream = asyncHandler(async (req, res) => {
     }
   })
 
+  console.log(requestResponse)
+
   if (requestResponse) {
     stream_id = requestResponse.data.live_stream.id
     primary_server = requestResponse.data.live_stream.source_connection_information.primary_server
@@ -158,6 +159,7 @@ const postStream = asyncHandler(async (req, res) => {
     webrtc_stream_name = requestResponse.data.live_stream.direct_playback_urls.webrtc[0].stream_name
     webrtc_publish_stream_name = requestResponse.data.live_stream.source_connection_information.stream_name
   }
+
 
   const stream = await Stream.create({
     title: req.body.title,

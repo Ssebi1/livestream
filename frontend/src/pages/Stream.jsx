@@ -34,7 +34,6 @@ function Stream() {
     const [currentTab, setTab] = useState('info')
     const infoTabRef = useRef(null)
     const settingsTabRef = useRef(null)
-    const statsTabRef = useRef(null)
 
     const [layoutSelected, setLayout] = useState(1)
     const [devicesLoading, setDevicesLoading] = useState(false)
@@ -334,14 +333,11 @@ function Stream() {
     const changeTab = (tab) => {
         infoTabRef.current.style.backgroundColor = "#E2E2E2"
         settingsTabRef.current.style.backgroundColor = "#E2E2E2"
-        statsTabRef.current.style.backgroundColor = "#E2E2E2"
 
         if (tab == 'info')
             infoTabRef.current.style.backgroundColor = "#cacaca"
         else if (tab == 'settings')
             settingsTabRef.current.style.backgroundColor = "#cacaca"
-        else if (tab == 'stats')
-            statsTabRef.current.style.backgroundColor = "#cacaca"
 
         setTab(tab)
     }
@@ -826,7 +822,6 @@ function Stream() {
                             <div className="stream-tabs">
                                 <div ref={infoTabRef} onClick={() => { changeTab('info') }}>Info</div>
                                 <div ref={settingsTabRef} onClick={() => { changeTab('settings') }}>Settings</div>
-                                <div ref={statsTabRef} onClick={() => { changeTab('stats') }}>Stats</div>
                             </div>
                         ) : (
                             <></>
@@ -1172,7 +1167,7 @@ function Stream() {
                                                 }
                                             </div>
                                         ) : (
-                                            <div>Stats</div>
+                                            <div></div>
                                         )
                                         }
                                     </>
