@@ -131,11 +131,11 @@ const postStream = asyncHandler(async (req, res) => {
     "live_stream": {
       "aspect_ratio_height": 720,
       "aspect_ratio_width": 1080,
-      "broadcast_location": "eu_belgium",
+      "broadcast_location": "eu_germany",
       "delivery_method": "push",
       "encoder": encoder,
       "name": req.body.title,
-      "transcoder_type": "transcoded",
+      "transcoder_type": "passthrough",
       "hosted_page": {
         "enabled": false
       },
