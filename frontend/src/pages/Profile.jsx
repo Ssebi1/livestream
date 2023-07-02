@@ -32,8 +32,8 @@ function Profile() {
     const descriptionModalWrapper = useRef(null)
 
     const [page, setPage] = useState('home')
-    const [streamsNumber, setStreamsNumber] = useState(8)
-    const [categoriesNumber, setCategoriesNumber] = useState(8)
+    const [streamsNumber, setStreamsNumber] = useState(6)
+    const [categoriesNumber, setCategoriesNumber] = useState(6)
     const [userLoaded, setUserLoaded] = useState(false)
     const [isOwnProfile, setIsOwnProfile] = useState(false)
     const [file, setFile] = useState()

@@ -18,9 +18,9 @@ function Home() {
     const { streams, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
     const { streamers, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers } = useSelector((state) => state.streamers)
     const { categories, isErrorCategories, isSuccessCategories, isLoadingCategories, messageCategories } = useSelector((state) => state.categories)
-    const [streamsNumber, setStreamsNumber] = useState(8)
-    const [categoriesNumber, setCategoriesNumber] = useState(8)
-    const [streamersNumber, setStreamersNumber] = useState(8)
+    const [streamsNumber, setStreamsNumber] = useState(6)
+    const [categoriesNumber, setCategoriesNumber] = useState(6)
+    const [streamersNumber, setStreamersNumber] = useState(6)
 
     useEffect(() => {
         const handleResize = () => {

@@ -17,7 +17,7 @@ function Following() {
     const { user } = useSelector((state) => state.auth)
     const { streams, isErrorStreams, isSuccessStreams, isLoadingStreams, messageStreams } = useSelector((state) => state.streams)
     const { streamers, isErrorStreamers, isSuccessStreamers, isLoadingStreamers, messageStreamers } = useSelector((state) => state.streamers)
-    const [streamsNumber, setStreamsNumber] = useState(8)
+    const [streamsNumber, setStreamsNumber] = useState(6)
 
     useEffect(() => {
         const handleResize = () => {
