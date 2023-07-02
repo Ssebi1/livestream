@@ -664,6 +664,9 @@ function Stream() {
                 const secondaryColor = chatSecondaryColorRef.current.value;
 
                 messages.map(message => {
+                    // if (message.username.length > 6) {
+                    //     message.username = message.username.slice(0, 6) + '...'
+                    // }
                     context.font = 20 + "px poppins";
                     context.fillStyle = primaryColor;
                     if (position === 'bottom-left' || position === 'bottom-right') {
@@ -674,13 +677,17 @@ function Stream() {
                     context.font = 16 + "px poppins";
                     context.fillStyle = secondaryColor;
                     message.message.map(split_message => {
+                        context.font = 20 + "px poppins";
+                        const username_width = context.measureText(message.username + ' ').width
+                        context.font = 16 + "px poppins";
+
                         if (position === 'bottom-left' || position === 'bottom-right') {
                             if (marginTop > canvas.height / 2) {
-                                context.fillText(split_message, marginLeft + context.measureText(message.username + ' ').width + 15, marginTop)
+                                context.fillText(split_message, marginLeft + username_width + 15, marginTop)
                                 marginTop -= 25
                             }
                         } else {
-                            context.fillText(split_message, marginLeft + context.measureText(message.username + ' ').width + 15, marginTop)
+                            context.fillText(split_message, marginLeft + username_width + 15, marginTop)
                             marginTop -= 25
                         }
                     })
@@ -843,7 +850,7 @@ function Stream() {
                                         if (user && stream.user._id !== user._id) {
                                             return (
                                                 <>
-                                                    {user && user.following.includes(stream.user._id) ? (
+                                                    {user && user.following && user.following.includes(stream.user._id) ? (
                                                         <div className="follow-button-wrapper">
                                                             <div className="follow-button unfollow-button" onClick={unfollow}>UNFOLLOW <AiOutlineStar size={20} /></div>
                                                         </div>

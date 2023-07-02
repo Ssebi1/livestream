@@ -17,6 +17,8 @@ function StreamChat(props) {
                     username: data.username
                 },
             ]);
+            if (data.username != user.name)
+                props.onSendMessage({ username: data.username, message: data.message })
         });
 
         return () => props.socket.off('receive_message');

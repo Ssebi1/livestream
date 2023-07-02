@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema({
     streamerMode: {
         type: Boolean,
         required: false,
-        default: false
+        default: true
     },
     description: {
         type: String,

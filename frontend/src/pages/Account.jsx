@@ -41,11 +41,6 @@ function Account() {
         return <Spinner />
     }
 
-    const onSubmit = (e) => {
-        e.preventDefault()
-        // dispatch(enableStreamerMode(user))
-    }
-
     const submitProfilePicture = async e => {
         let uploadFile = e.target.files[0]
         let newFile = new File([uploadFile], user._id + '.png')
@@ -63,7 +58,7 @@ function Account() {
                         <label className='upload-icon' htmlFor="file"><AiOutlineCloudUpload size={40}/></label>
                     </div>
                 </div>
-                <form onSubmit={onSubmit}>
+                <form>
                     <div className='input-1'>
                         <input type="text" className="input-1-field" id="name" name="name" value={user.name} onChange={onChange} required disabled/>
                         <label className="input-1-label">Username</label>
@@ -72,10 +67,6 @@ function Account() {
                         <input type="text" className="input-1-field" id="email" name="email" value={user.email} onChange={onChange} required disabled/>
                         <label className="input-1-label">Email</label>
                     </div>
-                    { user && !user.streamerMode ?
-                        (<button type="submit" className="button-1">Enable streamer mode</button>) :
-                        (<></>)
-                    }
                 </form>
             </section>
         </>

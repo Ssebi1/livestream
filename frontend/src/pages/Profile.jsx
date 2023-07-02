@@ -315,7 +315,7 @@ function Profile() {
                     {isOwnProfile || !user ? (
                         <></>
                     ) : (<>
-                        {user.following.includes(streamer._id) ? (
+                        {user && user.following && user.following.includes(streamer._id) ? (
                             <div className="follow-button-wrapper">
                                 <div className="follow-button unfollow-button" onClick={unfollow}>UNFOLLOW <AiOutlineStar size={20} /></div>
                             </div>
@@ -381,8 +381,19 @@ function Profile() {
 
                                     <div className="stats">
                                         <div className="column-1">
-                                            <div className="latest-stream">Latest stream: <span className='stats-subtitle'>{streams[0].createdAt.substring(0, 10)}</span></div>
-                                            <div className="first-stream">Frist stream: <span className='stats-subtitle'>{streams[streams.length - 1].createdAt.substring(0, 10)}</span></div>
+                                            {streams.length > 0 ? (
+                                                <>
+                                                    <div className="latest-stream">Latest stream: <span className='stats-subtitle'>{streams[0].createdAt.substring(0, 10)}</span></div>
+                                                    <div className="first-stream">Frist stream: <span className='stats-subtitle'>{streams[streams.length - 1].createdAt.substring(0, 10)}</span></div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="latest-stream">Latest stream: <span className='stats-subtitle'>No streams yet</span></div>
+                                                    <div className="first-stream">Frist stream: <span className='stats-subtitle'>No streams yet</span></div>
+                                                </>
+                                            )
+                                            }
+                                            
                                             <div className="account-created">Account created: <span className='stats-subtitle'>{streamer.createdAt.substring(0, 10)}</span></div>
                                         </div>
                                         <div className="column-2">
